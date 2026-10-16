@@ -1,12 +1,12 @@
 
 :root {
-    --primary: #111;
-    --primary-hover: #333;
-    --secondary: #f0f0f0;
-    --text-main: #333;
-    --text-light: #666;
-    --white: #fff;
-    --danger: #e74c3c;
+    --primary: #16284c; /* Azul da logo */
+    --primary-hover: #0d1930;
+    --secondary: #f4f6f9;
+    --text-main: #222222;
+    --text-light: #666666;
+    --white: #ffffff;
+    --danger: #c4262e; /* Vermelho da logo */
     --success: #2ecc71;
     --whatsapp: #25D366;
 }
