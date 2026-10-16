@@ -3,74 +3,466 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - AD Company</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Painel Administrativo - AD Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .admin-layout { display: flex; min-height: 100vh; }
-        .sidebar { width: 250px; background: var(--primary); color: white; padding: 20px; }
-        .sidebar h2 { margin-bottom: 30px; font-size: 1.5rem; }
-        .sidebar ul { list-style: none; padding: 0; }
-        .sidebar ul li { margin-bottom: 15px; }
-        .sidebar ul li a { color: white; text-decoration: none; font-weight: bold; }
-        .main-content { flex: 1; padding: 30px; background: #f4f4f4; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .stat-card h3 { margin: 0 0 10px 0; font-size: 1rem; color: var(--text-light); }
-        .stat-card p { margin: 0; font-size: 2rem; font-weight: bold; }
+        :root {
+            --bg-body: #fdfaf6;
+            --bg-header: #2c1a1d;
+            --text-header: #ffffff;
+            --accent: #d46b7a;
+            --accent-hover: #c05866;
+            --text-main: #333333;
+            --text-light: #666666;
+            --border-color: #f0e6e6;
+            --card-bg: #ffffff;
+            --danger: #ff4d4f;
+            --danger-bg: #fff1f0;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* --- CABEÇALHO --- */
+        .admin-header {
+            background-color: var(--bg-header);
+            color: var(--text-header);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 15px; }
+
+        .header-logo {
+            width: 40px; height: 40px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+        .header-title h1 {
+            font-family: var(--font-serif);
+            font-size: 24px; margin: 0; letter-spacing: 0.5px;
+        }
+
+        .header-title p { font-size: 13px; color: #d1c4c6; margin-top: 2px; }
+
+        .header-actions { display: flex; gap: 15px; }
+
+        .btn-header {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 8px 16px;
+            border-radius: 20px; cursor: pointer;
+            font-size: 14px; font-weight: 500;
+            transition: all 0.2s; text-decoration: none;
+        }
+
+        .btn-header:hover { border-color: white; background: rgba(255,255,255,0.1); }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px; padding: 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            margin-bottom: 30px; border: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-family: var(--font-serif);
+            font-size: 22px; margin-bottom: 25px; color: var(--text-main);
+        }
+
+        .form-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        label { font-size: 14px; font-weight: 600; color: var(--text-main); }
+
+        input[type="text"], input[type="number"], select, textarea {
+            padding: 12px; border: 1px solid #e2d9d9; border-radius: 8px;
+            font-size: 14px; font-family: var(--font-sans); transition: border-color 0.2s;
+            background-color: #fbfbfb;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--accent); background-color: #fff;
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        .file-input-wrapper {
+            display: flex; align-items: center; border: 1px solid #e2d9d9;
+            border-radius: 8px; background-color: #fbfbfb; padding: 5px;
+        }
+
+        .file-input-wrapper input[type="file"] { display: none; }
+
+        .btn-file {
+            background: #ffffff; border: 1px solid #d9d9d9; padding: 6px 12px;
+            border-radius: 6px; font-size: 13px; cursor: pointer; margin-right: 10px; font-weight: 500;
+        }
+
+        .file-name { font-size: 14px; color: var(--text-light); flex-grow: 1; }
+        .file-hint { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+
+        .checkbox-group { display: flex; gap: 20px; margin-top: 10px; align-items: center; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer; }
+
+        .btn-submit {
+            background-color: var(--accent); color: white; border: none;
+            padding: 12px 24px; border-radius: 25px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: background-color 0.2s; margin-top: 10px;
+        }
+
+        .btn-submit:hover { background-color: var(--accent-hover); }
+
+        /* --- LISTA DE PRODUTOS --- */
+        .product-list { display: flex; flex-direction: column; gap: 15px; }
+
+        .product-item {
+            background: var(--card-bg); border-radius: 12px; padding: 15px 25px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid var(--border-color);
+        }
+
+        .product-info-wrapper { display: flex; align-items: center; gap: 20px; }
+
+        .product-thumb {
+            width: 60px; height: 60px; border-radius: 8px; object-fit: cover; background-color: #f0f0f0;
+        }
+
+        .product-details h3 { font-family: var(--font-serif); font-size: 18px; margin: 0 0 5px 0; }
+        .product-details p { margin: 0; font-size: 14px; color: var(--text-light); }
+
+        .product-actions { display: flex; align-items: center; gap: 15px; }
+
+        /* Switch (Interruptor) */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e2d9d9; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #d46b7a; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .btn-action { padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-edit { background-color: #fbfbfb; color: var(--text-main); border: 1px solid #d9d9d9; }
+        .btn-edit:hover { background-color: #f0f0f0; }
+        .btn-delete { background-color: var(--danger-bg); color: var(--danger); }
+        .btn-delete:hover { background-color: #ffd8d9; }
+
+        .message { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; font-size: 14px; }
+        .message.success { background-color: #f6ffed; border: 1px solid #b7eb8f; color: #389e0d; display: block; }
+        .message.error { background-color: #fff2f0; border: 1px solid #ffccc7; color: #cf1322; display: block; }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .product-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .product-actions { width: 100%; justify-content: flex-end; }
+        }
     </style>
 </head>
 <body>
-    <div class="admin-layout">
-        <aside class="sidebar">
-            <h2>Admin Painel</h2>
-            <ul>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="#" id="logout-btn">Sair</a></li>
-            </ul>
-        </aside>
-        <main class="main-content">
-            <h1>Visão Geral</h1>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total de Produtos</h3>
-                    <p id="total-produtos">Carregando...</p>
-                </div>
+
+    <header class="admin-header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="../assets/logo.jpg" alt="Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4='">
             </div>
-            <!-- Pode adicionar mais funcionalidades aqui futuramente -->
-        </main>
-    </div>
+            <div class="header-title">
+                <h1>Catálogo</h1>
+                <p>Gerencie os produtos que aparecem no site.</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="../index.html" target="_blank" class="btn-header">Ver site</a>
+            <button id="logout-btn" class="btn-header">Sair</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div id="status-message" class="message"></div>
+
+        <section class="card">
+            <h2 class="card-title" id="form-title">Adicionar novo produto</h2>
+            
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="prod-name">Nome do produto</label>
+                        <input type="text" id="prod-name" placeholder="Ex: Jordan 4 Branco" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prod-price">Preço (R$)</label>
+                        <input type="number" id="prod-price" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="prod-desc">Descrição</label>
+                        <textarea id="prod-desc" placeholder="Detalhes do produto, material, etc..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prod-size">Tamanho(s)</label>
+                        <input type="text" id="prod-size" placeholder="Ex: 38, 39, 40">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prod-color">Cor(es)</label>
+                        <input type="text" id="prod-color" placeholder="Ex: Branco, Preto">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Foto do produto (opcional)</label>
+                        <div class="file-input-wrapper">
+                            <label for="prod-image" class="btn-file">Escolher arquivo</label>
+                            <span id="file-name-display" class="file-name">Nenhum arquivo escolhido</span>
+                            <input type="file" id="prod-image" accept="image/*">
+                        </div>
+                        <p class="file-hint">Escolha uma foto do computador. Deixe em branco para manter a imagem atual.</p>
+                        <input type="hidden" id="prod-image-url-existing">
+                    </div>
+
+                    <div class="form-group" style="display: none;">
+                        <label for="prod-status">Status Oculto</label>
+                        <select id="prod-status"><option value="true">Disponível</option></select>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="prod-promo"> Está em promoção
+                    </label>
+                </div>
+                
+                <div class="form-group" id="promo-price-group" style="display: none; margin-top: 15px; max-width: 50%;">
+                    <label for="prod-promo-price">Preço Promocional (R$)</label>
+                    <input type="number" id="prod-promo-price" step="0.01" min="0" placeholder="0.00">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn-submit" id="submit-btn">Salvar produto</button>
+                    <button type="button" class="btn-submit" id="cancel-edit-btn" style="background-color: #999; display: none;">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="product-list" id="products-container">
+            <p style="text-align: center; color: var(--text-light); padding: 20px;">Carregando produtos...</p>
+        </section>
+    </main>
 
     <script src="../js/config.js"></script>
     <script src="../js/supabase.js"></script>
     <script>
-        async function checkSession() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'login.html';
-            }
-        }
-        checkSession();
+        const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-        document.getElementById('logout-btn').addEventListener('click', async (e) => {
-            e.preventDefault();
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadProducts();
+            setupFormListeners();
+        });
+
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) window.location.href = 'login.html';
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
             await supabase.auth.signOut();
             window.location.href = 'login.html';
         });
 
-        async function loadDashboard() {
-            const { count, error } = await supabase
-                .from('products')
-                .select('*', { count: 'exact', head: true });
-            
-            if (!error) {
-                document.getElementById('total-produtos').textContent = count;
-            } else {
-                document.getElementById('total-produtos').textContent = 'Erro';
+        document.getElementById('prod-promo').addEventListener('change', (e) => {
+            document.getElementById('promo-price-group').style.display = e.target.checked ? 'flex' : 'none';
+        });
+
+        document.getElementById('prod-image').addEventListener('change', (e) => {
+            const fileName = e.target.files[0] ? e.target.files[0].name : "Nenhum arquivo escolhido";
+            document.getElementById('file-name-display').textContent = fileName;
+        });
+
+        function showMessage(text, type) {
+            const msgEl = document.getElementById('status-message');
+            msgEl.textContent = text; msgEl.className = `message ${type}`;
+            setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
+        }
+
+        async function loadProducts() {
+            const container = document.getElementById('products-container');
+            const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+
+            if (error) { container.innerHTML = '<p style="color: red;">Erro ao carregar produtos.</p>'; return; }
+            if (data.length === 0) { container.innerHTML = '<p>Nenhum produto cadastrado.</p>'; return; }
+
+            container.innerHTML = '';
+            data.forEach(prod => {
+                const imgUrl = prod.image_url || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4=';
+                const priceDisplay = prod.is_promo ? 
+                    `<span style="text-decoration: line-through; font-size: 12px; color: #999;">${formatter.format(prod.price)}</span> ${formatter.format(prod.promo_price)}` : 
+                    formatter.format(prod.price);
+
+                const itemHTML = `
+                    <div class="product-item">
+                        <div class="product-info-wrapper">
+                            <img src="${imgUrl}" class="product-thumb">
+                            <div class="product-details">
+                                <h3>${prod.name}</h3>
+                                <p>${priceDisplay}</p>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <label class="switch">
+                                <input type="checkbox" ${prod.is_active ? 'checked' : ''} onchange="toggleStatus('${prod.id}', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                            <button class="btn-action btn-edit" onclick='editProduct(${JSON.stringify(prod).replace(/'/g, "&#39;")})'>Editar</button>
+                            <button class="btn-action btn-delete" onclick="deleteProduct('${prod.id}')">Excluir</button>
+                        </div>
+                    </div>`;
+                container.insertAdjacentHTML('beforeend', itemHTML);
+            });
+        }
+
+        window.toggleStatus = async function(id, isActive) {
+            const { error } = await supabase.from('products').update({ is_active: isActive }).eq('id', id);
+            if (error) showMessage('Erro ao alterar status', 'error');
+        }
+
+        window.deleteProduct = async function(id) {
+            if(confirm('Tem certeza que deseja excluir este produto?')) {
+                const { error } = await supabase.from('products').delete().eq('id', id);
+                if (error) showMessage('Erro ao excluir', 'error');
+                else { showMessage('Produto excluído', 'success'); loadProducts(); }
             }
         }
-        loadDashboard();
+
+        window.editProduct = function(prod) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('form-title').textContent = 'Editar produto';
+            document.getElementById('product-id').value = prod.id;
+            document.getElementById('prod-name').value = prod.name;
+            document.getElementById('prod-price').value = prod.price;
+            document.getElementById('prod-desc').value = prod.description ? prod.description.split('\\nTamanhos')[0].trim() : '';
+            document.getElementById('prod-promo').checked = prod.is_promo;
+            document.getElementById('prod-image-url-existing').value = prod.image_url || '';
+            
+            if (prod.is_promo) {
+                document.getElementById('promo-price-group').style.display = 'flex';
+                document.getElementById('prod-promo-price').value = prod.promo_price;
+            } else {
+                document.getElementById('promo-price-group').style.display = 'none';
+                document.getElementById('prod-promo-price').value = '';
+            }
+
+            document.getElementById('submit-btn').textContent = 'Atualizar produto';
+            document.getElementById('cancel-edit-btn').style.display = 'block';
+        }
+
+        document.getElementById('cancel-edit-btn').addEventListener('click', resetForm);
+
+        function resetForm() {
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('prod-image-url-existing').value = '';
+            document.getElementById('file-name-display').textContent = 'Nenhum arquivo escolhido';
+            document.getElementById('form-title').textContent = 'Adicionar novo produto';
+            document.getElementById('submit-btn').textContent = 'Salvar produto';
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+            document.getElementById('promo-price-group').style.display = 'none';
+        }
+
+        function setupFormListeners() {
+            document.getElementById('product-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                document.getElementById('submit-btn').disabled = true;
+                document.getElementById('submit-btn').textContent = 'Salvando...';
+
+                const id = document.getElementById('product-id').value;
+                const name = document.getElementById('prod-name').value;
+                const price = parseFloat(document.getElementById('prod-price').value);
+                const description = document.getElementById('prod-desc').value;
+                const size = document.getElementById('prod-size').value;
+                const color = document.getElementById('prod-color').value;
+                
+                // Anexa tamanho e cor à descrição
+                let fullDesc = description;
+                if(size || color) fullDesc += `\\n\\nTamanhos: ${size || 'Não informado'} \\nCores: ${color || 'Não informado'}`;
+
+                const isPromo = document.getElementById('prod-promo').checked;
+                const promoPrice = isPromo ? parseFloat(document.getElementById('prod-promo-price').value) : null;
+                
+                const fileInput = document.getElementById('prod-image');
+                let finalImageUrl = document.getElementById('prod-image-url-existing').value;
+
+                // Processa o Upload de Imagem (caso exista um ficheiro selecionado)
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const fileName = `${Date.now()}_${file.name}`;
+                    const { error: uploadError } = await supabase.storage.from('Produtos').upload(`assets/${fileName}`, file);
+                    
+                    if (uploadError) {
+                        showMessage('Erro ao fazer upload da imagem', 'error');
+                        resetBtn(); return;
+                    }
+                    const { data: { publicUrl } } = supabase.storage.from('Produtos').getPublicUrl(`assets/${fileName}`);
+                    finalImageUrl = publicUrl;
+                }
+
+                const productData = {
+                    name, price, description: fullDesc,
+                    is_active: true, is_promo: isPromo, promo_price: promoPrice,
+                    image_url: finalImageUrl
+                };
+
+                let dbError;
+                if (id) {
+                    const { error } = await supabase.from('products').update(productData).eq('id', id);
+                    dbError = error;
+                } else {
+                    const { error } = await supabase.from('products').insert([productData]);
+                    dbError = error;
+                }
+
+                if (dbError) {
+                    showMessage('Erro ao salvar produto', 'error');
+                    console.error(dbError);
+                } else {
+                    showMessage(id ? 'Produto atualizado!' : 'Produto criado com sucesso!', 'success');
+                    resetForm(); loadProducts();
+                }
+                resetBtn();
+            });
+        }
+
+        function resetBtn() {
+            document.getElementById('submit-btn').disabled = false;
+            document.getElementById('submit-btn').textContent = document.getElementById('product-id').value ? 'Atualizar produto' : 'Salvar produto';
+        }
     </script>
 </body>
 </html>
