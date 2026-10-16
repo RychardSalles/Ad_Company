@@ -1,6 +1,6 @@
 
 // Inicialização do cliente Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Formatação de moeda BR
 const formatCurrency = (value) => {
