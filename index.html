@@ -3,80 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD Company - Loja de Tênis</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>AD Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #16284c; /* Azul da Logo */
+            --text-main: #000000;
+            --text-light: #666666;
+            --bg-body: #ffffff;
+            --font-sans: 'Inter', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-main); }
+        a { text-decoration: none; color: inherit; }
+
+        /* Barra de Topo Preta */
+        .top-bar { background: #000000; color: #ffffff; text-align: center; padding: 10px; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; }
+
+        /* Menu de Navegação */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; position: sticky; top: 0; background: #ffffff; z-index: 100; border-bottom: 1px solid #eeeeee; }
+        .logo img { height: 45px; }
+        .nav-links { display: flex; gap: 40px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a:hover { color: var(--text-light); }
+        .nav-icons { display: flex; gap: 20px; font-size: 12px; font-weight: 600; align-items: center; letter-spacing: 1px;}
+
+        /* Banner Principal (Hero) */
+        .hero { width: 100%; height: 65vh; background: linear-gradient(135deg, var(--primary) 0%, #0d1930 100%); display: flex; align-items: center; justify-content: center; color: white; text-align: center; flex-direction: column; }
+        .hero h1 { font-size: 4rem; font-weight: 800; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 10px; }
+        .hero p { font-size: 1.2rem; font-weight: 400; letter-spacing: 1px;}
+
+        /* Título da Seção de Produtos */
+        .section-title { text-align: center; margin: 70px 0 40px; }
+        .section-title p { font-size: 12px; color: var(--text-light); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+        .section-title h2 { font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px;}
+
+        /* Grade de Produtos Minimalista */
+        .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; padding: 0 50px 100px; max-width: 1600px; margin: 0 auto; }
+        .product-card { text-align: center; cursor: pointer; transition: transform 0.3s ease; }
+        .product-card:hover { transform: translateY(-8px); }
+        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: contain; background: #f9f9f9; margin-bottom: 20px; border-radius: 4px; }
+        .product-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .product-price { font-size: 14px; color: var(--text-main); font-weight: 400;}
+        
+        @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { 
+            header { flex-direction: column; gap: 20px; padding: 20px; } 
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 20px; } 
+            .hero h1 { font-size: 2.5rem; }
+        }
+    </style>
 </head>
 <body>
+    <div class="top-bar">
+        FRETE FIXO PARA ESTAÇÕES DE METRÔ • ENVIOS PARA TODO O BRASIL
+    </div>
+    
     <header>
-        <div class="container header-container">
-            <a href="index.html" class="logo">
-                <img src="assets/logo.png" alt="AD Company Logo" id="store-logo">
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="produtos.html">Todos os Tênis</a></li>
-                    <li><a href="produtos.html?promo=true">Promoções</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="Buscar tênis...">
-                    <button id="search-btn">🔍</button>
-                </div>
-                <a href="carrinho.html" class="cart-icon">
-                    🛒 <span id="cart-count">0</span>
-                </a>
-            </div>
+        <a href="index.html" class="logo">
+            <img src="assets/logo.png" alt="AD Company">
+        </a>
+        <nav class="nav-links">
+            <a href="produtos.html">Drop Atual</a>
+            <a href="produtos.html">Shop</a>
+            <a href="#">Galeria</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="admin/login.html" title="Painel Admin">ADMIN</a>
+            <a href="carrinho.html">CARRINHO (<span id="cart-count">0</span>)</a>
         </div>
     </header>
 
-    <main>
-        <section class="hero-banner">
-            <div class="container">
-                <h1>Os melhores sneakers você encontra aqui</h1>
-                <p>Estilo e exclusividade em cada passo.</p>
-                <a href="produtos.html" class="btn btn-primary">Ver Catálogo</a>
-            </div>
-        </section>
+    <section class="hero">
+        <!-- Substitua o background via CSS futuramente se quiser colocar uma foto de lifestyle aqui -->
+        <h1>AD COMPANY</h1>
+        <p>A nova coleção já está disponível.</p>
+    </section>
 
-        <section class="featured-products container">
-            <h2>Destaques</h2>
-            <div class="product-grid" id="featured-grid">
-                <p>Carregando produtos...</p>
-            </div>
-        </section>
+    <div class="section-title">
+        <p>Lançamento</p>
+        <h2>Catálogo</h2>
+    </div>
+
+    <main class="product-grid" id="featured-grid">
+        <p style="grid-column: 1/-1; text-align: center;">Carregando produtos...</p>
     </main>
-
-    <footer>
-        <div class="container footer-container">
-            <div class="footer-col">
-                <h3>AD Company</h3>
-                <p>Sua loja de tênis exclusiva.</p>
-            </div>
-            <div class="footer-col">
-                <h3>Links Úteis</h3>
-                <ul>
-                    <li><a href="produtos.html">Catálogo</a></li>
-                    <li><a href="admin/admin.html">Painel Admin</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Contato</h3>
-                <p >
-                    <a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank" style="display: block; margin-bottom: 8px;">Instagram: @adthecompany</a>
-                </p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 AD Company. Todos os direitos reservados.</p>
-        </div>
-    </footer>
 
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
-    <script src="js/carrinho.js"></script>
-    <script src="js/home.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Atualiza o contador do carrinho
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const countEl = document.getElementById('cart-count');
+            if(countEl) countEl.textContent = totalItems;
+
+            // Busca os produtos na base de dados
+            const grid = document.getElementById('featured-grid');
+            const { data: products, error } = await supabase
+                .from('products')
+                .select('id, name, price, promo_price, is_promo, image_url')
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(8);
+                
+            if (error) { grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Erro ao carregar produtos.</p>'; return; }
+            if (!products || products.length === 0) { grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Nenhum produto cadastrado.</p>'; return; }
+            
+            grid.innerHTML = '';
+            products.forEach(p => {
+                // Formatação do preço usando a função que está no supabase.js
+                const priceFormatted = formatCurrency(p.price);
+                const promoFormatted = formatCurrency(p.promo_price);
+                
+                const priceHTML = p.is_promo 
+                    ? `<span style="text-decoration: line-through; color: #999; margin-right: 8px;">${priceFormatted}</span> ${promoFormatted}`
+                    : `${priceFormatted}`;
+                    
+                grid.innerHTML += `
+                    <a href="produto.html?id=${p.id}" class="product-card">
+                        <img src="${p.image_url || 'assets/logo.png'}" class="product-img" alt="${p.name}">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">${priceHTML}</div>
+                    </a>
+                `;
+            });
+        });
+    </script>
 </body>
 </html>

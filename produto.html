@@ -86,11 +86,12 @@
     </main>
 
     <script src="js/config.js"></script>
+    <script src="js/supabase.js"></script>
     <script>
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        // Removi a linha do supabase, pois o js/supabase.js já faz isso!
+        // A função formatCurrency também já vem do js/supabase.js, pode apagar a antiga.
 
-        document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
 
