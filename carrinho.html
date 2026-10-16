@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho - AD Company</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/carrinho.css">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo"><h2>AD Company</h2></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>Seu Carrinho</h2>
+        <div class="cart-layout">
+            <div class="cart-items" id="cart-items">
+                <!-- Itens via JS -->
+            </div>
+            <div class="cart-summary">
+                <h3>Resumo</h3>
+                <div class="summary-line">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal">R$ 0,00</span>
+                </div>
+                <div class="summary-line">
+                    <input type="text" id="coupon-code" placeholder="Cupom de desconto">
+                    <button id="apply-coupon" class="btn btn-secondary">Aplicar</button>
+                </div>
+                <div class="summary-line" id="discount-line" style="display: none;">
+                    <span>Desconto:</span>
+                    <span id="cart-discount">- R$ 0,00</span>
+                </div>
+                <div class="summary-line total">
+                    <span>Total:</span>
+                    <span id="cart-total">R$ 0,00</span>
+                </div>
+                <a href="checkout.html" class="btn btn-primary" id="btn-checkout">Ir para Finalização</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/carrinho_page.js"></script>
+</body>
+</html>

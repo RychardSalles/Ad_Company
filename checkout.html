@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Pedido - AD Company</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/checkout.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo"><h2>AD Company</h2></a>
+        </div>
+    </header>
+
+    <main class="container checkout-layout">
+        <div class="checkout-form">
+            <h2>Dados do Cliente</h2>
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="cli-nome" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Telefone / WhatsApp *</label>
+                        <input type="text" id="cli-telefone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="cli-email">
+                    </div>
+                </div>
+
+                <h2>Como deseja receber seu pedido? *</h2>
+                <div class="delivery-options">
+                    <label>
+                        <input type="radio" name="delivery_type" value="station" required>
+                        Retirada em estação de metrô (Taxa: R$ 15,00)
+                    </label>
+                    <label>
+                        <input type="radio" name="delivery_type" value="address" required>
+                        Entrega em endereço (Taxa a confirmar)
+                    </label>
+                </div>
+
+                <div id="station-section" style="display: none;" class="mt-2">
+                    <label>Selecione a estação *</label>
+                    <select id="station-select">
+                        <option value="">Selecione...</option>
+                        <option value="Tucuruvi">Tucuruvi</option>
+                        <option value="Santana">Santana</option>
+                        <option value="Carandiru">Carandiru</option>
+                        <option value="São Bento">São Bento</option>
+                        <option value="Liberdade">Liberdade</option>
+                        <option value="República">República</option>
+                        <option value="Tatuapé">Tatuapé</option>
+                        <option value="Belém">Belém</option>
+                        <option value="Brás">Brás</option>
+                        <option value="Paulista">Paulista</option>
+                        <option value="Consolação">Consolação</option>
+                    </select>
+                </div>
+
+                <div id="address-section" style="display: none;" class="mt-2">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>CEP *</label>
+                            <input type="text" id="end-cep">
+                        </div>
+                        <div class="form-group">
+                            <label>Estado *</label>
+                            <input type="text" id="end-estado">
+                        </div>
+                        <div class="form-group">
+                            <label>Cidade *</label>
+                            <input type="text" id="end-cidade">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Bairro *</label>
+                        <input type="text" id="end-bairro">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 3;">
+                            <label>Rua/Avenida *</label>
+                            <input type="text" id="end-rua">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Número *</label>
+                            <input type="text" id="end-numero">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Complemento</label>
+                            <input type="text" id="end-complemento">
+                        </div>
+                        <div class="form-group">
+                            <label>Ponto de Referência</label>
+                            <input type="text" id="end-referencia">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-2">
+                    <label>Observações do pedido</label>
+                    <textarea id="cli-obs" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="checkout-summary">
+            <h3>Resumo do Pedido</h3>
+            <div id="checkout-items"></div>
+            <hr>
+            <div class="summary-line">
+                <span>Subtotal:</span>
+                <span id="chk-subtotal">R$ 0,00</span>
+            </div>
+            <div class="summary-line text-green" id="chk-discount-line" style="display:none;">
+                <span>Desconto:</span>
+                <span id="chk-discount">- R$ 0,00</span>
+            </div>
+            <div class="summary-line">
+                <span>Taxa de Entrega:</span>
+                <span id="chk-shipping">A calcular</span>
+            </div>
+            <div class="summary-line total">
+                <span>Total:</span>
+                <span id="chk-total">R$ 0,00</span>
+            </div>
+            <button id="btn-finish-whatsapp" class="btn btn-whatsapp mt-2">
+                Finalizar pedido pelo WhatsApp
+            </button>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>
