@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Cupons - AD Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-body: #f4f6f9;
+            --bg-header: #16284c;
+            --text-header: #ffffff;
+            --accent: #c4262e;
+            --accent-hover: #a31f25;
+            --text-main: #333333;
+            --text-light: #666666;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --danger: #c4262e;
+            --danger-bg: #fdf2f2;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; }
+
+        .admin-header { background-color: var(--bg-header); color: var(--text-header); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; background-color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .header-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .header-title h1 { font-family: var(--font-serif); font-size: 24px; margin: 0; }
+        .header-title p { font-size: 13px; color: #d1c4c6; margin-top: 2px; }
+        .header-actions { display: flex; gap: 15px; }
+
+        .btn-header { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s; }
+        .btn-header:hover { border-color: white; background: rgba(255,255,255,0.1); }
+        .btn-header.active { background: white; color: var(--bg-header); border-color: white; }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 30px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); margin-bottom: 30px; border: 1px solid var(--border-color); }
+        .card-title { font-family: var(--font-serif); font-size: 22px; margin-bottom: 25px; color: var(--text-main); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 14px; font-weight: 600; color: var(--text-main); }
+        input, select { padding: 12px; border: 1px solid #e2d9d9; border-radius: 8px; font-size: 14px; font-family: var(--font-sans); background-color: #fbfbfb; }
+        input:focus, select:focus { outline: none; border-color: var(--accent); background-color: #fff; }
+
+        .btn-submit { background-color: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 25px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .btn-submit:hover { background-color: var(--accent-hover); }
+
+        .coupon-list { display: flex; flex-direction: column; gap: 15px; }
+        .coupon-item { background: var(--card-bg); border-radius: 12px; padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); }
+        .coupon-info h3 { font-family: var(--font-serif); font-size: 20px; margin: 0 0 5px 0; color: var(--accent); text-transform: uppercase; }
+        .coupon-info p { margin: 0; font-size: 14px; color: var(--text-light); }
+        
+        .coupon-actions { display: flex; align-items: center; gap: 15px; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e2d9d9; border-radius: 24px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .btn-action { padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
+        .btn-edit { background-color: #fbfbfb; border: 1px solid #d9d9d9; }
+        .btn-edit:hover { background-color: #f0f0f0; }
+        .btn-delete { background-color: var(--danger-bg); color: var(--danger); }
+        .btn-delete:hover { background-color: #ffd8d9; }
+
+        .message { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; font-size: 14px; }
+        .message.success { background-color: #f6ffed; border: 1px solid #b7eb8f; color: #389e0d; display: block; }
+        .message.error { background-color: #fff2f0; border: 1px solid #ffccc7; color: #cf1322; display: block; }
+    </style>
+</head>
+<body>
+
+    <header class="admin-header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="../assets/logo.png" alt="Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4='">
+            </div>
+            <div class="header-title">
+                <h1>Cupons de Desconto</h1>
+                <p>Gerencie códigos promocionais da loja.</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="dashboard.html" class="btn-header">Produtos</a>
+            <a href="cupons.html" class="btn-header active">Cupons</a>
+            <a href="../index.html" target="_blank" class="btn-header">Ver site</a>
+            <button id="logout-btn" class="btn-header" style="border:none;">Sair</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="status-message" class="message"></div>
+
+        <section class="card">
+            <h2 class="card-title" id="form-title">Adicionar novo cupom</h2>
+            <form id="coupon-form">
+                <input type="hidden" id="cupom-id">
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="cupom-code">Código do Cupom</label>
+                        <input type="text" id="cupom-code" placeholder="Ex: BEMVINDO10" style="text-transform: uppercase;" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cupom-type">Tipo de Desconto</label>
+                        <select id="cupom-type">
+                            <option value="fixed">Valor Fixo (R$)</option>
+                            <option value="percentage">Porcentagem (%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cupom-value">Valor do Desconto</label>
+                        <input type="number" id="cupom-value" step="0.01" min="0" placeholder="Ex: 15.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cupom-min-order">Valor Mínimo do Pedido (Opcional)</label>
+                        <input type="number" id="cupom-min-order" step="0.01" min="0" placeholder="Ex: 100.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="cupom-limit">Limite de Utilizações (Opcional)</label>
+                        <input type="number" id="cupom-limit" min="1" placeholder="Ex: 50">
+                    </div>
+                    <div class="form-group">
+                        <label for="cupom-expires">Data de Expiração (Opcional)</label>
+                        <input type="date" id="cupom-expires">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn-submit" id="submit-btn">Salvar Cupom</button>
+                    <button type="button" class="btn-submit" id="cancel-edit-btn" style="background-color: #999; display: none;">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="coupon-list" id="coupons-container">
+            <p style="text-align: center; color: var(--text-light); padding: 20px;">Carregando cupons...</p>
+        </section>
+    </main>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadCoupons();
+            setupForm();
+        });
+
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) window.location.href = 'login.html';
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+
+        function showMessage(text, type) {
+            const msgEl = document.getElementById('status-message');
+            msgEl.textContent = text; msgEl.className = `message ${type}`;
+            setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
+        }
+
+        async function loadCoupons() {
+            const container = document.getElementById('coupons-container');
+            const { data, error } = await supabase.from('coupons').select('*').order('code', { ascending: true });
+
+            if (error) { container.innerHTML = '<p style="color: red;">Erro ao carregar cupons.</p>'; return; }
+            if (data.length === 0) { container.innerHTML = '<p>Nenhum cupom cadastrado.</p>'; return; }
+
+            container.innerHTML = '';
+            data.forEach(c => {
+                const tipoStr = c.discount_type === 'fixed' ? `R$ ${c.discount_value.toFixed(2)}` : `${c.discount_value}%`;
+                const regras = [];
+                if (c.min_order_value > 0) regras.push(`Mínimo R$ ${c.min_order_value.toFixed(2)}`);
+                if (c.usage_limit) regras.push(`Limite: ${c.usage_limit} usos (Usado: ${c.usage_count})`);
+                if (c.expires_at) regras.push(`Validade: ${new Date(c.expires_at).toLocaleDateString('pt-BR')}`);
+
+                const itemHTML = `
+                    <div class="coupon-item">
+                        <div class="coupon-info">
+                            <h3>${c.code} <span style="font-size: 14px; background: #eee; padding: 3px 8px; border-radius: 10px; color: #333;">Desconto: ${tipoStr}</span></h3>
+                            <p>${regras.length > 0 ? regras.join(' | ') : 'Sem regras de limite ou validade.'}</p>
+                        </div>
+                        <div class="coupon-actions">
+                            <label class="switch" title="Ativar/Desativar">
+                                <input type="checkbox" ${c.is_active ? 'checked' : ''} onchange="toggleStatus('${c.id}', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                            <button class="btn-action btn-edit" onclick='editCoupon(${JSON.stringify(c).replace(/'/g, "&#39;")})'>Editar</button>
+                            <button class="btn-action btn-delete" onclick="deleteCoupon('${c.id}')">Excluir</button>
+                        </div>
+                    </div>`;
+                container.insertAdjacentHTML('beforeend', itemHTML);
+            });
+        }
+
+        window.toggleStatus = async function(id, isActive) {
+            const { error } = await supabase.from('coupons').update({ is_active: isActive }).eq('id', id);
+            if (error) showMessage('Erro ao alterar status', 'error');
+        }
+
+        window.deleteCoupon = async function(id) {
+            if(confirm('Tem certeza que deseja excluir este cupom?')) {
+                const { error } = await supabase.from('coupons').delete().eq('id', id);
+                if (error) showMessage('Erro ao excluir', 'error');
+                else { showMessage('Cupom excluído', 'success'); loadCoupons(); }
+            }
+        }
+
+        window.editCoupon = function(c) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('form-title').textContent = 'Editar Cupom';
+            document.getElementById('cupom-id').value = c.id;
+            document.getElementById('cupom-code').value = c.code;
+            document.getElementById('cupom-type').value = c.discount_type;
+            document.getElementById('cupom-value').value = c.discount_value;
+            document.getElementById('cupom-min-order').value = c.min_order_value || '';
+            document.getElementById('cupom-limit').value = c.usage_limit || '';
+            document.getElementById('cupom-expires').value = c.expires_at ? c.expires_at.split('T')[0] : '';
+            
+            document.getElementById('submit-btn').textContent = 'Atualizar Cupom';
+            document.getElementById('cancel-edit-btn').style.display = 'block';
+        }
+
+        document.getElementById('cancel-edit-btn').addEventListener('click', resetForm);
+
+        function resetForm() {
+            document.getElementById('coupon-form').reset();
+            document.getElementById('cupom-id').value = '';
+            document.getElementById('form-title').textContent = 'Adicionar novo cupom';
+            document.getElementById('submit-btn').textContent = 'Salvar Cupom';
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+        }
+
+        function setupForm() {
+            document.getElementById('coupon-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('submit-btn');
+                btn.disabled = true; btn.textContent = 'Salvando...';
+
+                const id = document.getElementById('cupom-id').value;
+                const code = document.getElementById('cupom-code').value.toUpperCase().trim();
+                const discount_type = document.getElementById('cupom-type').value;
+                const discount_value = parseFloat(document.getElementById('cupom-value').value);
+                const min_order_value = parseFloat(document.getElementById('cupom-min-order').value) || 0;
+                const usage_limit = parseInt(document.getElementById('cupom-limit').value) || null;
+                const dateVal = document.getElementById('cupom-expires').value;
+                const expires_at = dateVal ? new Date(dateVal + 'T23:59:59').toISOString() : null;
+
+                const dataObj = { code, discount_type, discount_value, min_order_value, usage_limit, expires_at };
+
+                let dbError;
+                if (id) {
+                    const { error } = await supabase.from('coupons').update(dataObj).eq('id', id);
+                    dbError = error;
+                } else {
+                    const { error } = await supabase.from('coupons').insert([dataObj]);
+                    dbError = error;
+                }
+
+                if (dbError) {
+                    showMessage(dbError.code === '23505' ? 'Este código já existe!' : 'Erro ao salvar cupom', 'error');
+                } else {
+                    showMessage(id ? 'Cupom atualizado!' : 'Cupom criado com sucesso!', 'success');
+                    resetForm(); loadCoupons();
+                }
+                btn.disabled = false; btn.textContent = id ? 'Atualizar Cupom' : 'Salvar Cupom';
+            });
+        }
+    </script>
+</body>
+</html>
