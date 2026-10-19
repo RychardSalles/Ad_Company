@@ -8,9 +8,14 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        body {
+            background-color: #0d0d0d !important;
+            color: #ffffff !important;
+        }
+
         .top-bar { 
             background: var(--accent) !important; 
-            color: var(--text-main) !important; 
+            color: #ffffff !important; 
             overflow: hidden !important; 
             white-space: nowrap !important; 
             padding: 10px 0 !important; 
@@ -52,10 +57,11 @@
             grid-template-columns: 1fr 1.5fr 1fr; 
             gap: 60px; 
             align-items: start;
+            background-color: #0d0d0d !important;
         }
 
         .product-info-left { display: flex; flex-direction: column; gap: 20px; }
-        .product-title { font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
+        .product-title { font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; color: #fff; }
         .product-price { font-size: 20px; font-weight: 800; color: var(--accent); }
         .product-desc { font-size: 13px; line-height: 1.8; color: var(--text-light); margin-top: 10px; }
 
@@ -64,7 +70,7 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            background: var(--card-bg); 
+            background: var(--card-bg, #161616); 
             border: 1px solid rgba(136, 136, 136, 0.2);
             border-radius: 8px; 
             overflow: hidden; 
@@ -83,7 +89,7 @@
         .option-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; margin-bottom: 8px; }
         .option-selector { display: flex; gap: 10px; flex-wrap: wrap; }
         
-        .option-btn { border: 1px solid rgba(136, 136, 136, 0.3); background: var(--card-bg); color: white; padding: 12px 18px; cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 600; transition: all 0.2s; border-radius: 6px; }
+        .option-btn { border: 1px solid rgba(136, 136, 136, 0.3); background: var(--card-bg, #161616); color: white; padding: 12px 18px; cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 600; transition: all 0.2s; border-radius: 6px; }
         .option-btn:hover { border-color: var(--accent); }
         .option-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
 
