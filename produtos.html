@@ -3,74 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - AD Company</title>
+    <title>Todos os Tênis - AD Company</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/home.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* CORREÇÃO DO FUNDO VERMELHO: Força o fundo escuro padrão */
+        body, main, .catalog-section, .produtos-container {
+            background-color: #0d0d0d !important;
+            color: #ffffff !important;
+        }
+
+        /* Barra superior animada (marquee) */
+        .top-bar { 
+            background: var(--accent) !important; 
+            color: #ffffff !important; 
+            overflow: hidden !important; 
+            white-space: nowrap !important; 
+            padding: 10px 0 !important; 
+            font-size: 12px !important; 
+            font-weight: 800 !important; 
+            letter-spacing: 1px !important; 
+            text-transform: uppercase !important; 
+            width: 100% !important;
+            display: block !important;
+            box-sizing: border-box !important;
+        }
+
+        .top-bar-track {
+            display: inline-flex !important;
+            white-space: nowrap !important;
+            width: max-content !important;
+            animation: marqueeMove 15s linear infinite !important;
+        }
+
+        .top-bar-content { 
+            display: inline-flex !important; 
+            white-space: nowrap !important;
+        }
+
+        .top-bar-content span { 
+            margin: 0 30px !important; 
+        }
+
+        @keyframes marqueeMove { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-50%); } 
+        }
+
+        /* Vitrine de Produtos */
+        .catalog-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 40px;
+        }
+
         .catalog-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 40px 50px 20px;
-            flex-wrap: wrap;
-            gap: 20px;
+            margin-bottom: 30px;
         }
-        .catalog-header h1 {
-            font-size: 28px;
+
+        .catalog-title {
+            font-size: 24px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: -0.5px;
         }
-        .filters-wrapper {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(136, 136, 136, 0.2);
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
         }
-        .filters-wrapper input, .filters-wrapper select {
-            background: #0d0d0d;
-            border: 1px solid rgba(136, 136, 136, 0.3);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-family: var(--font-sans);
+
+        .product-card {
+            background: var(--card-bg, #161616);
+            border: 1px solid rgba(136, 136, 136, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .product-card:hover {
+            border-color: var(--accent);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            background-color: #111;
+        }
+
+        .product-card-info {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .product-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .product-card-price {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--accent);
         }
     </style>
 </head>
 <body>
     <div class="top-bar">
-    <div class="top-bar-track">
-        <div class="top-bar-content">
-            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-            <span>•</span>
-            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-            <span>•</span>
-            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-            <span>•</span>
-        </div>
-        <div class="top-bar-content">
-            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-            <span>•</span>
-            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-            <span>•</span>
-            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-            <span>•</span>
-        </div>
-    </div>
-    
+        <div class="top-bar-track">
+            <div class="top-bar-content">
+                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+                <span>•</span>
+                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+                <span>•</span>
+                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+                <span>•</span>
+            </div>
+            <div class="top-bar-content">
+                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+                <span>•</span>
+                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+                <span>•</span>
+                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+                <span>•</span>
+            </div>
+        </div>  
+    </div> 
+
     <header>
         <a href="index.html" class="logo">
             <img src="assets/logo.png" alt="AD Company">
         </a>
         <nav class="nav-links">
             <a href="index.html">Início</a>
-            <a href="produtos.html">Todos os Tênis</a>
+            <a href="produtos.html">Shop</a>
         </nav>
         <div class="nav-icons">
             <a href="carrinho.html" title="Carrinho" style="font-size: 18px; display: flex; align-items: center; gap: 5px;">
@@ -79,20 +158,13 @@
         </div>
     </header>
 
-    <div class="catalog-header">
-        <h1>Todos os Tênis</h1>
-        <div class="filters-wrapper">
-            <input type="text" id="search-input" placeholder="Buscar tênis...">
-            <select id="sort-select">
-                <option value="newest">Mais recentes</option>
-                <option value="price-asc">Menor preço</option>
-                <option value="price-desc">Maior preço</option>
-            </select>
+    <main class="catalog-container">
+        <div class="catalog-header">
+            <h1 class="catalog-title">Todos os Tênis</h1>
         </div>
-    </div>
-
-    <main class="product-grid" id="catalog-grid" style="padding-top: 20px;">
-        <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Carregando produtos...</p>
+        <div class="products-grid" id="catalog-grid">
+            <p style="color: var(--text-light);">A carregar produtos...</p>
+        </div>
     </main>
 
     <footer>
@@ -111,7 +183,7 @@
             <div class="footer-col">
                 <h3>Contato</h3>
                 <ul>
-                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://www.instagram.com/adthecompany" target="_blank">Instagram: @adthecompany</a></li>
                     <li><a href="https://wa.me/5511950070636" target="_blank">WhatsApp: (11) 95007-0636</a></li>
                 </ul>
             </div>
@@ -130,58 +202,38 @@
             const countEl = document.getElementById('cart-count');
             if(countEl) countEl.textContent = `(${totalItems})`;
 
-            await loadCatalog();
-
-            document.getElementById('search-input').addEventListener('input', loadCatalog);
-            document.getElementById('sort-select').addEventListener('change', loadCatalog);
-        });
-
-        async function loadCatalog() {
             const grid = document.getElementById('catalog-grid');
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const sortVal = document.getElementById('sort-select').value;
+            const { data: products, error } = await supabase.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false });
 
-            let query = supabase.from('products').select('*').eq('is_active', true);
-
-            if (sortVal === 'newest') query = query.order('created_at', { ascending: false });
-            if (sortVal === 'price-asc') query = query.order('price', { ascending: true });
-            if (sortVal === 'price-desc') query = query.order('price', { ascending: false });
-
-            const { data: products, error } = await query;
-
-            if (error) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Erro ao carregar catálogo.</p>';
-                return;
-            }
-
-            const filtered = products.filter(p => p.name.toLowerCase().includes(searchTerm));
-
-            if (filtered.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Nenhum produto encontrado.</p>';
+            if (error || !products || products.length === 0) {
+                grid.innerHTML = '<p style="color: var(--text-light);">Nenhum produto disponível no momento.</p>';
                 return;
             }
 
             grid.innerHTML = '';
-            filtered.forEach(p => {
-                const priceFormatted = formatCurrency(p.price);
-                const promoFormatted = formatCurrency(p.promo_price);
-                
-                const priceHTML = p.is_promo 
-                    ? `<span style="text-decoration: line-through; color: var(--text-light); margin-right: 8px; font-size: 12px;">${priceFormatted}</span> ${promoFormatted}`
-                    : `${priceFormatted}`;
+            products.forEach(prod => {
+                let img = 'assets/logo.png';
+                if (prod.image_url) {
+                    const imgs = prod.image_url.split(',').map(i => i.trim());
+                    if (imgs.length > 0 && imgs[0]) img = imgs[0];
+                }
 
-                const badge = p.is_promo ? '<span style="background: var(--accent); color: white; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; display: inline-block; margin-bottom: 5px;">PROMOÇÃO</span>' : '';
-                    
-                grid.innerHTML += `
-                    <a href="produto.html?id=${p.id}" class="product-card">
-                        ${badge}
-                        <img src="${p.image_url || 'assets/logo.png'}" class="product-img" alt="${p.name}">
-                        <div class="product-name">${p.name}</div>
-                        <div class="product-price">${priceHTML}</div>
+                const priceDisplay = prod.is_promo ? 
+                    `<span style="text-decoration: line-through; font-size: 13px; color: var(--text-light); margin-right: 8px;">${formatCurrency(prod.price)}</span> ${formatCurrency(prod.promo_price)}` : 
+                    formatCurrency(prod.price);
+
+                const cardHtml = `
+                    <a href="produto.html?id=${prod.id}" class="product-card">
+                        <img src="${img}" alt="${prod.name}" onerror="this.src='assets/logo.png'">
+                        <div class="product-card-info">
+                            <span class="product-card-title">${prod.name}</span>
+                            <span class="product-card-price">${priceDisplay}</span>
+                        </div>
                     </a>
                 `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
             });
-        }
+        });
     </script>
 </body>
 </html>
