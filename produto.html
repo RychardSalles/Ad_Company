@@ -95,7 +95,7 @@
     </header>
 
     <main class="product-container" id="product-page">
-        <p style="grid-column: 2; text-align: center; color: var(--text-light);">Carregando produto...</p>
+        <p style="grid-column: 2; text-align: center; color: var(--text-light);">A carregar produto...</p>
     </main>
 
     <footer>
@@ -153,14 +153,21 @@
                 sizes = product.sizes.split(',').map(s => s.trim());
             }
 
-            let colors = ["Padrão"];
-            if (product.colors) {
-                colors = product.colors.split(',').map(c => c.trim());
+            // Lê as cores salvas na descrição ou formato estruturado
+            let colors = ["Branco", "Preto"];
+            let rawDesc = product.description || "";
+            if (rawDesc.includes('Cores:')) {
+                const parts = rawDesc.split('Cores:');
+                rawDesc = parts[0].trim();
+                const colorPart = parts[1].split('\n')[0].trim();
+                if (colorPart) {
+                    colors = colorPart.split(',').map(c => c.trim());
+                }
             }
 
-            const descText = product.description || "Design exclusivo e material de alta qualidade.";
-            const measuresText = product.measures || "Consulte a tabela de numeração padrão para este modelo streetwear.";
-            const prazoText = product.prazo || "Entrega estimada em até 7 dias úteis para todo o Brasil.";
+            const descText = rawDesc || "Design exclusivo e material de alta qualidade.";
+            const measuresText = "Consulte a tabela de numeração padrão para este modelo streetwear.";
+            const prazoText = "Entrega estimada em até 7 dias úteis para todo o Brasil.";
 
             const priceHtml = product.is_promo ? 
                 `<span style="text-decoration: line-through; color: var(--text-light); font-size: 14px; margin-right: 10px;">${formatCurrency(product.price)}</span> ${formatCurrency(product.promo_price)}` : 
@@ -175,7 +182,7 @@
 
                 <div class="product-gallery">
                     <button class="nav-btn prev" onclick="changeImage(-1)">❮</button>
-                    <img src="${product.image_url}" class="gallery-img active" alt="${product.name}">
+                    <img src="${product.image_url || 'assets/logo.png'}" class="gallery-img active" alt="${product.name}">
                     <button class="nav-btn next" onclick="changeImage(1)">❯</button>
                 </div>
 
