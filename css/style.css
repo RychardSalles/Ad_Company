@@ -31,19 +31,17 @@ a { text-decoration: none; color: inherit; }
     font-weight: 800; 
     letter-spacing: 1px; 
     text-transform: uppercase; 
-    display: flex;
     width: 100%;
 }
 
 .top-bar-track {
-    display: flex;
+    display: inline-flex;
     white-space: nowrap;
-    animation: marquee 10s linear infinite;
-    width: max-content;
+    animation: marquee 12s linear infinite;
 }
 
 .top-bar-content { 
-    display: flex; 
+    display: inline-flex; 
     white-space: nowrap;
 }
 
