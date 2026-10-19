@@ -4,59 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo - AD Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/produtos.css">
+    <link rel="stylesheet" href="css/home.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .catalog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 50px 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .catalog-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+        .filters-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(136, 136, 136, 0.2);
+        }
+        .filters-wrapper input, .filters-wrapper select {
+            background: #0d0d0d;
+            border: 1px solid rgba(136, 136, 136, 0.3);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: var(--font-sans);
+        }
+        .filters-wrapper button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header repetido (simplificado para o exemplo) -->
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+            <span>💳 PARCELE EM ATÉ 12X NO CARTÃO</span>
+            <span>•</span>
+        </div>
+    </div>
+    
     <header>
-        <div class="container header-container">
-            <a href="index.html" class="logo"><h2>AD Company</h2></a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="produtos.html">Todos os Tênis</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <a href="carrinho.html" class="cart-icon">🛒 <span id="cart-count">0</span></a>
-            </div>
+        <a href="index.html" class="logo">
+            <img src="assets/logo.png" alt="AD Company">
+        </a>
+        <nav class="nav-links">
+            <a href="index.html">Início</a>
+            <a href="produtos.html">Todos os Tênis</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="carrinho.html">CARRINHO (<span id="cart-count">0</span>)</a>
         </div>
     </header>
 
-    <main class="container page-layout">
-        <aside class="filters">
-            <h3>Filtros</h3>
-            <div class="filter-group">
-                <label>Busca</label>
-                <input type="text" id="filter-search" placeholder="Nome do tênis...">
-            </div>
-            <div class="filter-group">
-                <label>Apenas Promoções</label>
-                <input type="checkbox" id="filter-promo">
-            </div>
-            <button id="apply-filters" class="btn btn-secondary">Aplicar Filtros</button>
-        </aside>
-        
-        <section class="products-list">
-            <div class="products-header">
-                <h2>Todos os Tênis</h2>
-                <select id="sort-select">
-                    <option value="recent">Mais recentes</option>
-                    <option value="price_asc">Menor Preço</option>
-                    <option value="price_desc">Maior Preço</option>
-                </select>
-            </div>
-            <div class="product-grid" id="products-grid">
-                <p>Carregando produtos...</p>
-            </div>
-        </section>
+    <div class="catalog-header">
+        <h1>Todos os Tênis</h1>
+        <div class="filters-wrapper">
+            <input type="text" id="search-input" placeholder="Buscar tênis...">
+            <select id="sort-select">
+                <option value="newest">Mais recentes</option>
+                <option value="price-asc">Menor preço</option>
+                <option value="price-desc">Maior preço</option>
+            </select>
+        </div>
+    </div>
+
+    <main class="product-grid" id="catalog-grid" style="padding-top: 20px;">
+        <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Carregando produtos...</p>
     </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>AD Company</h3>
+                <p style="color: var(--text-light); font-size: 14px;">Estilo e exclusividade em cada passo.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Links Úteis</h3>
+                <ul>
+                    <li><a href="produtos.html">Catálogo Completo</a></li>
+                    <li><a href="admin/admin.html">Painel Admin</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contato</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://wa.me/5511999999999" target="_blank">WhatsApp: Atendimento</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 AD Company. Todos os direitos reservados.
+        </div>
+    </footer>
 
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
-    <script src="js/carrinho.js"></script>
-    <script src="js/produtos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Atualiza o contador do carrinho
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const countEl = document.getElementById('cart-count');
+            if(countEl) countEl.textContent = totalItems;
+
+            await loadCatalog();
+
+            document.getElementById('search-input').addEventListener('input', loadCatalog);
+            document.getElementById('sort-select').addEventListener('change', loadCatalog);
+        });
+
+        async function loadCatalog() {
+            const grid = document.getElementById('catalog-grid');
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const sortVal = document.getElementById('sort-select').value;
+
+            let query = supabase.from('products').select('*').eq('is_active', true);
+
+            if (sortVal === 'newest') query = query.order('created_at', { ascending: false });
+            if (sortVal === 'price-asc') query = query.order('price', { ascending: true });
+            if (sortVal === 'price-desc') query = query.order('price', { ascending: false });
+
+            const { data: products, error } = await query;
+
+            if (error) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Erro ao carregar catálogo.</p>';
+                return;
+            }
+
+            const filtered = products.filter(p => p.name.toLowerCase().includes(searchTerm));
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Nenhum produto encontrado.</p>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            filtered.forEach(p => {
+                const priceFormatted = formatCurrency(p.price);
+                const promoFormatted = formatCurrency(p.promo_price);
+                
+                const priceHTML = p.is_promo 
+                    ? `<span style="text-decoration: line-through; color: var(--text-light); margin-right: 8px; font-size: 12px;">${priceFormatted}</span> ${promoFormatted}`
+                    : `${priceFormatted}`;
+
+                const badge = p.is_promo ? '<span style="background: var(--accent); color: white; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; display: inline-block; margin-bottom: 5px;">PROMOÇÃO</span>' : '';
+                    
+                grid.innerHTML += `
+                    <a href="produto.html?id=${p.id}" class="product-card">
+                        ${badge}
+                        <img src="${p.image_url || 'assets/logo.png'}" class="product-img" alt="${p.name}">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">${priceHTML}</div>
+                    </a>
+                `;
+            });
+        }
+    </script>
 </body>
 </html>

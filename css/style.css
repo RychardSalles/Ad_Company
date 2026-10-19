@@ -27,12 +27,11 @@ header {
     top: 0; 
     background: rgba(13, 13, 13, 0.95); 
     backdrop-filter: blur(10px); 
-    zIndex: 100; 
+    z-index: 100; 
     border-bottom: 1px solid var(--text-light); 
-    flex-wrap: wrap; /* Permite que se adapte se o espaço for menor */
+    flex-wrap: wrap;
     gap: 15px;
 }
-
 
 .logo img { 
     height: 65px; 
@@ -59,25 +58,8 @@ header {
     letter-spacing: 1px; 
 }
 
-/* Responsividade para telas menores e celulares */
-@media (max-width: 900px) {
-    header { 
-        padding: 15px 20px; 
-        justify-content: center; 
-        gap: 10px;
-    }
-    .logo img {
-        height: 55px;
-    }
-    .nav-links { 
-        gap: 15px; 
-        font-size: 11px; 
-    }
-    .nav-icons { 
-        font-size: 11px; 
-        gap: 15px;
-    }
-}
+/* Container de Conteúdo Geral */
+.container { max-width: 1400px; margin: 40px auto; padding: 0 40px; width: 100%; flex: 1; }
 
 /* Rodapé */
 footer { background: #050505; color: var(--text-main); padding: 50px 20px 20px; margin-top: auto; border-top: 1px solid var(--text-light); }
@@ -88,3 +70,10 @@ footer { background: #050505; color: var(--text-main); padding: 50px 20px 20px; 
 .footer-col a { color: var(--text-light); transition: 0.2s; }
 .footer-col a:hover { color: var(--text-main); }
 .footer-bottom { text-align: center; margin-top: 40px; border-top: 1px solid rgba(136, 136, 136, 0.2); padding-top: 20px; font-size: 12px; color: var(--text-light); }
+
+@media (max-width: 900px) {
+    header { padding: 15px 20px; justify-content: center; gap: 10px; }
+    .logo img { height: 55px; }
+    .nav-links { gap: 15px; font-size: 11px; }
+    .nav-icons { font-size: 11px; gap: 15px; }
+}
