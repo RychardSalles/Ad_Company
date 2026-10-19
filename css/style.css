@@ -17,12 +17,67 @@ a { text-decoration: none; color: inherit; }
 .top-bar-content span { margin: 0 20px; }
 @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
 
-/* Menu de Navegação */
-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; position: sticky; top: 0; background: rgba(13, 13, 13, 0.95); backdrop-filter: blur(10px); z-index: 100; border-bottom: 1px solid var(--text-light); }
-.logo img { height: 45px; }
-.nav-links { display: flex; gap: 40px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+/* Menu de Navegação Responsivo */
+header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 15px 40px; 
+    position: sticky; 
+    top: 0; 
+    background: rgba(13, 13, 13, 0.95); 
+    backdrop-filter: blur(10px); 
+    zIndex: 100; 
+    border-bottom: 1px solid var(--text-light); 
+    flex-wrap: wrap; /* Permite que se adapte se o espaço for menor */
+    gap: 15px;
+}
+
+
+.logo img { 
+    height: 65px; 
+    width: auto;
+    object-fit: contain;
+}
+
+.nav-links { 
+    display: flex; 
+    gap: 30px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+}
 .nav-links a:hover { color: var(--accent); }
-.nav-icons { display: flex; gap: 20px; font-size: 12px; font-weight: 600; align-items: center; letter-spacing: 1px; }
+
+.nav-icons { 
+    display: flex; 
+    gap: 20px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    align-items: center; 
+    letter-spacing: 1px; 
+}
+
+/* Responsividade para telas menores e celulares */
+@media (max-width: 900px) {
+    header { 
+        padding: 15px 20px; 
+        justify-content: center; 
+        gap: 10px;
+    }
+    .logo img {
+        height: 55px;
+    }
+    .nav-links { 
+        gap: 15px; 
+        font-size: 11px; 
+    }
+    .nav-icons { 
+        font-size: 11px; 
+        gap: 15px;
+    }
+}
 
 /* Rodapé */
 footer { background: #050505; color: var(--text-main); padding: 50px 20px 20px; margin-top: auto; border-top: 1px solid var(--text-light); }
