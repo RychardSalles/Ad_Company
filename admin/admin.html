@@ -315,12 +315,12 @@
             const fileInput = document.getElementById('prod-images');
             let imageUrls = document.getElementById('prod-image-url-existing').value;
 
-            // Faz o upload de múltiplos ficheiros para o Supabase Storage
+            // Faz o upload de múltiplos ficheiros diretamente para a pasta assets/ do bucket Produtos
             if (fileInput.files.length > 0) {
                 let uploadedUrls = [];
                 for (let i = 0; i < fileInput.files.length; i++) {
                     const file = fileInput.files[i];
-                    const fileName = `${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                    const fileName = `assets/${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
                     
                     const { error: uploadError } = await supabase.storage
                         .from('Produtos')
@@ -328,7 +328,7 @@
 
                     if (uploadError) {
                         console.error(uploadError);
-                        alert(`Erro ao enviar a imagem ${file.name}. Verifique o bucket 'Produtos' no Supabase.`);
+                        alert(`Erro ao enviar a imagem ${file.name}. Verifique o bucket 'Produtos'.`);
                         saveBtn.disabled = false;
                         saveBtn.textContent = 'Salvar Produto';
                         return;

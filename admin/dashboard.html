@@ -374,12 +374,16 @@
             let sizes = "";
             let colors = "";
 
-            if (desc.includes('Tamanhos:')) {
-                const parts = desc.split('Tamanhos:');
+            if (prod.description && prod.description.includes('Tamanhos:')) {
+                const parts = prod.description.split('Tamanhos:');
                 desc = parts[0].trim();
                 const rest = parts[1].split('Cores:');
                 if (rest[0]) sizes = rest[0].replace(/\\n/g, '').trim();
                 if (rest[1]) colors = rest[1].replace(/\\n/g, '').trim();
+            } else if (prod.description && prod.description.includes('Cores:')) {
+                const parts = prod.description.split('Cores:');
+                desc = parts[0].trim();
+                colors = parts[1].replace(/\\n/g, '').trim();
             }
 
             document.getElementById('prod-desc').value = desc;
@@ -388,6 +392,7 @@
 
             document.getElementById('prod-promo').checked = prod.is_promo;
             if (prod.is_promo) {
+                document.getElementById('promo-price-group').style.display = 'flex';
                 document.getElementById('promo-price-group').style.display = 'flex';
                 document.getElementById('prod-promo-price').value = prod.promo_price;
             } else {
@@ -441,7 +446,7 @@
                     let uploadedUrls = [];
                     for (let i = 0; i < fileInput.files.length; i++) {
                         const file = fileInput.files[i];
-                        const fileName = `${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                        const fileName = `assets/${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
                         
                         const { error: uploadError } = await supabase.storage
                             .from('Produtos')
