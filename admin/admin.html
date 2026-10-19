@@ -129,12 +129,12 @@
 
             <div class="form-group">
                 <label for="prod-sizes">Tamanhos (separados por vírgula)</label>
-                <input type="text" id="prod-sizes" placeholder="38, 39, 40, 41, 42, 43" value="38, 39, 40, 41, 42, 43">
+                <input type="text" id="prod-sizes" placeholder="Ex: 38, 39, 40, 41, 42, 43">
             </div>
 
             <div class="form-group">
                 <label for="prod-colors">Cores disponíveis (separadas por vírgula)</label>
-                <input type="text" id="prod-colors" placeholder="Ex: Branco, Preto, Cinza" value="Branco, Preto">
+                <input type="text" id="prod-colors" placeholder="Ex: Branco, Preto, Cinza">
             </div>
 
             <div class="form-group">
@@ -241,8 +241,8 @@
             document.getElementById('prod-image-url-existing').value = '';
             document.getElementById('prod-images').value = '';
             document.getElementById('file-name-display').textContent = 'Nenhum arquivo escolhido';
-            document.getElementById('prod-sizes').value = '38, 39, 40, 41, 42, 43';
-            document.getElementById('prod-colors').value = 'Branco, Preto';
+            document.getElementById('prod-sizes').value = '';
+            document.getElementById('prod-colors').value = '';
             document.getElementById('prod-desc').value = '';
             document.getElementById('product-modal').style.display = 'flex';
         }
@@ -262,19 +262,25 @@
             document.getElementById('prod-image-url-existing').value = p.image_url || '';
             document.getElementById('prod-images').value = '';
             document.getElementById('file-name-display').textContent = 'Manter fotos atuais (ou escolher novas)';
-            document.getElementById('prod-sizes').value = p.sizes || '38, 39, 40, 41, 42, 43';
             
-            let colorsVal = 'Branco, Preto';
-            if (p.description && p.description.includes('Cores:')) {
-                const match = p.description.match(/Cores:\s*(.*?)(?:\n|$)/);
-                if (match && match[1]) colorsVal = match[1].trim();
-            }
-            document.getElementById('prod-colors').value = colorsVal;
-
+            let sizesVal = '';
+            let colorsVal = '';
             let cleanDesc = p.description || '';
-            if (cleanDesc.includes('Tamanhos:')) {
-                cleanDesc = cleanDesc.split('Tamanhos:')[0].trim();
+
+            if (p.description && p.description.includes('Tamanhos:')) {
+                const parts = p.description.split('Tamanhos:');
+                cleanDesc = parts[0].trim();
+                const rest = parts[1].split('Cores:');
+                if (rest[0]) sizesVal = rest[0].replace(/\\n/g, '').trim();
+                if (rest[1]) colorsVal = rest[1].replace(/\\n/g, '').trim();
+            } else if (p.description && p.description.includes('Cores:')) {
+                const parts = p.description.split('Cores:');
+                cleanDesc = parts[0].trim();
+                colorsVal = parts[1].replace(/\\n/g, '').trim();
             }
+
+            document.getElementById('prod-sizes').value = sizesVal;
+            document.getElementById('prod-colors').value = colorsVal;
             document.getElementById('prod-desc').value = cleanDesc;
             document.getElementById('product-modal').style.display = 'flex';
         }
@@ -309,7 +315,7 @@
             const fileInput = document.getElementById('prod-images');
             let imageUrls = document.getElementById('prod-image-url-existing').value;
 
-            // Faz o upload dos novos arquivos selecionados para o Storage do Supabase
+            // Faz o upload de múltiplos ficheiros para o Supabase Storage
             if (fileInput.files.length > 0) {
                 let uploadedUrls = [];
                 for (let i = 0; i < fileInput.files.length; i++) {
@@ -322,7 +328,7 @@
 
                     if (uploadError) {
                         console.error(uploadError);
-                        alert(`Erro ao enviar a imagem ${file.name}. Verifique se o bucket 'Produtos' existe no Supabase.`);
+                        alert(`Erro ao enviar a imagem ${file.name}. Verifique o bucket 'Produtos' no Supabase.`);
                         saveBtn.disabled = false;
                         saveBtn.textContent = 'Salvar Produto';
                         return;
@@ -344,7 +350,6 @@
                 is_promo, 
                 is_active, 
                 image_url: imageUrls, 
-                sizes, 
                 description: fullDesc 
             };
 
