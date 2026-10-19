@@ -21,16 +21,16 @@ body {
 a { text-decoration: none; color: inherit; }
 
 /* Barra de Topo Animada (Marquee) */
-.top-bar {
-    background: var(--accent) !important;
-    color: var(--text-main) !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    padding: 10px 0 !important;
-    font-size: 12px !important;
-    font-weight: 800 !important;
-    letter-spacing: 1px !important;
-    text-transform: uppercase !important;
+.top-bar { 
+    background: var(--accent) !important; 
+    color: var(--text-main) !important; 
+    overflow: hidden !important; 
+    white-space: nowrap !important; 
+    padding: 10px 0 !important; 
+    font-size: 12px !important; 
+    font-weight: 800 !important; 
+    letter-spacing: 1px !important; 
+    text-transform: uppercase !important; 
     width: 100% !important;
     display: block !important;
     box-sizing: border-box !important;
@@ -40,21 +40,21 @@ a { text-decoration: none; color: inherit; }
     display: inline-flex !important;
     white-space: nowrap !important;
     width: max-content !important;
-    animation: marqueeMove 10s linear infinite !important;
+    animation: marqueeMove 15s linear infinite !important;
 }
 
-.top-bar-content {
-    display: inline-flex !important;
+.top-bar-content { 
+    display: inline-flex !important; 
     white-space: nowrap !important;
 }
 
-.top-bar-content span {
-    margin: 0 20px !important;
+.top-bar-content span { 
+    margin: 0 30px !important; 
 }
 
-@keyframes marqueeMove {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-10%); }
+@keyframes marqueeMove { 
+    0% { transform: translateX(0); } 
+    100% { transform: translateX(-50%); } 
 }
 
 /* Cabeçalho Fixo e Limpo */
