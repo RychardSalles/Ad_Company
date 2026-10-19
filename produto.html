@@ -18,13 +18,11 @@
             align-items: start;
         }
 
-        /* Coluna 1: Info e Descrição */
         .product-info-left { display: flex; flex-direction: column; gap: 20px; }
         .product-title { font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
         .product-price { font-size: 20px; font-weight: 800; color: var(--accent); }
         .product-desc { font-size: 13px; line-height: 1.8; color: var(--text-light); margin-top: 10px; }
 
-        /* Coluna 2: Galeria (Carrossel) */
         .product-gallery { 
             position: relative; 
             display: flex; 
@@ -44,21 +42,23 @@
         .nav-btn.prev { left: 0px; }
         .nav-btn.next { right: 0px; }
 
-        /* Coluna 3: Compra */
         .product-checkout { display: flex; flex-direction: column; gap: 25px; }
         
-        .size-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; margin-bottom: 5px; }
-        .size-selector { display: flex; gap: 10px; flex-wrap: wrap; }
-        .size-btn { border: 1px solid rgba(136, 136, 136, 0.3); background: var(--card-bg); color: white; padding: 15px 0; cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 600; transition: all 0.2s; flex: 1; text-align: center; min-width: 55px; border-radius: 6px; }
-        .size-btn:hover { border-color: var(--accent); }
-        .size-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+        .option-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; margin-bottom: 8px; }
+        .option-selector { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        .option-btn { border: 1px solid rgba(136, 136, 136, 0.3); background: var(--card-bg); color: white; padding: 12px 18px; cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 600; transition: all 0.2s; border-radius: 6px; }
+        .option-btn:hover { border-color: var(--accent); }
+        .option-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
 
         .btn-add-cart { background: var(--accent); color: white; border: none; padding: 16px; font-size: 14px; font-family: var(--font-sans); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; width: 100%; border-radius: 6px; }
         .btn-add-cart:hover { opacity: 0.9; }
 
         .accordion { border-top: 1px solid rgba(136, 136, 136, 0.2); margin-top: 10px; }
         .accordion-item { border-bottom: 1px solid rgba(136, 136, 136, 0.2); }
-        .accordion-header { padding: 18px 0; display: flex; justify-content: space-between; cursor: pointer; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
+        .accordion-header { padding: 16px 0; display: flex; justify-content: space-between; cursor: pointer; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
+        .accordion-content { padding: 0 0 15px 0; font-size: 13px; color: var(--text-light); display: none; line-height: 1.6; }
+        .accordion-content.open { display: block; }
 
         @media (max-width: 1024px) {
             .product-container { grid-template-columns: 1fr; gap: 40px; }
@@ -128,7 +128,6 @@
     <script src="js/supabase.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Atualiza contador do carrinho
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
             const countEl = document.getElementById('cart-count');
@@ -149,43 +148,49 @@
                 return;
             }
 
-            let sizes = ["P", "M", "G", "GG"]; 
-            let descText = product.description || "Design exclusivo e material de alta qualidade.";
-            
-            if(product.description && product.description.includes('Tamanhos:')) {
-                const sizeMatch = product.description.match(/Tamanhos: (.*?)( \\n|$)/);
-                if(sizeMatch && sizeMatch[1]) sizes = sizeMatch[1].split(',').map(s => s.trim());
-                descText = product.description.split('\\nTamanhos')[0].replace(/\\n/g, '<br>');
+            let sizes = ["38", "39", "40", "41", "42", "43"]; 
+            if (product.sizes) {
+                sizes = product.sizes.split(',').map(s => s.trim());
             }
+
+            let colors = ["Padrão"];
+            if (product.colors) {
+                colors = product.colors.split(',').map(c => c.trim());
+            }
+
+            const descText = product.description || "Design exclusivo e material de alta qualidade.";
+            const measuresText = product.measures || "Consulte a tabela de numeração padrão para este modelo streetwear.";
+            const prazoText = product.prazo || "Entrega estimada em até 7 dias úteis para todo o Brasil.";
 
             const priceHtml = product.is_promo ? 
                 `<span style="text-decoration: line-through; color: var(--text-light); font-size: 14px; margin-right: 10px;">${formatCurrency(product.price)}</span> ${formatCurrency(product.promo_price)}` : 
                 formatCurrency(product.price);
 
             const html = `
-                <!-- Coluna 1: Info -->
                 <div class="product-info-left">
                     <h1 class="product-title">${product.name}</h1>
                     <div class="product-price">${priceHtml}</div>
-                    <div class="product-desc">
-                        <p>${descText}</p>
-                    </div>
+                    <div class="product-desc"><p>${descText}</p></div>
                 </div>
 
-                <!-- Coluna 2: Galeria -->
                 <div class="product-gallery">
                     <button class="nav-btn prev" onclick="changeImage(-1)">❮</button>
                     <img src="${product.image_url}" class="gallery-img active" alt="${product.name}">
-                    <img src="${product.image_url}" class="gallery-img" style="filter: brightness(0.9);" alt="${product.name} detalhe">
                     <button class="nav-btn next" onclick="changeImage(1)">❯</button>
                 </div>
 
-                <!-- Coluna 3: Compra -->
                 <div class="product-checkout">
                     <div>
-                        <div class="size-label">Selecione o Tamanho</div>
-                        <div class="size-selector" id="size-container">
-                            ${sizes.map(s => `<button class="size-btn" onclick="selectSize(this, '${s}')">${s}</button>`).join('')}
+                        <div class="option-label">Selecione o Tamanho</div>
+                        <div class="option-selector" id="size-container">
+                            ${sizes.map(s => `<button class="option-btn size-btn" onclick="selectSize(this, '${s}')">${s}</button>`).join('')}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="option-label">Selecione a Cor</div>
+                        <div class="option-selector" id="color-container">
+                            ${colors.map(c => `<button class="option-btn color-btn" onclick="selectColor(this, '${c}')">${c}</button>`).join('')}
                         </div>
                     </div>
                     
@@ -195,10 +200,12 @@
 
                     <div class="accordion">
                         <div class="accordion-item">
-                            <div class="accordion-header">Medidas <span>˅</span></div>
+                            <div class="accordion-header" onclick="toggleAccordion(this)">Medidas <span>˅</span></div>
+                            <div class="accordion-content">${measuresText}</div>
                         </div>
                         <div class="accordion-item">
-                            <div class="accordion-header">Prazo <span>˅</span></div>
+                            <div class="accordion-header" onclick="toggleAccordion(this)">Prazo <span>˅</span></div>
+                            <div class="accordion-content">${prazoText}</div>
                         </div>
                     </div>
                 </div>
@@ -211,7 +218,6 @@
         window.changeImage = function(direction) {
             const images = document.querySelectorAll('.gallery-img');
             if(images.length <= 1) return;
-            
             images[currentImg].classList.remove('active');
             currentImg = (currentImg + direction + images.length) % images.length;
             images[currentImg].classList.add('active');
@@ -224,18 +230,31 @@
             selectedSize = size;
         };
 
+        let selectedColor = null;
+        window.selectColor = function(btn, color) {
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedColor = color;
+        };
+
+        window.toggleAccordion = function(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('open');
+        };
+
         window.addToCart = function(id, name, price, img) {
-            if(!selectedSize) { alert('Por favor, selecione um tamanho antes de adicionar ao carrinho.'); return; }
+            if(!selectedSize) { alert('Por favor, selecione um tamanho.'); return; }
+            if(!selectedColor) { alert('Por favor, selecione uma cor.'); return; }
             
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             
-            const existingItem = cart.find(item => item.product.id === id && item.variant.size === selectedSize);
+            const existingItem = cart.find(item => item.product.id === id && item.variant.size === selectedSize && item.variant.color === selectedColor);
             if(existingItem) {
                 existingItem.quantity += 1;
             } else {
                 cart.push({
                     product: { id, name, price, image_url: img },
-                    variant: { size: selectedSize, color: 'Padrão' },
+                    variant: { size: selectedSize, color: selectedColor },
                     quantity: 1
                 });
             }

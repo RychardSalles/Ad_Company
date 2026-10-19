@@ -3,83 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Administrativo - AD Company</title>
+    <title>Painel Administrativo - AD Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
-    <style>
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .error-msg {
-            color: #e74c3c;
-            margin-top: 10px;
-            display: none;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-        }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .admin-container { max-width: 1400px; margin: 40px auto; padding: 0 40px; flex: 1; width: 100%; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
+        .admin-header h1 { font-size: 24px; font-weight: 800; text-transform: uppercase; }
+        .btn-primary { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* Tabela de Produtos */
+        .admin-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid rgba(136, 136, 136, 0.2); }
+        .admin-table th, .admin-table td { padding: 15px 20px; text-align: left; font-size: 13px; border-bottom: 1px solid rgba(136, 136, 136, 0.1); }
+        .admin-table th { background: #111; color: var(--text-light); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+        .admin-table img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background: #000; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--card-bg); border: 1px solid rgba(136, 136, 136, 0.3); padding: 30px; border-radius: 8px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .modal-content h2 { font-size: 18px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; }
+        .form-group input, .form-group textarea, .form-group select { background: #0d0d0d; border: 1px solid rgba(136, 136, 136, 0.3); color: #fff; padding: 10px; border-radius: 6px; font-size: 13px; font-family: var(--font-sans); }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+        .btn-secondary { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+    </style>
 </head>
-<body style="background-color: #f4f4f4;">
-    <div class="login-container">
-        <h2>Painel Administrativo</h2>
-        <form id="login-form">
-            <div class="form-group">
-                <label>E-mail</label>
-                <input type="email" id="email" required>
-            </div>
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" id="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Entrar</button>
-            <p id="error-message" class="error-msg">E-mail ou senha incorretos.</p>
-        </form>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
     </div>
+    
+    <header>
+        <a href="../index.html" class="logo">
+            <img src="../assets/logo.png" alt="AD Company">
+        </a>
+        <nav class="nav-links">
+            <a href="../index.html">Início da Loja</a>
+            <a href="admin.html" style="color: var(--accent);">Painel de Produtos</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="../carrinho.html" title="Carrinho" style="font-size: 18px; display: flex; align-items: center; gap: 5px;">
+                🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <div class="admin-header">
+            <h1>Gestão de Produtos</h1>
+            <button class="btn-primary" onclick="openModal()">+ Novo Produto</button>
+        </div>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Imagem</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="products-table-body">
+                <tr><td colspan="5" style="text-align: center; color: var(--text-light);">A carregar produtos...</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <!-- Modal de Cadastro / Edição -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Adicionar Novo Produto</h2>
+            <input type="hidden" id="prod-id">
+            
+            <div class="form-group">
+                <label>Nome do Tênis</label>
+                <input type="text" id="prod-name" placeholder="Ex: Jordan 4 Retro">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Preço Normal (R$)</label>
+                    <input type="number" step="0.01" id="prod-price" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Preço Promocional (R$)</label>
+                    <input type="number" step="0.01" id="prod-promo-price" placeholder="0.00">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px; margin-top: 15px;">
+                    <input type="checkbox" id="prod-is-promo" style="width: 18px; height: 18px; accent-color: var(--accent);">
+                    <label style="margin: 0; cursor: pointer;">Em Promoção</label>
+                </div>
+                <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px; margin-top: 15px;">
+                    <input type="checkbox" id="prod-is-active" checked style="width: 18px; height: 18px; accent-color: var(--accent);">
+                    <label style="margin: 0; cursor: pointer;">Produto Ativo no Site</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>URL da Imagem</label>
+                <input type="text" id="prod-image" placeholder="https://exemplo.com/imagem.jpg ou assets/...">
+            </div>
+
+            <div class="form-group">
+                <label>Tamanhos (separados por vírgula)</label>
+                <input type="text" id="prod-sizes" placeholder="38, 39, 40, 41, 42, 43" value="38, 39, 40, 41, 42, 43">
+            </div>
+
+            <div class="form-group">
+                <label>Cores (separadas por vírgula)</label>
+                <input type="text" id="prod-colors" placeholder="Ex: Branco, Preto, Cinza" value="Branco, Preto">
+            </div>
+
+            <div class="form-group">
+                <label>Descrição do Produto</label>
+                <textarea id="prod-desc" rows="3" placeholder="Detalhes e materiais do tênis..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Medidas</label>
+                <textarea id="prod-measures" rows="2" placeholder="Ex: 38 = 25.5cm, 39 = 26cm"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Prazo de Entrega</label>
+                <input type="text" id="prod-prazo" placeholder="Até 7 dias úteis" value="Entrega estimada em até 7 dias úteis para todo o Brasil.">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button class="btn-primary" onclick="saveProduct()">Salvar Produto</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>AD Company</h3>
+                <p style="color: var(--text-light); font-size: 14px;">Estilo e exclusividade em cada passo.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Links Úteis</h3>
+                <ul>
+                    <li><a href="../produtos.html">Catálogo Completo</a></li>
+                    <li><a href="admin.html">Painel Admin</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contato</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://wa.me/5511950070636" target="_blank">WhatsApp: (11) 95007-0636</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 AD Company. Todos os direitos reservados.
+        </div>
+    </footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/supabase.js"></script>
     <script>
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('error-message');
-            const btn = e.target.querySelector('button');
+        document.addEventListener('DOMContentLoaded', async () => {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const countEl = document.getElementById('cart-count');
+            if(countEl) countEl.textContent = `(${totalItems})`;
 
-            btn.textContent = 'Entrando...';
-            errorMsg.style.display = 'none';
-
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-
-            if (error) {
-                errorMsg.style.display = 'block';
-                errorMsg.textContent = 'Credenciais inválidas.';
-                btn.textContent = 'Entrar';
-            } else {
-                window.location.href = 'dashboard.html';
-            }
+            await loadAdminProducts();
         });
 
-        async function checkSession() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                window.location.href = 'dashboard.html';
+        async function loadAdminProducts() {
+            const tbody = document.getElementById('products-table-body');
+            const { data: products, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-light);">Erro ao carregar produtos.</td></tr>`;
+                return;
             }
+
+            if (!products || products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-light);">Nenhum produto cadastrado.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            products.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${p.image_url || '../assets/logo.png'}" alt="${p.name}"></td>
+                        <td style="font-weight: 600;">${p.name}</td>
+                        <td style="color: var(--accent); font-weight: 800;">${formatCurrency(p.price)}</td>
+                        <td>${p.is_active ? '<span style="color: #4ade80;">Ativo</span>' : '<span style="color: #f87171;">Inativo</span>'}</td>
+                        <td>
+                            <button onclick='editProduct(${JSON.stringify(p)})' style="background: #333; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Editar</button>
+                            <button onclick="deleteProduct('${p.id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
         }
-        checkSession();
+
+        window.openModal = function() {
+            document.getElementById('modal-title').textContent = 'Adicionar Novo Produto';
+            document.getElementById('prod-id').value = '';
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-promo-price').value = '';
+            document.getElementById('prod-is-promo').checked = false;
+            document.getElementById('prod-is-active').checked = true;
+            document.getElementById('prod-image').value = '';
+            document.getElementById('prod-sizes').value = '38, 39, 40, 41, 42, 43';
+            document.getElementById('prod-colors').value = 'Branco, Preto';
+            document.getElementById('prod-desc').value = '';
+            document.getElementById('prod-measures').value = '';
+            document.getElementById('prod-prazo').value = 'Entrega estimada em até 7 dias úteis para todo o Brasil.';
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        window.closeModal = function() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+
+        window.editProduct = function(p) {
+            document.getElementById('modal-title').textContent = 'Editar Produto';
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-name').value = p.name || '';
+            document.getElementById('prod-price').value = p.price || '';
+            document.getElementById('prod-promo-price').value = p.promo_price || '';
+            document.getElementById('prod-is-promo').checked = p.is_promo || false;
+            document.getElementById('prod-is-active').checked = p.is_active ?? true;
+            document.getElementById('prod-image').value = p.image_url || '';
+            document.getElementById('prod-sizes').value = p.sizes || '38, 39, 40, 41, 42, 43';
+            document.getElementById('prod-colors').value = p.colors || 'Branco, Preto';
+            document.getElementById('prod-desc').value = p.description || '';
+            document.getElementById('prod-measures').value = p.measures || '';
+            document.getElementById('prod-prazo').value = p.prazo || 'Entrega estimada em até 7 dias úteis para todo o Brasil.';
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        window.saveProduct = async function() {
+            const id = document.getElementById('prod-id').value;
+            const name = document.getElementById('prod-name').value.trim();
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const promo_price = parseFloat(document.getElementById('prod-promo-price').value) || 0;
+            const is_promo = document.getElementById('prod-is-promo').checked;
+            const is_active = document.getElementById('prod-is-active').checked;
+            const image_url = document.getElementById('prod-image').value.trim();
+            const sizes = document.getElementById('prod-sizes').value.trim();
+            const colors = document.getElementById('prod-colors').value.trim();
+            const description = document.getElementById('prod-desc').value.trim();
+            const measures = document.getElementById('prod-measures').value.trim();
+            const prazo = document.getElementById('prod-prazo').value.trim();
+
+            if (!name || isNaN(price)) {
+                alert('Preencha pelo menos o Nome e o Preço válido do produto.');
+                return;
+            }
+
+            const productData = { name, price, promo_price, is_promo, is_active, image_url, sizes, colors, description, measures, prazo };
+
+            let error;
+            if (id) {
+                const res = await supabase.from('products').update(productData).eq('id', id);
+                error = res.error;
+            } else {
+                const res = await supabase.from('products').insert([productData]);
+                error = res.error;
+            }
+
+            if (error) {
+                console.error(error);
+                alert('Erro ao salvar produto.');
+                return;
+            }
+
+            alert('Produto salvo com sucesso!');
+            closeModal();
+            loadAdminProducts();
+        }
+
+        window.deleteProduct = async function(id) {
+            if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+            const { error } = await supabase.from('products').delete().eq('id', id);
+            if (error) {
+                alert('Erro ao excluir produto.');
+                return;
+            }
+            loadAdminProducts();
+        }
     </script>
 </body>
 </html>
