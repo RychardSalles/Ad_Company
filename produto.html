@@ -153,7 +153,7 @@
                 sizes = product.sizes.split(',').map(s => s.trim());
             }
 
-            // Lê as cores salvas na descrição ou formato estruturado
+            // Lê as cores salvas no produto
             let colors = ["Branco", "Preto"];
             let rawDesc = product.description || "";
             if (rawDesc.includes('Cores:')) {
@@ -169,6 +169,12 @@
             const measuresText = "Consulte a tabela de numeração padrão para este modelo streetwear.";
             const prazoText = "Entrega estimada em até 7 dias úteis para todo o Brasil.";
 
+            // Lê múltiplas imagens separadas por vírgula ou quebra de linha
+            let imagesList = ['assets/logo.png'];
+            if (product.image_url) {
+                imagesList = product.image_url.split(/,|\n/).map(img => img.trim()).filter(img => img.length > 0);
+            }
+
             const priceHtml = product.is_promo ? 
                 `<span style="text-decoration: line-through; color: var(--text-light); font-size: 14px; margin-right: 10px;">${formatCurrency(product.price)}</span> ${formatCurrency(product.promo_price)}` : 
                 formatCurrency(product.price);
@@ -181,9 +187,9 @@
                 </div>
 
                 <div class="product-gallery">
-                    <button class="nav-btn prev" onclick="changeImage(-1)">❮</button>
-                    <img src="${product.image_url || 'assets/logo.png'}" class="gallery-img active" alt="${product.name}">
-                    <button class="nav-btn next" onclick="changeImage(1)">❯</button>
+                    ${imagesList.length > 1 ? '<button class="nav-btn prev" onclick="changeImage(-1)">❮</button>' : ''}
+                    ${imagesList.map((img, idx) => `<img src="${img}" class="gallery-img ${idx === 0 ? 'active' : ''}" alt="${product.name}">`).join('')}
+                    ${imagesList.length > 1 ? '<button class="nav-btn next" onclick="changeImage(1)">❯</button>' : ''}
                 </div>
 
                 <div class="product-checkout">
@@ -201,7 +207,7 @@
                         </div>
                     </div>
                     
-                    <button class="btn-add-cart" onclick="addToCart('${product.id}', '${product.name}', ${product.is_promo ? product.promo_price : product.price}, '${product.image_url}')">
+                    <button class="btn-add-cart" onclick="addToCart('${product.id}', '${product.name}', ${product.is_promo ? product.promo_price : product.price}, '${imagesList[0]}')">
                         Adicionar ao carrinho
                     </button>
 

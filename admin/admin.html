@@ -112,8 +112,8 @@
             </div>
 
             <div class="form-group">
-                <label for="prod-image">URL da Imagem</label>
-                <input type="text" id="prod-image" placeholder="https://exemplo.com/imagem.jpg ou assets/...">
+                <label for="prod-image">URLs das Imagens (várias separadas por vírgula)</label>
+                <textarea id="prod-image" rows="2" placeholder="https://foto1.jpg, https://foto2.jpg"></textarea>
             </div>
 
             <div class="form-group">
@@ -192,9 +192,10 @@
 
             tbody.innerHTML = '';
             products.forEach(p => {
+                let firstImg = p.image_url ? p.image_url.split(/,|\n/)[0].trim() : '../assets/logo.png';
                 tbody.innerHTML += `
                     <tr>
-                        <td><img src="${p.image_url || '../assets/logo.png'}" alt="${p.name}"></td>
+                        <td><img src="${firstImg}" alt="${p.name}"></td>
                         <td style="font-weight: 600;">${p.name}</td>
                         <td style="color: var(--accent); font-weight: 800;">${formatCurrency(p.price)}</td>
                         <td>${p.is_active ? '<span style="color: #4ade80;">Ativo</span>' : '<span style="color: #f87171;">Inativo</span>'}</td>
@@ -237,10 +238,9 @@
             document.getElementById('prod-image').value = p.image_url || '';
             document.getElementById('prod-sizes').value = p.sizes || '38, 39, 40, 41, 42, 43';
             
-            // Extrai as cores se estiverem salvas na descrição ou coluna
-            let colorsVal = p.colors || 'Branco, Preto';
-            if (!p.colors && p.description && p.description.includes('Cores:')) {
-                const match = p.description.match(/Cores: (.*?)( \\n|$)/);
+            let colorsVal = 'Branco, Preto';
+            if (p.description && p.description.includes('Cores:')) {
+                const match = p.description.match(/Cores: (.*?)( \n|$)/);
                 if (match && match[1]) colorsVal = match[1].trim();
             }
             document.getElementById('prod-colors').value = colorsVal;
@@ -270,9 +270,7 @@
                 return;
             }
 
-            // Salva as cores de forma limpa garantindocompatibilidade
             const description = `${desc} \nCores: ${colors}`;
-
             const productData = { name, price, promo_price, is_promo, is_active, image_url, sizes, description };
 
             let error;
