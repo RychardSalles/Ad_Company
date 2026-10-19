@@ -25,6 +25,12 @@
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; }
         .form-group input, .form-group textarea, .form-group select { background: #0d0d0d; border: 1px solid rgba(136, 136, 136, 0.3); color: #fff; padding: 10px; border-radius: 6px; font-size: 13px; font-family: var(--font-sans); }
+        
+        .file-input-wrapper { display: flex; align-items: center; border: 1px solid rgba(136, 136, 136, 0.3); border-radius: 6px; background: #0d0d0d; padding: 5px; }
+        .file-input-wrapper input[type="file"] { display: none; }
+        .btn-file { background: #222; color: #fff; border: 1px solid #444; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 10px; font-weight: 600; }
+        .file-name { font-size: 13px; color: var(--text-light); flex-grow: 1; }
+
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
         .btn-secondary { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 12px; }
     </style>
@@ -112,8 +118,13 @@
             </div>
 
             <div class="form-group">
-                <label for="prod-image">URLs das Imagens (várias separadas por vírgula ou quebra de linha)</label>
-                <textarea id="prod-image" rows="2" placeholder="https://foto1.jpg, https://foto2.jpg"></textarea>
+                <label>Fotos do produto (Selecione uma ou várias fotos)</label>
+                <div class="file-input-wrapper">
+                    <label for="prod-images" class="btn-file">Escolher arquivos</label>
+                    <span id="file-name-display" class="file-name">Nenhum arquivo escolhido</span>
+                    <input type="file" id="prod-images" accept="image/*" multiple>
+                </div>
+                <input type="hidden" id="prod-image-url-existing">
             </div>
 
             <div class="form-group">
@@ -133,7 +144,7 @@
 
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button class="btn-primary" onclick="saveProduct()">Salvar Produto</button>
+                <button class="btn-primary" id="save-btn" onclick="saveProduct()">Salvar Produto</button>
             </div>
         </div>
     </div>
@@ -176,6 +187,12 @@
             await loadAdminProducts();
         });
 
+        document.getElementById('prod-images').addEventListener('change', (e) => {
+            const count = e.target.files.length;
+            const display = count > 0 ? `${count} arquivo(s) selecionado(s)` : "Nenhum arquivo escolhido";
+            document.getElementById('file-name-display').textContent = display;
+        });
+
         async function loadAdminProducts() {
             const tbody = document.getElementById('products-table-body');
             const { data: products, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
@@ -194,13 +211,13 @@
             products.forEach(p => {
                 let firstImg = '../assets/logo.png';
                 if (p.image_url) {
-                    const imgs = p.image_url.split(/,|\n/).map(i => i.trim()).filter(i => i.length > 0);
-                    if (imgs.length > 0) firstImg = imgs[0];
+                    const imgs = p.image_url.split(',').map(i => i.trim());
+                    if (imgs.length > 0 && imgs[0]) firstImg = imgs[0];
                 }
 
                 tbody.innerHTML += `
                     <tr>
-                        <td><img src="${firstImg}" alt="${p.name}"></td>
+                        <td><img src="${firstImg}" alt="${p.name}" onerror="this.src='../assets/logo.png'"></td>
                         <td style="font-weight: 600;">${p.name}</td>
                         <td style="color: var(--accent); font-weight: 800;">${formatCurrency(p.price)}</td>
                         <td>${p.is_active ? '<span style="color: #4ade80;">Ativo</span>' : '<span style="color: #f87171;">Inativo</span>'}</td>
@@ -221,7 +238,9 @@
             document.getElementById('prod-promo-price').value = '';
             document.getElementById('prod-is-promo').checked = false;
             document.getElementById('prod-is-active').checked = true;
-            document.getElementById('prod-image').value = '';
+            document.getElementById('prod-image-url-existing').value = '';
+            document.getElementById('prod-images').value = '';
+            document.getElementById('file-name-display').textContent = 'Nenhum arquivo escolhido';
             document.getElementById('prod-sizes').value = '38, 39, 40, 41, 42, 43';
             document.getElementById('prod-colors').value = 'Branco, Preto';
             document.getElementById('prod-desc').value = '';
@@ -240,7 +259,9 @@
             document.getElementById('prod-promo-price').value = p.promo_price || '';
             document.getElementById('prod-is-promo').checked = p.is_promo || false;
             document.getElementById('prod-is-active').checked = p.is_active ?? true;
-            document.getElementById('prod-image').value = p.image_url || '';
+            document.getElementById('prod-image-url-existing').value = p.image_url || '';
+            document.getElementById('prod-images').value = '';
+            document.getElementById('file-name-display').textContent = 'Manter fotos atuais (ou escolher novas)';
             document.getElementById('prod-sizes').value = p.sizes || '38, 39, 40, 41, 42, 43';
             
             let colorsVal = 'Branco, Preto';
@@ -251,32 +272,81 @@
             document.getElementById('prod-colors').value = colorsVal;
 
             let cleanDesc = p.description || '';
-            if (cleanDesc.includes('Cores:')) {
-                cleanDesc = cleanDesc.split('Cores:')[0].trim();
+            if (cleanDesc.includes('Tamanhos:')) {
+                cleanDesc = cleanDesc.split('Tamanhos:')[0].trim();
             }
             document.getElementById('prod-desc').value = cleanDesc;
             document.getElementById('product-modal').style.display = 'flex';
         }
 
         window.saveProduct = async function() {
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Enviando e salvando...';
+
             const id = document.getElementById('prod-id').value;
             const name = document.getElementById('prod-name').value.trim();
             const price = parseFloat(document.getElementById('prod-price').value);
             const promo_price = parseFloat(document.getElementById('prod-promo-price').value) || 0;
             const is_promo = document.getElementById('prod-is-promo').checked;
             const is_active = document.getElementById('prod-is-active').checked;
-            const image_url = document.getElementById('prod-image').value.trim();
             const sizes = document.getElementById('prod-sizes').value.trim();
             const colors = document.getElementById('prod-colors').value.trim();
             const desc = document.getElementById('prod-desc').value.trim();
 
             if (!name || isNaN(price)) {
                 alert('Preencha pelo menos o Nome e o Preço válido do produto.');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Salvar Produto';
                 return;
             }
 
-            const description = `${desc} \nCores: ${colors}`;
-            const productData = { name, price, promo_price, is_promo, is_active, image_url, sizes, description };
+            let fullDesc = desc;
+            if(sizes || colors) {
+                fullDesc += `\n\nTamanhos: ${sizes || 'Não informado'} \nCores: ${colors || 'Não informado'}`;
+            }
+
+            const fileInput = document.getElementById('prod-images');
+            let imageUrls = document.getElementById('prod-image-url-existing').value;
+
+            // Faz o upload dos novos arquivos selecionados para o Storage do Supabase
+            if (fileInput.files.length > 0) {
+                let uploadedUrls = [];
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const file = fileInput.files[i];
+                    const fileName = `${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                    
+                    const { error: uploadError } = await supabase.storage
+                        .from('Produtos')
+                        .upload(fileName, file);
+
+                    if (uploadError) {
+                        console.error(uploadError);
+                        alert(`Erro ao enviar a imagem ${file.name}. Verifique se o bucket 'Produtos' existe no Supabase.`);
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Salvar Produto';
+                        return;
+                    }
+
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('Produtos')
+                        .getPublicUrl(fileName);
+
+                    uploadedUrls.push(publicUrl);
+                }
+                imageUrls = uploadedUrls.join(', ');
+            }
+
+            const productData = { 
+                name, 
+                price, 
+                promo_price, 
+                is_promo, 
+                is_active, 
+                image_url: imageUrls, 
+                sizes, 
+                description: fullDesc 
+            };
 
             let error;
             if (id) {
@@ -290,12 +360,16 @@
             if (error) {
                 console.error(error);
                 alert('Erro ao salvar produto na base de dados.');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Salvar Produto';
                 return;
             }
 
             alert('Produto salvo com sucesso!');
             closeModal();
             loadAdminProducts();
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Salvar Produto';
         }
 
         window.deleteProduct = async function(id) {

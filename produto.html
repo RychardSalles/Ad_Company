@@ -148,12 +148,13 @@
                 return;
             }
 
+            // Tamanhos
             let sizes = ["38", "39", "40", "41", "42", "43"]; 
             if (product.sizes) {
                 sizes = product.sizes.split(',').map(s => s.trim());
             }
 
-            // Lê as cores salvas no produto
+            // Cores
             let colors = ["Branco", "Preto"];
             let rawDesc = product.description || "";
             if (rawDesc.includes('Cores:')) {
@@ -169,10 +170,10 @@
             const measuresText = "Consulte a tabela de numeração padrão para este modelo streetwear.";
             const prazoText = "Entrega estimada em até 7 dias úteis para todo o Brasil.";
 
-            // Lê múltiplas imagens separadas por vírgula ou quebra de linha
+            // Múltiplas Imagens (Carrossel)
             let imagesList = ['assets/logo.png'];
             if (product.image_url) {
-                imagesList = product.image_url.split(/,|\n/).map(img => img.trim()).filter(img => img.length > 0);
+                imagesList = product.image_url.split(',').map(img => img.trim()).filter(img => img.length > 0);
             }
 
             const priceHtml = product.is_promo ? 
@@ -188,7 +189,7 @@
 
                 <div class="product-gallery">
                     ${imagesList.length > 1 ? '<button class="nav-btn prev" onclick="changeImage(-1)">❮</button>' : ''}
-                    ${imagesList.map((img, idx) => `<img src="${img}" class="gallery-img ${idx === 0 ? 'active' : ''}" alt="${product.name}">`).join('')}
+                    ${imagesList.map((img, idx) => `<img src="${img}" class="gallery-img ${idx === 0 ? 'active' : ''}" alt="${product.name}" onerror="this.src='assets/logo.png'">`).join('')}
                     ${imagesList.length > 1 ? '<button class="nav-btn next" onclick="changeImage(1)">❯</button>' : ''}
                 </div>
 
