@@ -31,16 +31,24 @@ a { text-decoration: none; color: inherit; }
     font-weight: 800; 
     letter-spacing: 1px; 
     text-transform: uppercase; 
+    display: flex;
+    width: 100%;
 }
+
 .top-bar-content { 
-    display: inline-block; 
+    display: inline-flex; 
     white-space: nowrap;
-    animation: marquee 10s linear infinite; /* Diminua para 8s se quiser mais rápido */
+    will-change: transform;
+    animation: marquee 10s linear infinite; 
 }
-.top-bar-content span { margin: 0 20px; }
+
+.top-bar-content span { 
+    margin: 0 20px; 
+    flex-shrink: 0;
+}
 
 @keyframes marquee { 
-    0% { transform: translateX(0%); } 
+    0% { transform: translateX(0); } 
     100% { transform: translateX(-50%); } 
 }
 
