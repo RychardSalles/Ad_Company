@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     if (cart.length === 0) {
@@ -100,16 +99,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const rua = document.getElementById('end-rua').value;
             const num = document.getElementById('end-numero').value;
             if (!cep || !rua || !num) return alert('Preencha CEP, Rua e Número para entrega.');
+            
             addressDetails = `${rua}, ${num} - ${document.getElementById('end-bairro').value} - ${document.getElementById('end-cidade').value}/${document.getElementById('end-estado').value}. CEP: ${cep}`;
             taxaStr = 'A confirmar';
         }
 
-        // Construir mensagem
+        // Construir mensagem para o WhatsApp
         let msg = `Olá! Gostaria de fazer um pedido na loja.%0A%0A*DADOS DO PEDIDO*%0A`;
         
         cart.forEach((item, index) => {
             const price = item.product.is_promo ? item.product.promo_price : item.product.price;
-            msg += `Produto ${index+1}: ${item.product.name}%0ATamanho: ${item.variant.size}%0ACor: ${item.variant.color}%0AQuantidade: ${item.quantity}%0AValor unitário: ${formatCurrency(price)}%0ASubtotal: ${formatCurrency(price * item.quantity)}%0A%0A`;
+            const itemTotal = price * item.quantity;
+            msg += `Produto ${index+1}: ${item.product.name}%0ATamanho: ${item.variant.size}%0ACor: ${item.variant.color}%0AQuantidade: ${item.quantity}%0AValor unitário: ${formatCurrency(price)}%0ASubtotal: ${formatCurrency(itemTotal)}%0A%0A`;
         });
 
         const finalTotal = subtotal - discountData.value + shippingTax;
@@ -128,8 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         msg += `%0AAguardo a confirmação. Obrigado!`;
 
-        // Buscar telefone da loja nas configurações (Simulado para o script. No Supabase usaria uma query)
-        const phone = "5511999999999"; // Substituir por config no BD
+        // Número de WhatsApp atualizado da AD Company
+        const phone = "5511950070636";
         
         // Limpar carrinho
         localStorage.removeItem('cart');

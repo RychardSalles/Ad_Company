@@ -4,62 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Produto - AD Company</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --primary: #16284c;
-            --text-main: #222222;
-            --text-light: #666666;
-            --bg-body: #ffffff;
-            --danger: #c4262e;
-            --border: #eeeeee;
-            --font-serif: 'Playfair Display', serif;
-            --font-sans: 'Inter', sans-serif;
+        .product-container { 
+            max-width: 1400px; 
+            margin: 60px auto; 
+            padding: 0 40px; 
+            display: grid; 
+            grid-template-columns: 1fr 1.5fr 1fr; 
+            gap: 60px; 
+            align-items: start;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-main); }
-        a { text-decoration: none; color: inherit; }
-
-        /* Header Minimalista */
-        header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .logo { width: 120px; }
-        .nav-links { display: flex; gap: 30px; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-        .nav-icons { display: flex; gap: 20px; font-size: 20px; }
-
-        /* Container Principal: 3 Colunas como na referência */
-        .product-container { max-width: 1400px; margin: 60px auto; padding: 0 40px; display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 60px; }
 
         /* Coluna 1: Info e Descrição */
         .product-info-left { display: flex; flex-direction: column; gap: 20px; }
-        .product-title { font-family: var(--font-sans); font-weight: 600; font-size: 24px; line-height: 1.2; text-align: center; }
-        .product-price { font-size: 18px; font-weight: 500; text-align: center; }
-        .product-desc { font-size: 12px; line-height: 1.8; color: var(--text-light); margin-top: 20px; text-align: center; }
+        .product-title { font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
+        .product-price { font-size: 20px; font-weight: 800; color: var(--accent); }
+        .product-desc { font-size: 13px; line-height: 1.8; color: var(--text-light); margin-top: 10px; }
 
         /* Coluna 2: Galeria (Carrossel) */
-        .product-gallery { position: relative; display: flex; align-items: center; justify-content: center; background: #ffffff; border-radius: 8px; overflow: hidden; min-height: 500px; }
+        .product-gallery { 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: var(--card-bg); 
+            border: 1px solid rgba(136, 136, 136, 0.2);
+            border-radius: 8px; 
+            overflow: hidden; 
+            min-height: 500px; 
+        }
         .gallery-img { width: 100%; height: 100%; object-fit: contain; position: absolute; top:0; left:0; opacity: 0; transition: opacity 0.3s ease; }
         .gallery-img.active { opacity: 1; z-index: 2; position: relative; }
         
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 24px; cursor: pointer; z-index: 10; padding: 20px; color: #000; font-weight: bold; }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; font-size: 20px; cursor: pointer; z-index: 10; padding: 15px; transition: 0.3s; }
+        .nav-btn:hover { background: var(--accent); }
         .nav-btn.prev { left: 0px; }
         .nav-btn.next { right: 0px; }
 
         /* Coluna 3: Compra */
-        .product-checkout { display: flex; flex-direction: column; gap: 30px; }
+        .product-checkout { display: flex; flex-direction: column; gap: 25px; }
         
+        .size-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; margin-bottom: 5px; }
         .size-selector { display: flex; gap: 10px; flex-wrap: wrap; }
-        .size-btn { border: 1px solid var(--border); background: white; padding: 15px 0; cursor: pointer; font-family: var(--font-sans); font-size: 12px; transition: all 0.2s; flex: 1; text-align: center; min-width: 60px; }
-        .size-btn:hover { border-color: var(--text-main); }
-        .size-btn.selected { background: var(--text-main); color: white; border-color: var(--text-main); }
+        .size-btn { border: 1px solid rgba(136, 136, 136, 0.3); background: var(--card-bg); color: white; padding: 15px 0; cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 600; transition: all 0.2s; flex: 1; text-align: center; min-width: 55px; border-radius: 6px; }
+        .size-btn:hover { border-color: var(--accent); }
+        .size-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
 
-        .btn-add-cart { background: var(--text-main); color: white; border: none; padding: 18px; font-size: 13px; font-family: var(--font-sans); font-weight: 500; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-add-cart:hover { background: #000; }
+        .btn-add-cart { background: var(--accent); color: white; border: none; padding: 16px; font-size: 14px; font-family: var(--font-sans); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; width: 100%; border-radius: 6px; }
+        .btn-add-cart:hover { opacity: 0.9; }
 
-        .accordion { border-top: 1px solid var(--border); margin-top: 20px; }
-        .accordion-item { border-bottom: 1px solid var(--border); }
-        .accordion-header { padding: 20px 0; display: flex; justify-content: space-between; cursor: pointer; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .accordion { border-top: 1px solid rgba(136, 136, 136, 0.2); margin-top: 10px; }
+        .accordion-item { border-bottom: 1px solid rgba(136, 136, 136, 0.2); }
+        .accordion-header { padding: 18px 0; display: flex; justify-content: space-between; cursor: pointer; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
 
         @media (max-width: 1024px) {
             .product-container { grid-template-columns: 1fr; gap: 40px; }
@@ -69,41 +68,84 @@
 </head>
 <body>
 
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
+    </div>
+
     <header>
         <a href="index.html" class="logo">
-            <img src="assets/logo.png" alt="AD Company" style="width: 100%;">
+            <img src="assets/logo.png" alt="AD Company">
         </a>
         <nav class="nav-links">
+            <a href="index.html">Início</a>
             <a href="produtos.html">Shop</a>
         </nav>
         <div class="nav-icons">
-            <a href="carrinho.html" style="font-size: 14px; font-weight: 600;">CARRINHO <span id="cart-count">(0)</span></a>
+            <a href="carrinho.html" title="Carrinho" style="font-size: 18px; display: flex; align-items: center; gap: 5px;">
+                🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
+            </a>
         </div>
     </header>
 
     <main class="product-container" id="product-page">
-        <p style="grid-column: 2; text-align: center;">Carregando produto...</p>
+        <p style="grid-column: 2; text-align: center; color: var(--text-light);">Carregando produto...</p>
     </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>AD Company</h3>
+                <p style="color: var(--text-light); font-size: 14px;">Estilo e exclusividade em cada passo.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Links Úteis</h3>
+                <ul>
+                    <li><a href="produtos.html">Catálogo Completo</a></li>
+                    <li><a href="admin/admin.html">Painel Admin</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contato</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://wa.me/5511999999999" target="_blank">WhatsApp: Atendimento</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 AD Company. Todos os direitos reservados.
+        </div>
+    </footer>
 
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
     <script>
-        // Removi a linha do supabase, pois o js/supabase.js já faz isso!
-        // A função formatCurrency também já vem do js/supabase.js, pode apagar a antiga.
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Atualiza contador do carrinho
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const countEl = document.getElementById('cart-count');
+            if(countEl) countEl.textContent = `(${totalItems})`;
 
-    document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
 
             if (!productId) {
-                document.getElementById('product-page').innerHTML = '<p style="grid-column: 2; text-align: center;">Produto não encontrado.</p>';
+                document.getElementById('product-page').innerHTML = '<p style="grid-column: 2; text-align: center; color: var(--text-light);">Produto não encontrado.</p>';
                 return;
             }
 
             const { data: product, error } = await supabase.from('products').select('*').eq('id', productId).single();
 
             if (error || !product) {
-                document.getElementById('product-page').innerHTML = '<p style="grid-column: 2; text-align: center;">Erro ao carregar o produto.</p>';
+                document.getElementById('product-page').innerHTML = '<p style="grid-column: 2; text-align: center; color: var(--text-light);">Erro ao carregar o produto.</p>';
                 return;
             }
 
@@ -117,7 +159,7 @@
             }
 
             const priceHtml = product.is_promo ? 
-                `<span style="text-decoration: line-through; color: #999; font-size: 14px;">${formatCurrency(product.price)}</span> ${formatCurrency(product.promo_price)}` : 
+                `<span style="text-decoration: line-through; color: var(--text-light); font-size: 14px; margin-right: 10px;">${formatCurrency(product.price)}</span> ${formatCurrency(product.promo_price)}` : 
                 formatCurrency(product.price);
 
             const html = `
@@ -133,17 +175,18 @@
                 <!-- Coluna 2: Galeria -->
                 <div class="product-gallery">
                     <button class="nav-btn prev" onclick="changeImage(-1)">❮</button>
-                    <!-- Imagem 1: Original -->
                     <img src="${product.image_url}" class="gallery-img active" alt="${product.name}">
-                    <!-- Imagem 2: Placeholder simulando verso/detalhe -->
-                    <img src="${product.image_url}" class="gallery-img" style="transform: scaleX(-1);" alt="${product.name} verso">
+                    <img src="${product.image_url}" class="gallery-img" style="filter: brightness(0.9);" alt="${product.name} detalhe">
                     <button class="nav-btn next" onclick="changeImage(1)">❯</button>
                 </div>
 
                 <!-- Coluna 3: Compra -->
                 <div class="product-checkout">
-                    <div class="size-selector" id="size-container">
-                        ${sizes.map(s => `<button class="size-btn" onclick="selectSize(this, '${s}')">${s}</button>`).join('')}
+                    <div>
+                        <div class="size-label">Selecione o Tamanho</div>
+                        <div class="size-selector" id="size-container">
+                            ${sizes.map(s => `<button class="size-btn" onclick="selectSize(this, '${s}')">${s}</button>`).join('')}
+                        </div>
                     </div>
                     
                     <button class="btn-add-cart" onclick="addToCart('${product.id}', '${product.name}', ${product.is_promo ? product.promo_price : product.price}, '${product.image_url}')">

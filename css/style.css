@@ -34,9 +34,10 @@ header {
 }
 
 .logo img { 
-    height: 65px; 
-    width: auto;
+    height: 65px !important; 
+    width: auto !important;
     object-fit: contain;
+    max-height: none !important;
 }
 
 .nav-links { 
