@@ -4,46 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrinho - AD Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/carrinho.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
+    </div>
+    
     <header>
-        <div class="container header-container">
-            <a href="index.html" class="logo"><h2>AD Company</h2></a>
+        <a href="index.html" class="logo">
+            <img src="assets/logo.png" alt="AD Company">
+        </a>
+        <nav class="nav-links">
+            <a href="index.html">Início</a>
+            <a href="produtos.html">Shop</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="carrinho.html" title="Carrinho" style="font-size: 18px; display: flex; align-items: center; gap: 5px;">
+                🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
+            </a>
         </div>
     </header>
 
-    <main class="container">
-        <h2>Seu Carrinho</h2>
-        <div class="cart-layout">
-            <div class="cart-items" id="cart-items">
-                <!-- Itens via JS -->
-            </div>
-            <div class="cart-summary">
-                <h3>Resumo</h3>
-                <div class="summary-line">
-                    <span>Subtotal:</span>
-                    <span id="cart-subtotal">R$ 0,00</span>
-                </div>
-                <div class="summary-line">
-                    <input type="text" id="coupon-code" placeholder="Cupom de desconto">
-                    <button id="apply-coupon" class="btn btn-secondary">Aplicar</button>
-                </div>
-                <div class="summary-line" id="discount-line" style="display: none;">
-                    <span>Desconto:</span>
-                    <span id="cart-discount">- R$ 0,00</span>
-                </div>
-                <div class="summary-line total">
-                    <span>Total:</span>
-                    <span id="cart-total">R$ 0,00</span>
-                </div>
-                <a href="checkout.html" class="btn btn-primary" id="btn-checkout">Ir para Finalização</a>
-            </div>
-        </div>
+    <div style="max-width: 1400px; margin: 40px 40px 0; padding: 0;">
+        <h1 style="font-size: 28px; font-weight: 800; text-transform: uppercase;">Seu Carrinho</h1>
+    </div>
+
+    <main class="cart-container" id="cart-content">
+        <!-- Preenchido via JavaScript -->
+        <p style="color: var(--text-light);">A carregar carrinho...</p>
     </main>
 
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>AD Company</h3>
+                <p style="color: var(--text-light); font-size: 14px;">Estilo e exclusividade em cada passo.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Links Úteis</h3>
+                <ul>
+                    <li><a href="produtos.html">Catálogo Completo</a></li>
+                    <li><a href="admin/admin.html">Painel Admin</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contato</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://wa.me/5511950070636" target="_blank">WhatsApp: (11) 95007-0636</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 AD Company. Todos os direitos reservados.
+        </div>
+    </footer>
+
     <script src="js/config.js"></script>
-    <script src="js/carrinho_page.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/carrinho.js"></script>
 </body>
 </html>
