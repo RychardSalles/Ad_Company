@@ -1,14 +1,137 @@
+.checkout-container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+    flex: 1;
+}
 
-.checkout-layout { display: flex; gap: 30px; margin-top: 40px; flex-wrap: wrap; align-items: flex-start; }
-.checkout-form { flex: 2; min-width: 300px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.checkout-summary { flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 90px; }
-.checkout-form h2 { margin-bottom: 20px; font-size: 1.2rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-.delivery-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.delivery-options label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-.summary-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
-.summary-line.total { font-size: 1.2rem; font-weight: bold; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px; }
-.checkout-item { display: flex; gap: 10px; margin-bottom: 15px; }
-.checkout-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
-.checkout-item-details { flex: 1; font-size: 14px; }
-.checkout-item-details h4 { font-size: 14px; margin-bottom: 2px; }
-.checkout-item-details p { color: var(--text-light); margin: 2px 0; font-size: 12px; }
+.checkout-box {
+    background: var(--card-bg);
+    border: 1px solid rgba(136, 136, 136, 0.2);
+    border-radius: 8px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.checkout-box h2 {
+    font-size: 18px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(136, 136, 136, 0.2);
+    padding-bottom: 15px;
+    color: var(--text-main);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    background: #0d0d0d;
+    border: 1px solid rgba(136, 136, 136, 0.3);
+    color: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: var(--font-sans);
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+.checkout-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid rgba(136, 136, 136, 0.2);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.checkout-item img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #111;
+}
+
+.checkout-item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.checkout-item-details h4 {
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.checkout-item-details p {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+}
+
+.summary-row.total {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-main);
+    border-top: 1px solid rgba(136, 136, 136, 0.2);
+    padding-top: 15px;
+    margin-top: 10px;
+}
+
+.btn-finish {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 6px;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+    width: 100%;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.btn-finish:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+    .checkout-container {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+}
