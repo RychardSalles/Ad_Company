@@ -54,7 +54,7 @@ a { text-decoration: none; color: inherit; }
 
 @keyframes marqueeMove {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    100% { transform: translateX(-10%); }
 }
 
 /* Cabeçalho Fixo e Limpo */
