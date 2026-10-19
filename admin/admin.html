@@ -112,7 +112,7 @@
             </div>
 
             <div class="form-group">
-                <label for="prod-image">URLs das Imagens (várias separadas por vírgula)</label>
+                <label for="prod-image">URLs das Imagens (várias separadas por vírgula ou quebra de linha)</label>
                 <textarea id="prod-image" rows="2" placeholder="https://foto1.jpg, https://foto2.jpg"></textarea>
             </div>
 
@@ -192,7 +192,12 @@
 
             tbody.innerHTML = '';
             products.forEach(p => {
-                let firstImg = p.image_url ? p.image_url.split(/,|\n/)[0].trim() : '../assets/logo.png';
+                let firstImg = '../assets/logo.png';
+                if (p.image_url) {
+                    const imgs = p.image_url.split(/,|\n/).map(i => i.trim()).filter(i => i.length > 0);
+                    if (imgs.length > 0) firstImg = imgs[0];
+                }
+
                 tbody.innerHTML += `
                     <tr>
                         <td><img src="${firstImg}" alt="${p.name}"></td>
@@ -240,7 +245,7 @@
             
             let colorsVal = 'Branco, Preto';
             if (p.description && p.description.includes('Cores:')) {
-                const match = p.description.match(/Cores: (.*?)( \n|$)/);
+                const match = p.description.match(/Cores:\s*(.*?)(?:\n|$)/);
                 if (match && match[1]) colorsVal = match[1].trim();
             }
             document.getElementById('prod-colors').value = colorsVal;
@@ -284,7 +289,7 @@
 
             if (error) {
                 console.error(error);
-                alert('Erro ao salvar produto.');
+                alert('Erro ao salvar produto na base de dados.');
                 return;
             }
 
