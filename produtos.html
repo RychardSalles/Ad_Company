@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* CORREÇÃO DO FUNDO VERMELHO: Força o fundo escuro padrão */
-        body, main, .catalog-section, .produtos-container {
+        /* Fundo escuro garantido */
+        body, main, .catalog-container {
             background-color: #0d0d0d !important;
             color: #ffffff !important;
         }
@@ -51,7 +51,7 @@
             100% { transform: translateX(-50%); } 
         }
 
-        /* Vitrine de Produtos */
+        /* Vitrine de Produtos - Alinhamento Lado a Lado */
         .catalog-container {
             max-width: 1400px;
             margin: 40px auto;
@@ -73,9 +73,10 @@
         }
 
         .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 30px !important;
+            width: 100% !important;
         }
 
         .product-card {
@@ -96,7 +97,7 @@
 
         .product-card img {
             width: 100%;
-            height: 320px;
+            height: 300px;
             object-fit: cover;
             background-color: #111;
         }
@@ -118,6 +119,22 @@
             font-size: 16px;
             font-weight: 800;
             color: var(--accent);
+        }
+
+        /* Responsividade para Tablets e Telemóveis */
+        @media (max-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .products-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .catalog-container {
+                padding: 0 20px;
+            }
         }
     </style>
 </head>
