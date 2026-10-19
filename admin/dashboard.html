@@ -230,8 +230,8 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="prod-color">Cor(es)</label>
-                      <input type="text" id="prod-color" placeholder="Ex: Branco, Preto">
+                        <label for="prod-color">Cor(es)</label>
+                        <input type="text" id="prod-color" placeholder="Ex: Branco, Preto">
                     </div>
 
                     <div class="form-group full-width">
@@ -367,17 +367,19 @@
             document.getElementById('prod-name').value = prod.name;
             document.getElementById('prod-price').value = prod.price;
             document.getElementById('prod-image-url-existing').value = prod.image_url || '';
+            document.getElementById('prod-images').value = '';
+            document.getElementById('file-name-display').textContent = 'Manter fotos atuais (ou escolher novas)';
             
             let desc = prod.description || '';
-            let sizes = "38, 39, 40, 41, 42, 43";
-            let colors = "Branco, Preto";
+            let sizes = "";
+            let colors = "";
 
             if (desc.includes('Tamanhos:')) {
                 const parts = desc.split('Tamanhos:');
                 desc = parts[0].trim();
                 const rest = parts[1].split('Cores:');
-                if (rest[0]) sizes = rest[0].trim();
-                if (rest[1]) colors = rest[1].trim();
+                if (rest[0]) sizes = rest[0].replace(/\\n/g, '').trim();
+                if (rest[1]) colors = rest[1].replace(/\\n/g, '').trim();
             }
 
             document.getElementById('prod-desc').value = desc;
@@ -435,7 +437,6 @@
                 const fileInput = document.getElementById('prod-images');
                 let imageUrls = document.getElementById('prod-image-url-existing').value;
 
-                // Se novos arquivos foram selecionados, faz o upload de cada um para o Storage do Supabase
                 if (fileInput.files.length > 0) {
                     let uploadedUrls = [];
                     for (let i = 0; i < fileInput.files.length; i++) {
@@ -448,7 +449,7 @@
 
                         if (uploadError) {
                             console.error(uploadError);
-                            showMessage(`Erro ao enviar a imagem ${file.name}. Verifique o bucket 'Produtos'.`, 'error');
+                            alert(`Erro ao enviar a imagem ${file.name}. Verifique o bucket 'Produtos'.`);
                             submitBtn.disabled = false;
                             submitBtn.textContent = id ? 'Atualizar produto' : 'Salvar produto';
                             return;
@@ -483,10 +484,10 @@
                 }
 
                 if (dbError) {
-                    showMessage('Erro ao salvar produto na base de dados', 'error');
+                    showMessage('Erro ao salvar produto', 'error');
                     console.error(dbError);
                 } else {
-                    showMessage(id ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!', 'success');
+                    showMessage(id ? 'Produto atualizado!' : 'Produto criado com sucesso!', 'success');
                     resetForm(); 
                     loadProducts();
                 }
