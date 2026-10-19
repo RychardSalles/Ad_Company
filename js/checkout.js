@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('chk-shipping').textContent = formatCurrency(15);
         } else if (deliveryType === 'address') {
             document.getElementById('chk-shipping').textContent = 'A confirmar no WhatsApp';
-            total = subtotal - discountData.value; // Taxa será somada depois
+            total = subtotal - discountData.value;
         } else {
             document.getElementById('chk-shipping').textContent = 'Selecione a entrega';
         }
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             taxaStr = 'A confirmar';
         }
 
-        // Construir mensagem para o WhatsApp
+        // Construir mensagem para o WhatsApp (Sem redundância no final)
         let msg = `Olá! Gostaria de fazer um pedido na loja.%0A%0A*DADOS DO PEDIDO*%0A`;
         
         cart.forEach((item, index) => {
@@ -121,15 +121,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (deliveryType === 'station') msg += `Estação: ${stationDetails}%0A`;
         msg += `Taxa de entrega: ${taxaStr}%0ATotal do pedido: ${deliveryType === 'station' ? formatCurrency(finalTotal) : formatCurrency(finalTotal) + ' + Frete'}%0A%0A`;
 
+        // Apenas exibe os dados do cliente e a entrega já está integrada acima e no resumo financeiro
         msg += `*DADOS DO CLIENTE*%0ANome: ${nome}%0ATelefone: ${telefone}%0A`;
-        msg += `*LOCAL DE ENTREGA/RETIRADA*%0A${addressDetails}%0A`;
+        if (deliveryType === 'address') {
+            msg += `*ENDEREÇO DE ENTREGA*%0A${addressDetails}%0A`;
+        }
         
         const obs = document.getElementById('cli-obs').value;
         if(obs) msg += `Observações: ${obs}%0A`;
         
         msg += `%0AAguardo a confirmação. Obrigado!`;
 
-        // Número de WhatsApp atualizado da AD Company
         const phone = "5511950070636";
         
         // Limpar carrinho
