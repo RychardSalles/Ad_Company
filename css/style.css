@@ -35,16 +35,20 @@ a { text-decoration: none; color: inherit; }
     width: 100%;
 }
 
-.top-bar-content { 
-    display: inline-flex; 
+.top-bar-track {
+    display: flex;
     white-space: nowrap;
-    will-change: transform;
-    animation: marquee 10s linear infinite; 
+    animation: marquee 10s linear infinite;
+    width: max-content;
+}
+
+.top-bar-content { 
+    display: flex; 
+    white-space: nowrap;
 }
 
 .top-bar-content span { 
     margin: 0 20px; 
-    flex-shrink: 0;
 }
 
 @keyframes marquee { 
