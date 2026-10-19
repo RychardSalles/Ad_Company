@@ -32,9 +32,17 @@ a { text-decoration: none; color: inherit; }
     letter-spacing: 1px; 
     text-transform: uppercase; 
 }
-.top-bar-content { display: inline-block; animation: marquee 12s linear infinite; }
+.top-bar-content { 
+    display: inline-block; 
+    white-space: nowrap;
+    animation: marquee 10s linear infinite; /* Diminua para 8s se quiser mais rápido */
+}
 .top-bar-content span { margin: 0 20px; }
-@keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+
+@keyframes marquee { 
+    0% { transform: translateX(0%); } 
+    100% { transform: translateX(-50%); } 
+}
 
 /* Cabeçalho Fixo e Limpo */
 header { 
