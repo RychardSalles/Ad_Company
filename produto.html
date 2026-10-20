@@ -90,7 +90,6 @@
     <script src="js/supabase.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Menu Hambúrguer Mobile
             const menuBtn = document.getElementById('mobile-menu-btn');
             const navMenu = document.getElementById('nav-menu');
 
@@ -101,7 +100,6 @@
                 });
             }
 
-            // Contador do carrinho
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const countEl = document.getElementById('cart-count');
             const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -110,7 +108,6 @@
             loadProductDetails();
         });
 
-        // Converte string com vírgulas ou JSON em Array seguro
         function parseOptions(value) {
             if (!value) return [];
             if (Array.isArray(value)) return value;
@@ -146,31 +143,47 @@
                     return;
                 }
 
-                // Lê tamanhos e cores sem quebrar com erro de JSON
-                const sizes = parseOptions(product.sizes || product.tamanhos);
-                const colors = parseOptions(product.colors || product.cores);
+                let sizes = parseOptions(product.sizes || product.tamanhos || product.size);
+                let colors = parseOptions(product.colors || product.cores || product.color);
 
-                // Limpa textos de tamanhos/cores que possam ter vindo colados na descrição
-                let cleanDescription = (product.description || 'Sem descrição informada.')
-                    .replace(/\\n/g, '\n')
-                    .split(/Tamanhos:/i)[0]
+                const descText = (product.description || '').replace(/\\n/g, '\n');
+
+                // Extração de emergência dos Tamanhos caso estejam salvos no texto da descrição
+                if (sizes.length === 0) {
+                    const sizeMatch = descText.match(/Tamanhos?:\s*([^\n\r]+)/i);
+                    if (sizeMatch && sizeMatch[1]) {
+                        sizes = sizeMatch[1].split(',').map(s => s.trim()).filter(Boolean);
+                    }
+                }
+
+                // Extração de emergência das Cores caso estejam salvas no texto da descrição
+                if (colors.length === 0) {
+                    const colorMatch = descText.match(/Cores?:\s*([^\n\r]+)/i);
+                    if (colorMatch && colorMatch[1]) {
+                        colors = colorMatch[1].split(',').map(c => c.trim()).filter(Boolean);
+                    }
+                }
+
+                // Limpa o texto da descrição para remover os rótulos "Tamanhos:" e "Cores:" do parágrafo
+                let cleanDescription = descText
+                    .replace(/Tamanhos?:\s*[^\n\r]+/gi, '')
+                    .replace(/Cores?:\s*[^\n\r]+/gi, '')
                     .trim();
 
-                // INJETA AS 3 COLUNAS
                 container.innerHTML = `
-                    <!-- COLUNA 1: ESQUERDA (DESCRIÇÃO E INFORMAÇÕES DO PAINEL) -->
+                    <!-- COLUNA 1: ESQUERDA (TÍTULO, PREÇO E DESCRIÇÃO) -->
                     <div class="product-info-left">
                         <h1 class="product-title">${product.name}</h1>
                         <span class="product-price">${formatCurrency(product.price)}</span>
-                        <div class="product-desc">${cleanDescription}</div>
+                        <div class="product-desc">${cleanDescription || 'Sem descrição informada.'}</div>
                     </div>
 
-                    <!-- COLUNA 2: CENTRO (FOTO / GALERIA DO PRODUTO) -->
+                    <!-- COLUNA 2: CENTRO (IMAGEM DO PRODUTO) -->
                     <div class="product-gallery">
                         <img class="gallery-img" src="${product.image_url || 'assets/logo.png'}" alt="${product.name}" onerror="this.src='assets/logo.png'">
                     </div>
 
-                    <!-- COLUNA 3: DIREITA (TAMANHOS, CORES, FRETE E CHECKOUT) -->
+                    <!-- COLUNA 3: DIREITA (SELEÇÃO DE TAMANHOS, CORES E COMPRA) -->
                     <div class="product-checkout">
                         ${sizes.length > 0 ? `
                             <div class="option-group">
