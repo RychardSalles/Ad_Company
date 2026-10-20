@@ -1,101 +1,54 @@
 /* ==========================================
-   ESTILOS EXCLUSIVOS - PÁGINA DE DETALHES (produto.html)
+   LAYOUT DE 3 COLUNAS - DETALHES DO PRODUTO (produto.html)
    ========================================== */
-:root {
-    --bg-body: #0d0d0d;
-    --card-bg: #161616;
-    --accent: #c4262e;
-    --accent-hover: #a31f25;
-    --text-main: #ffffff;
-    --text-light: #a0a0a0;
-    --border-color: rgba(136, 136, 136, 0.2);
-    --font-sans: 'Inter', sans-serif;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: var(--font-sans);
-    background-color: var(--bg-body);
-    color: var(--text-main);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Barra Superior */
-.top-bar { 
-    background: var(--accent) !important; 
-    color: #ffffff !important; 
-    overflow: hidden !important; 
-    white-space: nowrap !important; 
-    padding: 10px 0 !important; 
-    font-size: 12px !important; 
-    font-weight: 800 !important; 
-    text-transform: uppercase !important; 
-    width: 100% !important;
-    display: block !important;
-}
-
-.top-bar-track {
-    display: inline-flex !important;
-    white-space: nowrap !important;
-    animation: marqueeMove 15s linear infinite !important;
-}
-
-.top-bar-content span { 
-    margin: 0 30px !important; 
-}
-
-@keyframes marqueeMove { 
-    0% { transform: translateX(0); } 
-    100% { transform: translateX(-50%); } 
-}
-
-/* Cabeçalho */
-header {
-    background-color: var(--card-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo img { height: 40px; object-fit: contain; }
-.nav-links { display: flex; gap: 30px; align-items: center; }
-.nav-links a { color: var(--text-light); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; }
-.nav-links a:hover, .nav-links a.active { color: var(--accent); }
-
-/* --- CONTENTOR DE DETALHES DO PRODUTO (3 COLUNAS) --- */
 .product-container { 
     max-width: 1400px !important; 
     margin: 60px auto !important; 
     padding: 0 40px !important; 
     display: grid !important; 
-    grid-template-columns: 1fr 1.5fr 1fr !important; 
-    gap: 60px !important; 
+    grid-template-columns: 1fr 1.5fr 1fr !important; /* Coluna 1: Info | Coluna 2: Foto | Coluna 3: Checkout */
+    gap: 40px !important; 
     align-items: start !important;
     background-color: var(--bg-body) !important;
     flex: 1;
     width: 100% !important;
 }
 
+/* 1. Coluna da Esquerda (Informações / Descrição) */
 .product-info-left { 
     display: flex !important; 
     flex-direction: column !important; 
     gap: 20px !important; 
+    order: 1 !important;
+}
+
+/* 2. Coluna do Centro (Galeria e Foto do Produto) */
+.product-gallery { 
+    position: relative !important; 
+    display: flex !important; 
+    align-items: center !important; 
+    justify-content: center !important; 
+    background: var(--card-bg) !important; 
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important; 
+    overflow: hidden !important; 
+    min-height: 450px !important; 
+    width: 100% !important;
+    order: 2 !important;
+}
+
+/* 3. Coluna da Direita (Checkout, Tamanhos, Cores e Botões) */
+.product-checkout { 
+    display: flex !important; 
+    flex-direction: column !important; 
+    gap: 20px !important; 
+    order: 3 !important;
 }
 
 .product-title { 
-    font-size: 26px !important; 
+    font-size: 24px !important; 
     font-weight: 800 !important; 
     text-transform: uppercase !important; 
-    letter-spacing: -0.5px !important; 
     color: #fff !important; 
 }
 
@@ -109,27 +62,12 @@ header {
     font-size: 13px !important; 
     line-height: 1.8 !important; 
     color: var(--text-light) !important; 
-    margin-top: 10px !important; 
-}
-
-/* Galeria e Carrossel */
-.product-gallery { 
-    position: relative !important; 
-    display: flex !important; 
-    align-items: center !important; 
-    justify-content: center !important; 
-    background: var(--card-bg) !important; 
-    border: 1px solid var(--border-color) !important;
-    border-radius: 8px !important; 
-    overflow: hidden !important; 
-    min-height: 500px !important; 
-    width: 100% !important;
 }
 
 .gallery-img { 
     width: 100% !important; 
     height: 100% !important; 
-    object-fit: contain !important; 
+    object-fit: cover !important; 
     position: absolute !important; 
     top: 0; 
     left: 0; 
@@ -143,150 +81,21 @@ header {
     position: relative !important; 
 }
 
-.nav-btn { 
-    position: absolute !important; 
-    top: 50% !important; 
-    transform: translateY(-50%) !important; 
-    background: rgba(0, 0, 0, 0.6) !important; 
-    color: white !important; 
-    border: none !important; 
-    font-size: 20px !important; 
-    cursor: pointer !important; 
-    z-index: 10 !important; 
-    padding: 15px !important; 
-}
-
-.nav-btn:hover { background: var(--accent) !important; }
-.nav-btn.prev { left: 0 !important; }
-.nav-btn.next { right: 0 !important; }
-
-/* Checkout e Opções */
-.product-checkout { 
-    display: flex !important; 
-    flex-direction: column !important; 
-    gap: 25px !important; 
-}
-
-.option-label { 
-    font-size: 12px !important; 
-    font-weight: 600 !important; 
-    text-transform: uppercase !important; 
-    color: var(--text-light) !important; 
-    letter-spacing: 1px !important; 
-    margin-bottom: 8px !important; 
-}
-
-.option-selector { 
-    display: flex !important; 
-    gap: 10px !important; 
-    flex-wrap: wrap !important; 
-}
-
-.option-btn { 
-    border: 1px solid var(--border-color) !important; 
-    background: var(--card-bg) !important; 
-    color: white !important; 
-    padding: 12px 18px !important; 
-    cursor: pointer !important; 
-    font-family: var(--font-sans) !important; 
-    font-size: 13px !important; 
-    font-weight: 600 !important; 
-    border-radius: 6px !important; 
-}
-
-.option-btn:hover { border-color: var(--accent) !important; }
-.option-btn.selected { background: var(--accent) !important; color: white !important; border-color: var(--accent) !important; }
-
-.btn-add-cart { 
-    background: var(--accent) !important; 
-    color: white !important; 
-    border: none !important; 
-    padding: 16px !important; 
-    font-size: 14px !important; 
-    font-weight: 800 !important; 
-    text-transform: uppercase !important; 
-    letter-spacing: 1px !important; 
-    cursor: pointer !important; 
-    width: 100% !important; 
-    border-radius: 6px !important; 
-}
-
-.btn-add-cart:hover { opacity: 0.9 !important; }
-
-/* Rodapé */
-footer {
-    background-color: var(--card-bg);
-    border-top: 1px solid var(--border-color);
-    padding: 40px 20px 20px;
-    margin-top: auto;
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    margin-bottom: 30px;
-}
-
-.footer-col h3 { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; color: var(--text-main); }
-.footer-col ul { list-style: none; }
-.footer-col ul li { margin-bottom: 10px; }
-.footer-col ul li a { color: var(--text-light); text-decoration: none; font-size: 13px; }
-.footer-col ul li a:hover { color: var(--accent); }
-.footer-bottom { text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px; font-size: 12px; color: var(--text-light); }
-
-/* Responsividade */
+/* Responsividade para Telemóveis e Tablets (passa para coluna única empilhada) */
 @media (max-width: 1024px) {
     .product-container { 
         grid-template-columns: 1fr !important; 
-        gap: 40px !important; 
+        gap: 30px !important; 
         padding: 0 20px !important;
     }
     .product-gallery { 
-        order: -1 !important; 
-        min-height: 400px !important; 
+        order: -1 !important; /* Foto fica no topo em dispositivos móveis */
+        min-height: 380px !important; 
     }
-}
-
-/* --- CORREÇÃO DEFINITIVA DE LAYOUT PARA A PÁGINA DE DETALHES --- */
-.product-container, main {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    align-items: flex-start !important;
-    gap: 40px !important;
-    max-width: 1200px !important;
-    margin: 40px auto !important;
-    padding: 0 20px !important;
-}
-
-/* Força os blocos internos ou o conteúdo gerado a dividirem-se em duas colunas principais no PC */
-.product-container > *, main > div {
-    flex: 1 1 45% !important;
-    min-width: 300px !important;
-}
-
-/* Ajuste específico para a imagem/galeria ficar em destaque à esquerda */
-.product-gallery, .product-container img, main img:first-of-type {
-    max-width: 500px !important;
-    width: 100% !important;
-    height: 450px !important;
-    object-fit: cover !important;
-    border-radius: 8px !important;
-}
-
-/* Responsividade para telemóveis (tudo em coluna única) */
-@media (max-width: 768px) {
-    .product-container, main {
-        flex-direction: column !important;
-        padding: 0 10px !important;
+    .product-info-left {
+        order: 2 !important;
     }
-    
-    .product-container > *, main > div {
-        flex: 1 1 100% !important;
-        width: 100% !important;
+    .product-checkout {
+        order: 3 !important;
     }
 }
