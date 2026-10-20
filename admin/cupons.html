@@ -19,6 +19,7 @@
             --card-bg: #ffffff;
             --danger: #c4262e;
             --danger-bg: #fdf2f2;
+            --success: #389e0d;
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Inter', sans-serif;
         }
@@ -53,7 +54,10 @@
 
         .coupon-list { display: flex; flex-direction: column; gap: 15px; }
         .coupon-item { background: var(--card-bg); border-radius: 12px; padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); }
-        .coupon-info h3 { font-family: var(--font-serif); font-size: 20px; margin: 0 0 5px 0; color: var(--accent); text-transform: uppercase; }
+        
+        /* Correção da legibilidade e cor do texto do cupom no painel */
+        .coupon-info h3 { font-family: var(--font-sans); font-size: 18px; font-weight: 800; margin: 0 0 5px 0; color: #111111; text-transform: uppercase; }
+        .coupon-info h3 span { font-size: 13px; font-weight: 600; background: #f0f2f5; padding: 4px 10px; border-radius: 6px; color: #333333; margin-left: 10px; }
         .coupon-info p { margin: 0; font-size: 14px; color: var(--text-light); }
         
         .coupon-actions { display: flex; align-items: center; gap: 15px; }
@@ -65,7 +69,7 @@
         input:checked + .slider:before { transform: translateX(20px); }
 
         .btn-action { padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-edit { background-color: #fbfbfb; border: 1px solid #d9d9d9; }
+        .btn-edit { background-color: #fbfbfb; border: 1px solid #d9d9d9; color: #333; }
         .btn-edit:hover { background-color: #f0f0f0; }
         .btn-delete { background-color: var(--danger-bg); color: var(--danger); }
         .btn-delete:hover { background-color: #ffd8d9; }
@@ -187,7 +191,7 @@
                 const itemHTML = `
                     <div class="coupon-item">
                         <div class="coupon-info">
-                            <h3>${c.code} <span style="font-size: 14px; background: #eee; padding: 3px 8px; border-radius: 10px; color: #333;">Desconto: ${tipoStr}</span></h3>
+                            <h3>${c.code} <span>Desconto: ${tipoStr}</span></h3>
                             <p>${regras.length > 0 ? regras.join(' | ') : 'Sem regras de limite ou validade.'}</p>
                         </div>
                         <div class="coupon-actions">
