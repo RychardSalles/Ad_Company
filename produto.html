@@ -54,9 +54,9 @@
         </div>
     </header>
 
-    <main class="product-container" style="max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 70vh;">
-        <div id="product-detail" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
-            <p style="color: var(--text-light);">A carregar detalhes do produto...</p>
+    <main class="product-container">
+        <div id="product-detail">
+            <p style="color: var(--text-light); text-align: center; grid-column: 1 / -1;">A carregar detalhes do produto...</p>
         </div>
     </main>
 
@@ -110,13 +110,27 @@
             loadProductDetails();
         });
 
+        // Converte string com vírgulas ou JSON em Array seguro
+        function parseOptions(value) {
+            if (!value) return [];
+            if (Array.isArray(value)) return value;
+            if (typeof value === 'string') {
+                let trimmed = value.trim();
+                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                    try { return JSON.parse(trimmed); } catch(e) {}
+                }
+                return trimmed.split(',').map(item => item.trim()).filter(Boolean);
+            }
+            return [];
+        }
+
         async function loadProductDetails() {
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('id');
             const container = document.getElementById('product-detail');
 
             if (!productId) {
-                container.innerHTML = '<p style="color: red;">Produto não especificado.</p>';
+                container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Produto não especificado.</p>';
                 return;
             }
 
@@ -128,54 +142,65 @@
                     .single();
 
                 if (error || !product) {
-                    container.innerHTML = '<p style="color: red;">Produto não encontrado.</p>';
+                    container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Produto não encontrado.</p>';
                     return;
                 }
 
-                // Normaliza tamanhos e cores cadastrados restritamente ao produto
-                let sizes = [];
-                try {
-                    sizes = typeof product.sizes === 'string' ? JSON.parse(product.sizes) : (product.sizes || []);
-                } catch(e) { sizes = []; }
+                // Lê tamanhos e cores sem quebrar com erro de JSON
+                const sizes = parseOptions(product.sizes || product.tamanhos);
+                const colors = parseOptions(product.colors || product.cores);
 
-                let colors = [];
-                try {
-                    colors = typeof product.colors === 'string' ? JSON.parse(product.colors) : (product.colors || []);
-                } catch(e) { colors = []; }
+                // Limpa textos de tamanhos/cores que possam ter vindo colados na descrição
+                let cleanDescription = (product.description || 'Sem descrição informada.')
+                    .replace(/\\n/g, '\n')
+                    .split(/Tamanhos:/i)[0]
+                    .trim();
 
+                // INJETA AS 3 COLUNAS
                 container.innerHTML = `
-                    <div>
-                        <img src="${product.image_url || 'assets/logo.png'}" alt="${product.name}" style="width: 100%; border-radius: 8px; object-fit: cover; background: #161618;" onerror="this.src='assets/logo.png'">
+                    <!-- COLUNA 1: ESQUERDA (DESCRIÇÃO E INFORMAÇÕES DO PAINEL) -->
+                    <div class="product-info-left">
+                        <h1 class="product-title">${product.name}</h1>
+                        <span class="product-price">${formatCurrency(product.price)}</span>
+                        <div class="product-desc">${cleanDescription}</div>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 20px;">
-                        <h1 style="font-size: 26px; font-weight: 800; text-transform: uppercase;">${product.name}</h1>
-                        <span style="font-size: 22px; font-weight: 800; color: var(--accent);">${formatCurrency(product.price)}</span>
-                        <p style="color: var(--text-light); font-size: 14px; line-height: 1.6;">${product.description || 'Sem descrição informada.'}</p>
-                        
+
+                    <!-- COLUNA 2: CENTRO (FOTO / GALERIA DO PRODUTO) -->
+                    <div class="product-gallery">
+                        <img class="gallery-img" src="${product.image_url || 'assets/logo.png'}" alt="${product.name}" onerror="this.src='assets/logo.png'">
+                    </div>
+
+                    <!-- COLUNA 3: DIREITA (TAMANHOS, CORES, FRETE E CHECKOUT) -->
+                    <div class="product-checkout">
                         ${sizes.length > 0 ? `
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <label style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light);">Tamanho</label>
-                                <div style="display: flex; gap: 10px;" id="size-options">
-                                    ${sizes.map((s, idx) => `<button type="button" class="size-btn ${idx === 0 ? 'selected' : ''}" onclick="selectOption('size', '${s}', this)" style="padding: 8px 16px; background: #161618; border: 1px solid ${idx === 0 ? 'var(--accent)' : 'var(--text-light)'}; color: white; border-radius: 4px; cursor: pointer; font-weight: 600;">${s}</button>`).join('')}
+                            <div class="option-group">
+                                <label class="option-label">Tamanho</label>
+                                <div class="option-selector" id="size-options">
+                                    ${sizes.map((s, idx) => `<button type="button" class="option-btn ${idx === 0 ? 'selected' : ''}" onclick="selectOption('size', '${s}', this)">${s}</button>`).join('')}
                                 </div>
                             </div>
                         ` : ''}
 
                         ${colors.length > 0 ? `
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <label style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light);">Cor</label>
-                                <div style="display: flex; gap: 10px;" id="color-options">
-                                    ${colors.map((c, idx) => `<button type="button" class="color-btn ${idx === 0 ? 'selected' : ''}" onclick="selectOption('color', '${c}', this)" style="padding: 8px 16px; background: #161618; border: 1px solid ${idx === 0 ? 'var(--accent)' : 'var(--text-light)'}; color: white; border-radius: 4px; cursor: pointer; font-weight: 600;">${c}</button>`).join('')}
+                            <div class="option-group">
+                                <label class="option-label">Cor</label>
+                                <div class="option-selector" id="color-options">
+                                    ${colors.map((c, idx) => `<button type="button" class="option-btn ${idx === 0 ? 'selected' : ''}" onclick="selectOption('color', '${c}', this)">${c}</button>`).join('')}
                                 </div>
                             </div>
                         ` : ''}
 
-                        <button onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})" style="margin-top: 10px; background: var(--accent); color: white; border: none; padding: 16px; border-radius: 6px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s;">Adicionar ao Carrinho</button>
+                        <div class="shipping-info">
+                            <p>⚡ Frete Fixo para Estações de Metrô de SP</p>
+                            <p>🚀 Envios com rastreio para todo o Brasil</p>
+                        </div>
+
+                        <button class="btn-add-cart" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">Adicionar ao Carrinho</button>
                     </div>
                 `;
             } catch (err) {
                 console.error('Erro ao carregar produto:', err);
-                container.innerHTML = '<p style="color: red;">Erro ao carregar os dados do produto.</p>';
+                container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Erro ao carregar os dados do produto.</p>';
             }
         }
 
@@ -184,11 +209,7 @@
 
         window.selectOption = function(type, value, btn) {
             const parent = btn.parentElement;
-            parent.querySelectorAll('button').forEach(b => {
-                b.style.borderColor = 'var(--text-light)';
-                b.classList.remove('selected');
-            });
-            btn.style.borderColor = 'var(--accent)';
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
 
             if (type === 'size') selectedSize = value;
