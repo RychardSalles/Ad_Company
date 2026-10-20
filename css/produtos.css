@@ -231,3 +231,39 @@ footer { background-color: var(--card-bg) !important; border-top: 1px solid var(
         max-height: 160px !important;
     }
 }
+
+/* ==========================================
+   REMOÇÃO DE SUBLINHADOS E CORES DE LINKS
+   ========================================== */
+
+/* Remove sublinhado e altera a cor padrão de todos os links */
+a, 
+a:visited, 
+a:hover, 
+a:active {
+    text-decoration: none !important;
+}
+
+/* Força a remoção de sublinhado em todos os elementos dentro dos cards */
+.product-card,
+.product-card *,
+#featured-grid a,
+#products-grid a {
+    text-decoration: none !important;
+}
+
+/* Mantém o nome do produto branco puro */
+.product-card h3,
+.product-card .product-name,
+.product-card-title {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+/* Mantém o preço em vermelho destaque sem linha por baixo */
+.product-card .product-price,
+.product-card .product-card-price,
+.product-card .price-container span:not([style*="line-through"]) {
+    color: var(--accent) !important;
+    text-decoration: none !important;
+}
