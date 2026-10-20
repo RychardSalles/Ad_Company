@@ -207,11 +207,11 @@ if (checkoutForm) {
         }
 
         let message = `*NOVO PEDIDO - AD COMPANY*\n\n`;
-        message += `👤 *Cliente:* ${name}\n`;
-        message += `📞 *Telefone:* ${phone}\n`;
-        message += `🚚 *Modalidade:* ${deliveryDetails}\n`;
-        if (notes) message += `📝 *Obs:* ${notes}\n`;
-        message += `\n🛍️ *Itens do Pedido:*\n`;
+        message += ` *Cliente:* ${name}\n`;
+        message += ` *Telefone:* ${phone}\n`;
+        message += ` *Modalidade:* ${deliveryDetails}\n`;
+        if (notes) message += ` *Obs:* ${notes}\n`;
+        message += `\n *Itens do Pedido:*\n`;
 
         let total = 0;
         cart.forEach(item => {
@@ -225,12 +225,12 @@ if (checkoutForm) {
         const effectiveSubtotal = Math.max(0, total - discountAmount);
         const finalTotal = shippingType === 'metro' ? effectiveSubtotal + 15.00 : effectiveSubtotal;
         
-        message += `\n📦 *Subtotal:* ${formatCurrency(total)}`;
+        message += `\n *Subtotal:* ${formatCurrency(total)}`;
         if (discountAmount > 0) {
-            message += `\n🏷️ *Desconto:* -${formatCurrency(discountAmount)}`;
+            message += `\n *Desconto:* -${formatCurrency(discountAmount)}`;
         }
-        message += `\n🚚 *Taxa de Entrega:* ${shippingFeeText}`;
-        message += `\n💰 *TOTAL:* ${shippingType === 'metro' ? formatCurrency(finalTotal) : formatCurrency(effectiveSubtotal) + ' + Frete a combinar'}`;
+        message += `\n *Taxa de Entrega:* ${shippingFeeText}`;
+        message += `\n *TOTAL:* ${shippingType === 'metro' ? formatCurrency(finalTotal) : formatCurrency(effectiveSubtotal) + ' + Frete a combinar'}`;
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `https://wa.me/5511950070636?text=${encodedMessage}`;
