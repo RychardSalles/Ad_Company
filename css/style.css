@@ -104,6 +104,22 @@ header {
 }
 .nav-icons a { color: var(--text-main); }
 
+/* Estilo Discreto e Minimalista para as Setas do Carrossel */
+.carousel-button, .swiper-button-prev, .swiper-button-next {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 50% !important;
+    width: 36px !important;
+    height: 36px !important;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease-in-out;
+}
+
+.carousel-button:hover, .swiper-button-prev:hover, .swiper-button-next:hover {
+    background: rgba(196, 38, 46, 0.8) !important;
+    border-color: var(--accent) !important;
+}
+
 /* Rodapé */
 footer { 
     background: #050505 !important; 
@@ -120,7 +136,26 @@ footer {
 .footer-col a:hover { color: var(--text-main); }
 .footer-bottom { text-align: center; margin-top: 40px; border-top: 1px solid rgba(136, 136, 136, 0.2); padding-top: 20px; font-size: 12px; color: var(--text-light); }
 
+/* Responsividade Global para Telemóveis e Tablets */
 @media (max-width: 900px) {
-    header { padding: 15px 20px; justify-content: center; gap: 15px; flex-direction: column; }
-    .nav-links { gap: 20px; font-size: 12px; }
+    header { 
+        padding: 15px 20px !important; 
+        justify-content: center !important; 
+        gap: 12px !important; 
+        flex-direction: column !important; 
+    }
+    .nav-links { 
+        gap: 20px !important; 
+        font-size: 12px !important; 
+    }
+    .logo img {
+        height: 80px !important; /* Reduz ligeiramente a altura da logo em telas pequenas para economizar espaço */
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-button, .swiper-button-prev, .swiper-button-next {
+        width: 30px !important;
+        height: 30px !important;
+    }
 }
