@@ -5,292 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finalizar Pedido - AD Company</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/checkout.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --bg-body: #0d0d0d;
-            --card-bg: #161616;
-            --accent: #c4262e;
-            --accent-hover: #a31f25;
-            --text-main: #ffffff;
-            --text-light: #a0a0a0;
-            --border-color: rgba(136, 136, 136, 0.2);
-            --font-sans: 'Inter', sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body, html {
-            font-family: var(--font-sans);
-            background-color: var(--bg-body) !important;
-            color: var(--text-main);
-            min-height: 100vh;
-        }
-
-        /* Barra superior animada (Marquee) */
-        .top-bar { 
-            background: var(--accent) !important; 
-            color: #ffffff !important; 
-            overflow: hidden !important; 
-            white-space: nowrap !important; 
-            padding: 10px 0 !important; 
-            font-size: 12px !important; 
-            font-weight: 800 !important; 
-            letter-spacing: 1px !important; 
-            text-transform: uppercase !important; 
-            width: 100% !important;
-            display: block !important;
-            box-sizing: border-box !important;
-        }
-
-        .top-bar-track {
-            display: inline-flex !important;
-            white-space: nowrap !important;
-            width: max-content !important;
-            animation: marqueeMove 15s linear infinite !important;
-        }
-
-        .top-bar-content { 
-            display: inline-flex !important; 
-            white-space: nowrap !important;
-        }
-
-        .top-bar-content span { 
-            margin: 0 30px !important; 
-        }
-
-        @keyframes marqueeMove { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-50%); } 
-        }
-
-        /* Header da Loja */
-        header {
-            background-color: #121212;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo img { height: 35px; object-fit: contain; }
-
-        .nav-links { display: flex; gap: 20px; }
-        .nav-links a { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 14px; text-transform: uppercase; }
-        .nav-links a:hover { color: var(--accent); }
-
-        .nav-icons a { color: var(--text-main); text-decoration: none; }
-
-        /* Estrutura do Checkout (Forçando fundo escuro) */
-        main.checkout-container {
-            background-color: var(--bg-body) !important;
-            min-height: 80vh;
-            padding: 40px 20px;
-        }
-
-        .checkout-page-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 40px;
-            align-items: start;
-        }
-
-        .checkout-title {
-            font-size: 24px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: -0.5px;
-            margin-bottom: 30px;
-            grid-column: 1 / -1;
-        }
-
-        .checkout-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 25px;
-        }
-
-        .checkout-card h3 {
-            font-size: 16px;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-light);
-            letter-spacing: 0.5px;
-        }
-
-        input[type="text"], textarea {
-            padding: 12px 16px;
-            background: #0d0d0d;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: white;
-            font-size: 14px;
-            font-family: var(--font-sans);
-            width: 100%;
-        }
-
-        input[type="text"]:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .radio-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .radio-label input { accent-color: var(--accent); }
-
-        /* Resumo do Pedido na direita */
-        .summary-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .summary-item img {
-            width: 60px; height: 60px;
-            object-fit: cover;
-            border-radius: 6px;
-            background: #111;
-        }
-
-        .summary-item-details {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .summary-item-title {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .summary-item-variant {
-            font-size: 11px;
-            color: var(--text-light);
-            text-transform: uppercase;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-
-        .summary-total {
-            display: flex;
-            justify-content: space-between;
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--accent);
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-
-        .btn-submit-order {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s;
-        }
-
-        .btn-submit-order:hover { opacity: 0.9; }
-
-        /* Rodapé */
-        footer {
-            background: #121212;
-            border-top: 1px solid var(--border-color);
-            padding: 40px 20px 20px;
-            color: var(--text-main);
-        }
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        .footer-col h3 { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
-        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-        .footer-col ul li a { color: var(--text-light); text-decoration: none; font-size: 13px; }
-        .footer-col ul li a:hover { color: white; }
-        .footer-bottom { text-align: center; font-size: 12px; color: var(--text-light); border-top: 1px solid var(--border-color); padding-top: 20px; }
-
-        @media (max-width: 900px) {
-            .checkout-page-container { grid-template-columns: 1fr; }
-            header { padding: 15px 20px; flex-direction: column; gap: 15px; }
-            .footer-container { grid-template-columns: 1fr; gap: 20px; }
-        }
-    </style>
 </head>
 <body>
     <div class="top-bar">
-        <div class="top-bar-track">
-            <div class="top-bar-content">
-                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-                <span>•</span>
-                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-                <span>•</span>
-                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-                <span>•</span>
-            </div>
-            <div class="top-bar-content">
-                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-                <span>•</span>
-                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-                <span>•</span>
-                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-                <span>•</span>
-            </div>
-        </div>  
-    </div> 
-
+    <div class="top-bar-track">
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
+    </div>
+    
     <header>
         <a href="index.html" class="logo">
-            <img src="assets/logo.png" alt="AD Company" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4='">
+            <img src="assets/logo.png" alt="AD Company">
         </a>
         <nav class="nav-links">
             <a href="index.html">Início</a>
@@ -303,63 +45,115 @@
         </div>
     </header>
 
+    <div style="max-width: 1400px; margin: 40px auto 0; padding: 0 40px;">
+        <h1 style="font-size: 28px; font-weight: 800; text-transform: uppercase;">Finalizar Pedido</h1>
+    </div>
+
     <main class="checkout-container">
-        <div class="checkout-page-container">
-            <h1 class="checkout-title">Finalizar Pedido</h1>
-            
-            <form id="checkout-form" style="display: contents;">
-                <div>
-                    <div class="checkout-card">
-                        <h3>1. Seus Dados</h3>
-                        <div class="form-group">
-                            <label>Nome Completo</label>
-                            <input type="text" id="client-name" required placeholder="Digite seu nome">
-                        </div>
-                        <div class="form-group">
-                            <label>Telefone / WhatsApp</label>
-                            <input type="text" id="client-phone" required placeholder="(11) 99999-9999">
-                        </div>
-                    </div>
+        <!-- Coluna Esquerda: Dados do Cliente e Entrega -->
+        <div class="checkout-box">
+            <h2>1. Seus Dados</h2>
+            <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" id="cli-nome" placeholder="Digite seu nome">
+            </div>
+            <div class="form-group">
+                <label>Telefone / WhatsApp</label>
+                <input type="text" id="cli-telefone" placeholder="(11) 99999-9999">
+            </div>
 
-                    <div class="checkout-card">
-                        <h3>2. Modalidade de Entrega</h3>
-                        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-                            <label class="radio-label">
-                                <input type="radio" name="shipping" value="metro" checked onchange="updateShipping()"> Retirada em Estação de Metrô (SP) - R$ 15,00
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="shipping" value="correios" onchange="updateShipping()"> Envio para Endereço (Correios/Moto)
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>Observações / Estação de Metrô / Endereço</label>
-                            <textarea id="client-address" rows="3" placeholder="Informe a estação de metrô ou o endereço completo com CEP..."></textarea>
-                        </div>
+            <h2 style="margin-top: 15px;">2. Modalidade de Entrega</h2>
+            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                    <input type="radio" name="delivery_type" value="station"> Retirada em Estação de Metrô (SP) - R$ 15,00
+                </label>
+            </div>
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                    <input type="radio" name="delivery_type" value="address"> Envio para Endereço (Correios/Moto)
+                </label>
+            </div>
+
+            <!-- Seção de Estação -->
+            <div id="station-section" style="display: none;" class="form-group">
+                <label>Selecione a Estação de Metrô</label>
+                <select id="station-select">
+                    <option value="">Escolha a estação...</option>
+                    <option value="Sé (Linha 1-Azul / 3-Vermelha)">Sé (Linha 1-Azul / 3-Vermelha)</option>
+                    <option value="Paulista (Linha 4-Amarela)">Paulista (Linha 4-Amarela)</option>
+                    <option value="Consolação (Linha 2-Verde)">Consolação (Linha 2-Verde)</option>
+                    <option value="República (Linha 3-Vermelha / 4-Amarela)">República (Linha 3-Vermelha / 4-Amarela)</option>
+                    <option value="Liberdade (Linha 1-Azul)">Liberdade (Linha 1-Azul)</option>
+                    <option value="Pari / Brás (Linha 3-Vermelha)">Brás (Linha 3-Vermelha)</option>
+                    <option value="Outra (Combinar no WhatsApp)">Outra Estação (Combinar no WhatsApp)</option>
+                </select>
+            </div>
+
+            <!-- Seção de Endereço -->
+            <div id="address-section" style="display: none;">
+                <div class="form-group">
+                    <label>CEP</label>
+                    <input type="text" id="end-cep" placeholder="00000-000">
+                </div>
+                <div class="form-group">
+                    <label>Rua / Avenida</label>
+                    <input type="text" id="end-rua" placeholder="Nome da rua">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Número</label>
+                        <input type="text" id="end-numero" placeholder="123">
+                    </div>
+                    <div class="form-group">
+                        <label>Bairro</label>
+                        <input type="text" id="end-bairro" placeholder="Nome do bairro">
                     </div>
                 </div>
-
-                <div>
-                    <div class="checkout-card">
-                        <h3>Resumo do Pedido</h3>
-                        <div id="checkout-items-list">
-                            <!-- Itens injetados via JS -->
-                        </div>
-                        <div class="summary-row">
-                            <span>Subtotal</span>
-                            <span id="checkout-subtotal">R$ 0,00</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Taxa de Entrega</span>
-                            <span id="checkout-shipping-fee">R$ 15,00</span>
-                        </div>
-                        <div class="summary-total">
-                            <span>Total</span>
-                            <span id="checkout-total">R$ 0,00</span>
-                        </div>
-                        <button type="submit" class="btn-submit-order">Finalizar Pedido pelo WhatsApp</button>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Cidade</label>
+                        <input type="text" id="end-cidade" placeholder="São Paulo">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <input type="text" id="end-estado" placeholder="SP">
                     </div>
                 </div>
-            </form>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Observações (Opcional)</label>
+                <textarea id="cli-obs" rows="2" placeholder="Alguma instrução para o envio ou retirada?"></textarea>
+            </div>
+        </div>
+
+        <!-- Coluna Direita: Resumo do Carrinho -->
+        <div class="checkout-box">
+            <h2>Resumo do Pedido</h2>
+            <div id="checkout-items">
+                <!-- Inserido via js/checkout.js -->
+            </div>
+
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="chk-subtotal">R$ 0,00</span>
+            </div>
+            <div class="summary-row" id="chk-discount-line" style="display: none; color: var(--accent);">
+                <span>Desconto</span>
+                <span id="chk-discount">- R$ 0,00</span>
+            </div>
+            <div class="summary-row">
+                <span>Taxa de Entrega</span>
+                <span id="chk-shipping">Selecione a entrega</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span id="chk-total">R$ 0,00</span>
+            </div>
+
+            <button class="btn-finish" id="btn-finish-whatsapp" style="margin-top: 15px;">
+                Finalizar pedido pelo WhatsApp
+            </button>
         </div>
     </main>
 
@@ -379,7 +173,7 @@
             <div class="footer-col">
                 <h3>Contato</h3>
                 <ul>
-                    <li><a href="https://www.instagram.com/adthecompany" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
                     <li><a href="https://wa.me/5511950070636" target="_blank">WhatsApp: (11) 95007-0636</a></li>
                 </ul>
             </div>
@@ -391,101 +185,6 @@
 
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
-    <script>
-        let currentSubtotal = 0;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const countEl = document.getElementById('cart-count');
-            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-            if(countEl) countEl.textContent = `(${totalItems})`;
-
-            if (cart.length === 0) {
-                alert('O seu carrinho está vazio.');
-                window.location.href = 'carrinho.html';
-                return;
-            }
-
-            renderCheckoutSummary(cart);
-        });
-
-        function renderCheckoutSummary(cart) {
-            const container = document.getElementById('checkout-items-list');
-            container.innerHTML = '';
-            currentSubtotal = 0;
-
-            cart.forEach(item => {
-                const itemTotal = (item.product.price || 0) * (item.quantity || 1);
-                currentSubtotal += itemTotal;
-                const size = item.variant?.size || 'N/A';
-                const color = item.variant?.color || 'N/A';
-
-                const html = `
-                    <div class="summary-item">
-                        <img src="${item.product.image_url || 'assets/logo.png'}" alt="${item.product.name}" onerror="this.src='assets/logo.png'">
-                        <div class="summary-item-details">
-                            <span class="summary-item-title">${item.product.name}</span>
-                            <span class="summary-item-variant">Tam: ${size} | Cor: ${color}</span>
-                            <span style="font-size: 12px; color: var(--text-light);">Qtd: ${item.quantity} x ${formatCurrency(item.product.price)}</span>
-                        </div>
-                        <span style="font-weight: 800; color: var(--accent); font-size: 14px;">${formatCurrency(itemTotal)}</span>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', html);
-            });
-
-            document.getElementById('checkout-subtotal').textContent = formatCurrency(currentSubtotal);
-            updateShipping();
-        }
-
-        window.updateShipping = function() {
-            const shippingType = document.querySelector('input[name="shipping"]:checked').value;
-            const fee = shippingType === 'metro' ? 15.00 : 30.00; // Ajuste o valor de envio se necessário
-            
-            document.getElementById('checkout-shipping-fee').textContent = formatCurrency(fee);
-            const totalFinal = currentSubtotal + fee;
-            document.getElementById('checkout-total').textContent = formatCurrency(totalFinal);
-        }
-
-        document.getElementById('checkout-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            if (cart.length === 0) return;
-
-            const name = document.getElementById('client-name').value.trim();
-            const phone = document.getElementById('client-phone').value.trim();
-            const shippingType = document.querySelector('input[name="shipping"]:checked').value;
-            const address = document.getElementById('client-address').value.trim();
-            const shippingFee = shippingType === 'metro' ? 15.00 : 30.00;
-
-            let message = `*NOVO PEDIDO - AD COMPANY*\n\n`;
-            message += `👤 *Cliente:* ${name}\n`;
-            message += `📞 *Telefone:* ${phone}\n`;
-            message += `🚚 *Entrega:* ${shippingType === 'metro' ? 'Retirada em Estação de Metrô SP (R$ 15,00)' : 'Envio para Endereço'}\n`;
-            message += `📍 *Detalhes/Endereço:* ${address || 'Não informado'}\n\n`;
-            message += `🛍️ *Itens do Pedido:*\n`;
-
-            let total = 0;
-            cart.forEach(item => {
-                const itemTotal = (item.product.price || 0) * (item.quantity || 1);
-                total += itemTotal;
-                const size = item.variant?.size || 'N/A';
-                const color = item.variant?.color || 'N/A';
-                message += `- ${item.product.name} (Tam: ${size}, Cor: ${color}) x${item.quantity} - ${formatCurrency(itemTotal)}\n`;
-            });
-
-            const finalTotal = total + shippingFee;
-            message += `\n📦 *Subtotal:* ${formatCurrency(total)}`;
-            message += `\n🚚 *Frete:* ${formatCurrency(shippingFee)}`;
-            message += `\n💰 *TOTAL FINAL:* ${formatCurrency(finalTotal)}`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/5511950070636?text=${encodedMessage}`;
-            
-            localStorage.removeItem('cart');
-            window.open(whatsappUrl, '_blank');
-            window.location.href = 'index.html';
-        });
-    </script>
+    <script src="js/checkout.js"></script>
 </body>
 </html>
