@@ -93,7 +93,7 @@
     let productImages = [];
     let selectedSize = '';
     let selectedColor = '';
-    let currentLoadedProduct = null; // Variável global para não corromper o objeto no HTML
+    let currentLoadedProduct = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -177,9 +177,7 @@
                 return;
             }
 
-            // Guarda o produto intacto
             currentLoadedProduct = product;
-
             productImages = parseImages(product);
             currentImgIndex = 0;
 
@@ -227,11 +225,11 @@
                     ` : ''}
                 </div>
 
-                <!-- COLUNA 3: DIREITA (OPÇÕES) -->
+                <!-- COLUNA 3: DIREITA (OPÇÕES, BOTÃO E SANFONADOS) -->
                 <div class="product-checkout">
                     ${sizes.length > 0 ? `
                         <div class="option-group">
-                            <label class="option-label">Tamanho</label>
+                            <label class="option-label">TAMANHO</label>
                             <div class="option-selector" id="size-options">
                                 ${sizes.map(s => `<button type="button" class="option-btn" onclick="selectOption('size', '${s}', this)">${s}</button>`).join('')}
                             </div>
@@ -240,19 +238,38 @@
 
                     ${colors.length > 0 ? `
                         <div class="option-group">
-                            <label class="option-label">Cor</label>
+                            <label class="option-label">COR</label>
                             <div class="option-selector" id="color-options">
                                 ${colors.map(c => `<button type="button" class="option-btn" onclick="selectOption('color', '${c}', this)">${c}</button>`).join('')}
                             </div>
                         </div>
                     ` : ''}
 
-                    <div class="shipping-info">
-                        <p>⚡ Frete Fixo para Estações de Metrô de SP</p>
-                        <p>🚀 Envios com rastreio para todo o Brasil</p>
-                    </div>
+                    <button class="btn-add-cart" onclick="addToCart()">ADICIONAR AO CARRINHO</button>
 
-                    <button class="btn-add-cart" onclick="addToCart()">Adicionar ao Carrinho</button>
+                    <!-- SANFONADOS INTERATIVOS (MEDIDAS E PRAZO) -->
+                    <div class="accordion-container">
+                        <div class="accordion-item">
+                            <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+                                <span>MEDIDAS</span>
+                                <span class="arrow">v</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>Forma padrão. Recomendamos escolher o seu tamanho habitual.</p>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+                                <span>PRAZO</span>
+                                <span class="arrow">v</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>⚡ Frete Fixo para Estações de Metrô de SP</p>
+                                <p>🚀 Envios com rastreio para todo o Brasil (5 a 12 dias úteis)</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
         } catch (err) {
@@ -260,6 +277,11 @@
             container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Erro ao carregar os dados do produto.</p>';
         }
     }
+
+    window.toggleAccordion = function(btn) {
+        const item = btn.parentElement;
+        item.classList.toggle('active');
+    };
 
     window.changeImage = function(direction) {
         if (!productImages.length) return;
