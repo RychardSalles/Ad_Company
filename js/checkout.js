@@ -106,8 +106,10 @@ window.applyCoupon = async function() {
     }
 
     try {
-        // Consulta o cupom diretamente na tabela 'coupons' do Supabase
-        const { data, error } = await window.supabaseClient
+        // Usa a variável 'supabase' global (igual ao painel admin)
+        const client = window.supabaseClient || supabase;
+        
+        const { data, error } = await client
             .from('coupons')
             .select('*')
             .eq('code', code)
@@ -119,7 +121,12 @@ window.applyCoupon = async function() {
             const discountRow = document.getElementById('discount-row');
             if (discountRow) discountRow.style.display = 'none';
         } else {
-            // Suporta tipos de desconto por percentagem ou valor fixo
+            // Verifica se o cupom está ativo
+            if (data.is_active === false) {
+                alert('Este cupom está desativado.');
+                return;
+            }
+
             const type = data.discount_type || data.type;
             const val = data.discount_value !== undefined ? data.discount_value : (data.value || 0);
 
