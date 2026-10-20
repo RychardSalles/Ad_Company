@@ -166,6 +166,33 @@
 
         .radio-label input { accent-color: var(--accent); }
 
+        /* Secção de Cupom */
+        .coupon-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .coupon-box input {
+            flex: 1;
+        }
+
+        .btn-apply-coupon {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-apply-coupon:hover { opacity: 0.9; }
+
         /* Resumo do Pedido */
         .summary-item {
             display: flex;
@@ -349,10 +376,20 @@
                             </select>
                         </div>
 
-                        <!-- Campo dinâmico para Endereço / CEP (Oculto por padrão) -->
-                        <div class="form-group" id="address-group" style="display: none;">
-                            <label>CEP, Endereço e Complemento</label>
-                            <textarea id="client-full-address" rows="3" placeholder="Digite seu CEP, Rua, Número, Bairro e Complemento..."></textarea>
+                        <!-- Campos dinâmicos separados para Endereço (Oculto por padrão) -->
+                        <div id="address-group" style="display: none;">
+                            <div class="form-group">
+                                <label>CEP</label>
+                                <input type="text" id="client-cep" placeholder="00000-000">
+                            </div>
+                            <div class="form-group">
+                                <label>Endereço (Rua, Número e Bairro)</label>
+                                <input type="text" id="client-street" placeholder="Ex: Av. Paulista, 1000 - Bela Vista">
+                            </div>
+                            <div class="form-group">
+                                <label>Complemento (Opcional)</label>
+                                <input type="text" id="client-complement" placeholder="Ex: Apto 42, Bloco B">
+                            </div>
                         </div>
 
                         <div class="form-group" style="margin-top: 15px;">
@@ -365,12 +402,23 @@
                 <div>
                     <div class="checkout-card">
                         <h3>Resumo do Pedido</h3>
+                        
+                        <!-- Bloco de Cupom de Desconto -->
+                        <div class="coupon-box">
+                            <input type="text" id="coupon-code" placeholder="Cupom de desconto">
+                            <button type="button" class="btn-apply-coupon" onclick="applyCoupon()">Aplicar</button>
+                        </div>
+
                         <div id="checkout-items-list">
                             <!-- Itens injetados via JS -->
                         </div>
                         <div class="summary-row">
                             <span>Subtotal</span>
                             <span id="checkout-subtotal">R$ 0,00</span>
+                        </div>
+                        <div class="summary-row" id="discount-row" style="display: none; color: #2ecc71;">
+                            <span>Desconto</span>
+                            <span id="checkout-discount">-R$ 0,00</span>
                         </div>
                         <div class="summary-row">
                             <span>Taxa de Entrega</span>
@@ -417,6 +465,7 @@
     <script src="js/supabase.js"></script>
     <script>
         let currentSubtotal = 0;
+        let discountAmount = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -481,16 +530,32 @@
             updateTotal();
         }
 
+        window.applyCoupon = function() {
+            const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+            if (code === 'AD10') {
+                discountAmount = currentSubtotal * 0.10;
+                document.getElementById('discount-row').style.display = 'flex';
+                document.getElementById('checkout-discount').textContent = '-' + formatCurrency(discountAmount);
+                alert('Cupom aplicado com sucesso! 10% de desconto.');
+            } else {
+                alert('Cupom inválido ou expirado.');
+                discountAmount = 0;
+                document.getElementById('discount-row').style.display = 'none';
+            }
+            updateTotal();
+        }
+
         window.updateTotal = function() {
             const shippingType = document.querySelector('input[name="shipping"]:checked').value;
             const fee = shippingType === 'metro' ? 15.00 : 0.00;
-            const totalFinal = currentSubtotal + fee;
+            const effectiveSubtotal = Math.max(0, currentSubtotal - discountAmount);
+            const totalFinal = effectiveSubtotal + fee;
             
             const totalEl = document.getElementById('checkout-total');
             if (shippingType === 'metro') {
                 totalEl.textContent = formatCurrency(totalFinal);
             } else {
-                totalEl.textContent = formatCurrency(currentSubtotal) + ' + Frete';
+                totalEl.textContent = formatCurrency(effectiveSubtotal) + ' + Frete';
             }
         }
 
@@ -516,12 +581,15 @@
                 deliveryDetails = `Retirada em Estação de Metrô: ${station}`;
                 shippingFeeText = 'R$ 15,00 (Frete Fixo)';
             } else {
-                const fullAddress = document.getElementById('client-full-address').value.trim();
-                if (!fullAddress) {
-                    alert('Por favor, informe o seu endereço e CEP.');
+                const cep = document.getElementById('client-cep').value.trim();
+                const street = document.getElementById('client-street').value.trim();
+                const complement = document.getElementById('client-complement').value.trim();
+
+                if (!cep || !street) {
+                    alert('Por favor, preencha pelo menos o CEP e o Endereço.');
                     return;
                 }
-                deliveryDetails = `Envio para Endereço: ${fullAddress}`;
+                deliveryDetails = `Envio para Endereço: CEP ${cep}, ${street}${complement ? ' - Complemento: ' + complement : ''}`;
                 shippingFeeText = 'A combinar';
             }
 
@@ -541,10 +609,15 @@
                 message += `- ${item.product.name} (Tam: ${size}, Cor: ${color}) x${item.quantity} - ${formatCurrency(itemTotal)}\n`;
             });
 
-            const finalTotal = shippingType === 'metro' ? total + 15.00 : total;
+            const effectiveSubtotal = Math.max(0, total - discountAmount);
+            const finalTotal = shippingType === 'metro' ? effectiveSubtotal + 15.00 : effectiveSubtotal;
+            
             message += `\n📦 *Subtotal:* ${formatCurrency(total)}`;
+            if (discountAmount > 0) {
+                message += `\n🏷️ *Desconto:* -${formatCurrency(discountAmount)}`;
+            }
             message += `\n🚚 *Taxa de Entrega:* ${shippingFeeText}`;
-            message += `\n💰 *TOTAL:* ${shippingType === 'metro' ? formatCurrency(finalTotal) : formatCurrency(total) + ' + Frete a combinar'}`;
+            message += `\n💰 *TOTAL:* ${shippingType === 'metro' ? formatCurrency(finalTotal) : formatCurrency(effectiveSubtotal) + ' + Frete a combinar'}`;
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/5511950070636?text=${encodedMessage}`;
