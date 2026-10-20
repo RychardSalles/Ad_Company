@@ -92,7 +92,6 @@
     <script src="js/supabase.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Script do Menu Hambúrguer
         const menuBtn = document.getElementById('mobile-menu-btn');
         const navMenu = document.getElementById('nav-menu');
 
@@ -103,43 +102,54 @@
             });
         }
 
-        // Carrinho count
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const countEl = document.getElementById('cart-count');
         const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-        if(countEl) countEl.textContent = `(${totalItems})`;
+        if (countEl) countEl.textContent = `(${totalItems})`;
 
-        // Carregar produtos da loja
         loadProductsCatalog();
     });
 
-    // Função para extrair sempre a PRIMEIRA foto cadastrada como capa
+    // Extrator de foto de capa universal
     function getCoverImage(product) {
         if (!product) return 'assets/logo.png';
-        let raw = product.images || product.fotos || product.image_url;
+        let raw = product.images || product.fotos || product.image_url || product.foto;
         if (!raw) return 'assets/logo.png';
 
         if (Array.isArray(raw)) {
-            return raw[0] || 'assets/logo.png';
+            return (raw.length > 0 && raw[0]) ? raw[0] : 'assets/logo.png';
         }
+
         if (typeof raw === 'string') {
-            let trimmed = raw.trim();
-            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+            let cleaned = raw.trim();
+
+            if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
                 try {
-                    let parsed = JSON.parse(trimmed);
-                    return parsed[0] || 'assets/logo.png';
+                    let parsed = JSON.parse(cleaned);
+                    if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]) {
+                        return parsed[0];
+                    }
                 } catch(e) {}
             }
-            if (trimmed.includes(',')) {
-                return trimmed.split(',')[0].trim() || 'assets/logo.png';
+
+            if (cleaned.includes(',')) {
+                cleaned = cleaned.split(',')[0].trim();
             }
-            return trimmed || 'assets/logo.png';
+
+            cleaned = cleaned.replace(/^['"\[\s\\]+|['"\]\s\\]+$/g, '');
+
+            if (cleaned && cleaned.length > 5) {
+                return cleaned;
+            }
         }
+
         return 'assets/logo.png';
     }
 
     async function loadProductsCatalog() {
         const grid = document.getElementById('products-grid');
+        if (!grid) return;
+
         try {
             const { data, error } = await supabase.from('products').select('*').eq('is_active', true);
             if (error) throw error;
@@ -152,13 +162,17 @@
             grid.innerHTML = '';
             data.forEach(p => {
                 const coverUrl = getCoverImage(p);
+                const priceHTML = p.is_promo && p.promo_price
+                    ? `<span style="text-decoration: line-through; color: var(--text-light); margin-right: 8px; font-size: 12px;">${formatCurrency(p.price)}</span><span class="product-card-price">${formatCurrency(p.promo_price)}</span>`
+                    : `<span class="product-card-price">${formatCurrency(p.price)}</span>`;
+
                 const card = `
-                    <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
-                        <img src="${coverUrl}" alt="${p.name}" style="width: 100%; height: 220px; object-fit: cover;" onerror="this.src='assets/logo.png'">
-                        <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px; flex: 1;">
-                            <h3 style="font-size: 14px; font-weight: 600; text-transform: uppercase;">${p.name}</h3>
-                            <span style="font-size: 15px; font-weight: 800; color: var(--accent);">${formatCurrency(p.price)}</span>
-                            <a href="produto.html?id=${p.id}" style="margin-top: auto; display: block; text-align: center; background: var(--accent); color: white; padding: 10px; border-radius: 4px; font-size: 12px; font-weight: 800; text-transform: uppercase; text-decoration: none;">Ver Detalhes</a>
+                    <div class="product-card">
+                        <img src="${coverUrl}" alt="${p.name}" onerror="this.onerror=null; this.src='assets/logo.png';">
+                        <div class="product-card-body">
+                            <h3 class="product-card-title">${p.name}</h3>
+                            <div>${priceHTML}</div>
+                            <a href="produto.html?id=${p.id}" class="btn-card-details">Ver Detalhes</a>
                         </div>
                     </div>
                 `;

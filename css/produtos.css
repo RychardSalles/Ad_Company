@@ -1,11 +1,7 @@
-/* ==========================================
-   ESTILOS EXCLUSIVOS - PÁGINA DE PRODUTOS (produtos.html)
-   ========================================== */
 :root {
     --bg-body: #0d0d0d;
     --card-bg: #161616;
     --accent: #c4262e;
-    --accent-hover: #a31f25;
     --text-main: #ffffff;
     --text-light: #a0a0a0;
     --border-color: rgba(136, 136, 136, 0.2);
@@ -27,140 +23,121 @@ body {
     flex-direction: column;
 }
 
-/* Barra Superior */
-.top-bar { 
-    background: var(--accent) !important; 
-    color: #ffffff !important; 
-    overflow: hidden !important; 
-    white-space: nowrap !important; 
-    padding: 10px 0 !important; 
-    font-size: 12px !important; 
-    font-weight: 800 !important; 
-    text-transform: uppercase !important; 
-    width: 100% !important;
-    display: block !important;
-}
+/* Barra Superior e Cabeçalho */
+.top-bar { background: var(--accent); color: white; padding: 10px 0; font-size: 12px; font-weight: 800; text-transform: uppercase; overflow: hidden; white-space: nowrap; }
+.top-bar-track { display: inline-flex; animation: marqueeMove 15s linear infinite; }
+.top-bar-content span { margin: 0 30px; }
+@keyframes marqueeMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-.top-bar-track {
-    display: inline-flex !important;
-    white-space: nowrap !important;
-    animation: marqueeMove 15s linear infinite !important;
-}
-
-.top-bar-content span { 
-    margin: 0 30px !important; 
-}
-
-@keyframes marqueeMove { 
-    0% { transform: translateX(0); } 
-    100% { transform: translateX(-50%); } 
-}
-
-/* Cabeçalho */
-header {
-    background-color: var(--card-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo img { 
-    height: 75px !important; 
-    max-height: 80px !important; 
-    width: auto !important; 
-    object-fit: contain !important; 
-}
+header { background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+.logo img { height: 75px; width: auto; object-fit: contain; }
 .nav-links { display: flex; gap: 30px; align-items: center; }
 .nav-links a { color: var(--text-light); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; }
 .nav-links a:hover, .nav-links a.active { color: var(--accent); }
 
-/* --- GRELHA DE PRODUTOS CORRETA --- */
+/* --- GRELHA DO CATÁLOGO DE PRODUTOS --- */
 main {
-    flex: 1;
-    padding: 40px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 20px;
     width: 100%;
+    flex: 1;
 }
 
-h2 {
-    font-size: 22px;
+.catalog-title {
+    font-size: 28px;
     font-weight: 800;
     text-transform: uppercase;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
 }
 
+/* GRELHA PRINCIPAL: 4 COLUNAS NO DESKTOP */
 #products-grid, .products-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 20px !important;
+    gap: 25px !important;
     width: 100% !important;
 }
 
-#products-grid > div, .products-grid > div {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 8px !important;
-    overflow: hidden !important;
-    display: flex !important;
-    flex-direction: column !important;
+/* CARDS DOS PRODUTOS */
+.product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, border-color 0.2s;
 }
 
-#products-grid img, .products-grid img {
-    height: 220px !important;
-    object-fit: cover !important;
-    width: 100% !important;
+.product-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
 }
 
-/* Rodapé */
-footer {
-    background-color: var(--card-bg);
-    border-top: 1px solid var(--border-color);
-    padding: 40px 20px 20px;
-    margin-top: auto;
+.product-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    background-color: #000;
 }
 
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    margin-bottom: 30px;
+.product-card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
 }
 
-.footer-col h3 {
+.product-card-title {
     font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.product-card-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.btn-card-details {
+    margin-top: auto;
+    display: block;
+    text-align: center;
+    background: var(--accent);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-    color: var(--text-main);
+    text-decoration: none;
 }
 
+/* RODAPÉ */
+footer { background-color: var(--card-bg); border-top: 1px solid var(--border-color); padding: 40px 20px 20px; margin-top: auto; }
+.footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; }
+.footer-col h3 { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
 .footer-col ul { list-style: none; }
 .footer-col ul li { margin-bottom: 10px; }
 .footer-col ul li a { color: var(--text-light); text-decoration: none; font-size: 13px; }
-.footer-col ul li a:hover { color: var(--accent); }
 .footer-bottom { text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px; font-size: 12px; color: var(--text-light); }
 
-/* Responsividade */
-@media (max-width: 1024px) {
-    #products-grid, .products-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
-}
-
-@media (max-width: 768px) {
+/* RESPONSIVIDADE: 2 COLUNAS NO TELEMÓVEL */
+@media (max-width: 900px) {
     #products-grid, .products-grid {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
-        padding: 0 5px !important;
+        gap: 15px !important;
     }
-    #products-grid img, .products-grid img {
-        height: 150px !important;
+    
+    .product-card img {
+        height: 180px;
     }
 }
