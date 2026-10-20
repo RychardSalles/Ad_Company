@@ -110,7 +110,6 @@
         loadProductsCatalog();
     });
 
-    // Extrator de foto de capa universal
     function getCoverImage(product) {
         if (!product) return 'assets/logo.png';
         let raw = product.images || product.fotos || product.image_url || product.foto;
