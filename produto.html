@@ -277,41 +277,48 @@
         };
 
         window.addToCart = function(product) {
-            const sizesContainer = document.getElementById('size-options');
-            const colorsContainer = document.getElementById('color-options');
+        const sizesContainer = document.getElementById('size-options');
+        const colorsContainer = document.getElementById('color-options');
 
-            if (sizesContainer && !selectedSize) {
-                alert('Por favor, selecione um Tamanho!');
-                return;
-            }
+        if (sizesContainer && !selectedSize) {
+            alert('Por favor, selecione um Tamanho!');
+            return;
+        }
 
-            if (colorsContainer && !selectedColor) {
-                alert('Por favor, selecione uma Cor!');
-                return;
-            }
+        if (colorsContainer && !selectedColor) {
+            alert('Por favor, selecione uma Cor!');
+            return;
+        }
 
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            
-            const existingIndex = cart.findIndex(item => 
-                item.product.id === product.id && 
-                item.variant?.size === selectedSize && 
-                item.variant?.color === selectedColor
-            );
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        const existingIndex = cart.findIndex(item => 
+            item.product.id === product.id && 
+            item.variant?.size === selectedSize && 
+            item.variant?.color === selectedColor
+        );
 
-            if (existingIndex > -1) {
-                cart[existingIndex].quantity += 1;
-            } else {
-                cart.push({
-                    product: product,
-                    variant: { size: selectedSize || 'Único', color: selectedColor || 'Única' },
-                    quantity: 1
-                });
-            }
+        if (existingIndex > -1) {
+            cart[existingIndex].quantity += 1;
+        } else {
+            cart.push({
+                product: product,
+                variant: { size: selectedSize || 'Único', color: selectedColor || 'Única' },
+                quantity: 1
+            });
+        }
 
-            localStorage.setItem('cart', JSON.stringify(cart));
-            alert('Produto adicionado ao carrinho com sucesso!');
-            window.location.href = 'carrinho.html';
-        };
+        // Guardar no localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        // 1. Atualiza instantaneamente o contador do carrinho no cabeçalho
+        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+        const countEl = document.getElementById('cart-count');
+        if (countEl) countEl.textContent = `(${totalItems})`;
+
+        // 2. Avisa o utilizador mantendo-o na página
+        alert('Produto adicionado ao carrinho com sucesso!');
+    };
     </script>
 </body>
 </html>
