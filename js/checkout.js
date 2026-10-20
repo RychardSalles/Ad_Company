@@ -1,3 +1,40 @@
+// Função de extração ultra-segura para a foto de capa no checkout
+function getCoverImage(product) {
+    if (!product) return 'assets/logo.png';
+
+    let raw = product.image_url || product.images || product.fotos || product.foto;
+    if (!raw) return 'assets/logo.png';
+
+    if (Array.isArray(raw)) {
+        return raw.length > 0 && raw[0] ? raw[0] : 'assets/logo.png';
+    }
+
+    if (typeof raw === 'string') {
+        let cleaned = raw.trim();
+
+        if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+            try {
+                let parsed = JSON.parse(cleaned);
+                if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]) {
+                    return parsed[0];
+                }
+            } catch(e) {}
+        }
+
+        if (cleaned.includes(',')) {
+            cleaned = cleaned.split(',')[0].trim();
+        }
+
+        cleaned = cleaned.replace(/^['"\[\s]+\vert{}['"\]\s]+$/g, '');
+
+        if (cleaned && cleaned.length > 5) {
+            return cleaned;
+        }
+    }
+
+    return 'assets/logo.png';
+}
+
 let currentSubtotal = 0;
 let discountAmount = 0;
 
@@ -51,18 +88,20 @@ function renderCheckoutSummary(cart) {
     currentSubtotal = 0;
 
     cart.forEach(item => {
-        const itemTotal = (item.product.price || 0) * (item.quantity || 1);
+        const itemPrice = item.product.is_promo ? (item.product.promo_price || item.product.price) : item.product.price;
+        const itemTotal = (itemPrice || 0) * (item.quantity || 1);
         currentSubtotal += itemTotal;
         const size = item.variant?.size || 'N/A';
         const color = item.variant?.color || 'N/A';
+        const coverUrl = getCoverImage(item.product);
 
         const html = `
             <div class="summary-item">
-                <img src="${item.product.image_url || 'assets/logo.png'}" alt="${item.product.name}" onerror="this.src='assets/logo.png'">
+                <img src="${coverUrl}" alt="${item.product.name}" onerror="this.onerror=null; this.src='assets/logo.png';">
                 <div class="summary-item-details">
                     <span class="summary-item-title">${item.product.name}</span>
                     <span class="summary-item-variant">Tam: ${size} | Cor: ${color}</span>
-                    <span style="font-size: 12px; color: var(--text-light);">Qtd: ${item.quantity} x ${formatCurrency(item.product.price)}</span>
+                    <span style="font-size: 12px; color: var(--text-light);">Qtd: ${item.quantity} x ${formatCurrency(itemPrice)}</span>
                 </div>
                 <span style="font-weight: 800; color: var(--accent); font-size: 14px;">${formatCurrency(itemTotal)}</span>
             </div>
@@ -106,7 +145,6 @@ window.applyCoupon = async function() {
     }
 
     try {
-        // Usa a variável 'supabase' global (igual ao painel admin)
         const client = window.supabaseClient || supabase;
         
         const { data, error } = await client
@@ -121,7 +159,6 @@ window.applyCoupon = async function() {
             const discountRow = document.getElementById('discount-row');
             if (discountRow) discountRow.style.display = 'none';
         } else {
-            // Verifica se o cupom está ativo
             if (data.is_active === false) {
                 alert('Este cupom está desativado.');
                 return;
@@ -140,7 +177,7 @@ window.applyCoupon = async function() {
             const discountVal = document.getElementById('checkout-discount');
             if (discountRow) discountRow.style.display = 'flex';
             if (discountVal) discountVal.textContent = '-' + formatCurrency(discountAmount);
-            alert('Cupom aplicado com sucesso!');
+            alert('Cupom applied com sucesso!');
         }
     } catch (err) {
         console.error('Erro ao validar cupom:', err);
@@ -215,7 +252,8 @@ if (checkoutForm) {
 
         let total = 0;
         cart.forEach(item => {
-            const itemTotal = (item.product.price || 0) * (item.quantity || 1);
+            const itemPrice = item.product.is_promo ? (item.product.promo_price || item.product.price) : item.product.price;
+            const itemTotal = (itemPrice || 0) * (item.quantity || 1);
             total += itemTotal;
             const size = item.variant?.size || 'N/A';
             const color = item.variant?.color || 'N/A';
