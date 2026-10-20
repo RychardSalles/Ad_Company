@@ -89,194 +89,203 @@
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
     <script>
-        let currentImgIndex = 0;
-        let productImages = [];
-        let selectedSize = '';
-        let selectedColor = '';
+    let currentImgIndex = 0;
+    let productImages = [];
+    let selectedSize = '';
+    let selectedColor = '';
+    let currentLoadedProduct = null; // Variável global para não corromper o objeto no HTML
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuBtn = document.getElementById('mobile-menu-btn');
-            const navMenu = document.getElementById('nav-menu');
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const navMenu = document.getElementById('nav-menu');
 
-            if (menuBtn && navMenu) {
-                menuBtn.addEventListener('click', () => {
-                    navMenu.classList.toggle('active');
-                    menuBtn.classList.toggle('active');
-                });
-            }
-
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const countEl = document.getElementById('cart-count');
-            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-            if(countEl) countEl.textContent = `(${totalItems})`;
-
-            loadProductDetails();
-        });
-
-        function parseImages(product) {
-            let imgs = [];
-            let raw = product.images || product.fotos || product.image_url;
-            
-            if (!raw) return ['assets/logo.png'];
-
-            if (Array.isArray(raw)) {
-                imgs = raw;
-            } else if (typeof raw === 'string') {
-                let trimmed = raw.trim();
-                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-                    try { imgs = JSON.parse(trimmed); } catch(e) { imgs = [trimmed]; }
-                } else if (trimmed.includes(',')) {
-                    imgs = trimmed.split(',').map(s => s.trim()).filter(Boolean);
-                } else if (trimmed) {
-                    imgs = [trimmed];
-                }
-            }
-            return imgs.length > 0 ? imgs : ['assets/logo.png'];
+        if (menuBtn && navMenu) {
+            menuBtn.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                menuBtn.classList.toggle('active');
+            });
         }
 
-        function parseOptions(value) {
-            if (!value) return [];
-            if (Array.isArray(value)) return value;
-            if (typeof value === 'string') {
-                let trimmed = value.trim();
-                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-                    try { return JSON.parse(trimmed); } catch(e) {}
-                }
-                return trimmed.split(',').map(item => item.trim()).filter(Boolean);
+        updateCartCount();
+        loadProductDetails();
+    });
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const countEl = document.getElementById('cart-count');
+        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+        if (countEl) countEl.textContent = `(${totalItems})`;
+    }
+
+    function parseImages(product) {
+        if (!product) return ['assets/logo.png'];
+        let raw = product.images || product.fotos || product.image_url || product.foto;
+        if (!raw) return ['assets/logo.png'];
+
+        if (Array.isArray(raw)) return raw.length > 0 ? raw : ['assets/logo.png'];
+
+        if (typeof raw === 'string') {
+            let trimmed = raw.trim();
+            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                try {
+                    let parsed = JSON.parse(trimmed);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                } catch(e) {}
             }
-            return [];
+            if (trimmed.includes(',')) {
+                let list = trimmed.split(',').map(s => s.trim().replace(/^['"\[\s\\]+|['"\]\s\\]+$/g, '')).filter(Boolean);
+                if (list.length > 0) return list;
+            }
+            let cleaned = trimmed.replace(/^['"\[\s\\]+|['"\]\s\\]+$/g, '');
+            if (cleaned) return [cleaned];
+        }
+        return ['assets/logo.png'];
+    }
+
+    function parseOptions(value) {
+        if (!value) return [];
+        if (Array.isArray(value)) return value;
+        if (typeof value === 'string') {
+            let trimmed = value.trim();
+            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                try { return JSON.parse(trimmed); } catch(e) {}
+            }
+            return trimmed.split(',').map(item => item.trim()).filter(Boolean);
+        }
+        return [];
+    }
+
+    async function loadProductDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        const container = document.getElementById('product-detail');
+
+        if (!productId) {
+            container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Produto não especificado.</p>';
+            return;
         }
 
-        async function loadProductDetails() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-            const container = document.getElementById('product-detail');
+        try {
+            const { data: product, error } = await supabase
+                .from('products')
+                .select('*')
+                .eq('id', productId)
+                .single();
 
-            if (!productId) {
-                container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Produto não especificado.</p>';
+            if (error || !product) {
+                container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Produto não encontrado.</p>';
                 return;
             }
 
-            try {
-                const { data: product, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .eq('id', productId)
-                    .single();
+            // Guarda o produto intacto
+            currentLoadedProduct = product;
 
-                if (error || !product) {
-                    container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Produto não encontrado.</p>';
-                    return;
+            productImages = parseImages(product);
+            currentImgIndex = 0;
+
+            let sizes = parseOptions(product.sizes || product.tamanhos || product.size);
+            let colors = parseOptions(product.colors || product.cores || product.color);
+
+            const descText = (product.description || '').replace(/\\n/g, '\n');
+
+            if (sizes.length === 0) {
+                const sizeMatch = descText.match(/Tamanhos?:\s*([^\n\r]+)/i);
+                if (sizeMatch && sizeMatch[1]) {
+                    sizes = sizeMatch[1].split(',').map(s => s.trim()).filter(Boolean);
                 }
-
-                // Processa a galeria (primeira foto = índice 0)
-                productImages = parseImages(product);
-                currentImgIndex = 0;
-
-                let sizes = parseOptions(product.sizes || product.tamanhos || product.size);
-                let colors = parseOptions(product.colors || product.cores || product.color);
-
-                const descText = (product.description || '').replace(/\\n/g, '\n');
-
-                if (sizes.length === 0) {
-                    const sizeMatch = descText.match(/Tamanhos?:\s*([^\n\r]+)/i);
-                    if (sizeMatch && sizeMatch[1]) {
-                        sizes = sizeMatch[1].split(',').map(s => s.trim()).filter(Boolean);
-                    }
-                }
-
-                if (colors.length === 0) {
-                    const colorMatch = descText.match(/Cores?:\s*([^\n\r]+)/i);
-                    if (colorMatch && colorMatch[1]) {
-                        colors = colorMatch[1].split(',').map(c => c.trim()).filter(Boolean);
-                    }
-                }
-
-                let cleanDescription = descText
-                    .replace(/Tamanhos?:\s*[^\n\r]+/gi, '')
-                    .replace(/Cores?:\s*[^\n\r]+/gi, '')
-                    .trim();
-
-                // Monta o layout sem botões pré-selecionados
-                container.innerHTML = `
-                    <!-- COLUNA 1: ESQUERDA (DESCRIÇÃO) -->
-                    <div class="product-info-left">
-                        <h1 class="product-title">${product.name}</h1>
-                        <span class="product-price">${formatCurrency(product.price)}</span>
-                        <div class="product-desc">${cleanDescription || 'Sem descrição informada.'}</div>
-                    </div>
-
-                    <!-- COLUNA 2: CENTRO (CARROSSEL COM NAVEGAÇÃO MANUAL) -->
-                    <div class="product-gallery">
-                        ${productImages.map((img, idx) => `
-                            <img class="gallery-img ${idx === 0 ? 'active' : ''}" src="${img}" alt="${product.name}" onerror="this.src='assets/logo.png'">
-                        `).join('')}
-                        
-                        ${productImages.length > 1 ? `
-                            <button type="button" class="nav-btn prev" onclick="changeImage(-1)">&#10094;</button>
-                            <button type="button" class="nav-btn next" onclick="changeImage(1)">&#10095;</button>
-                        ` : ''}
-                    </div>
-
-                    <!-- COLUNA 3: DIREITA (OPÇÕES ZERADAS E CHECKOUT) -->
-                    <div class="product-checkout">
-                        ${sizes.length > 0 ? `
-                            <div class="option-group">
-                                <label class="option-label">Tamanho</label>
-                                <div class="option-selector" id="size-options">
-                                    ${sizes.map(s => `<button type="button" class="option-btn" onclick="selectOption('size', '${s}', this)">${s}</button>`).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-
-                        ${colors.length > 0 ? `
-                            <div class="option-group">
-                                <label class="option-label">Cor</label>
-                                <div class="option-selector" id="color-options">
-                                    ${colors.map(c => `<button type="button" class="option-btn" onclick="selectOption('color', '${c}', this)">${c}</button>`).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-
-                        <div class="shipping-info">
-                            <p>⚡ Frete Fixo para Estações de Metrô de SP</p>
-                            <p>🚀 Envios com rastreio para todo o Brasil</p>
-                        </div>
-
-                        <button class="btn-add-cart" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">Adicionar ao Carrinho</button>
-                    </div>
-                `;
-            } catch (err) {
-                console.error('Erro ao carregar produto:', err);
-                container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Erro ao carregar os dados do produto.</p>';
             }
-        }
 
-        // Navegação estritamente manual do carrossel
-        window.changeImage = function(direction) {
-            if (!productImages.length) return;
-            currentImgIndex = (currentImgIndex + direction + productImages.length) % productImages.length;
-            const imgs = document.querySelectorAll('.gallery-img');
-            imgs.forEach((img, idx) => {
-                if (idx === currentImgIndex) {
-                    img.classList.add('active');
-                } else {
-                    img.classList.remove('active');
+            if (colors.length === 0) {
+                const colorMatch = descText.match(/Cores?:\s*([^\n\r]+)/i);
+                if (colorMatch && colorMatch[1]) {
+                    colors = colorMatch[1].split(',').map(c => c.trim()).filter(Boolean);
                 }
-            });
-        };
+            }
 
-        // Seleção interativa manual de tamanho/cor
-        window.selectOption = function(type, value, btn) {
-            const parent = btn.parentElement;
-            parent.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
+            let cleanDescription = descText
+                .replace(/Tamanhos?:\s*[^\n\r]+/gi, '')
+                .replace(/Cores?:\s*[^\n\r]+/gi, '')
+                .trim();
 
-            if (type === 'size') selectedSize = value;
-            if (type === 'color') selectedColor = value;
-        };
+            container.innerHTML = `
+                <!-- COLUNA 1: ESQUERDA (DESCRIÇÃO) -->
+                <div class="product-info-left">
+                    <h1 class="product-title">${product.name}</h1>
+                    <span class="product-price">${formatCurrency(product.price)}</span>
+                    <div class="product-desc">${cleanDescription || 'Sem descrição informada.'}</div>
+                </div>
 
-        window.addToCart = function(product) {
+                <!-- COLUNA 2: CENTRO (CARROSSEL) -->
+                <div class="product-gallery">
+                    ${productImages.map((img, idx) => `
+                        <img class="gallery-img ${idx === 0 ? 'active' : ''}" src="${img}" alt="${product.name}" onerror="this.onerror=null; this.src='assets/logo.png';">
+                    `).join('')}
+                    
+                    ${productImages.length > 1 ? `
+                        <button type="button" class="nav-btn prev" onclick="changeImage(-1)">&#10094;</button>
+                        <button type="button" class="nav-btn next" onclick="changeImage(1)">&#10095;</button>
+                    ` : ''}
+                </div>
+
+                <!-- COLUNA 3: DIREITA (OPÇÕES) -->
+                <div class="product-checkout">
+                    ${sizes.length > 0 ? `
+                        <div class="option-group">
+                            <label class="option-label">Tamanho</label>
+                            <div class="option-selector" id="size-options">
+                                ${sizes.map(s => `<button type="button" class="option-btn" onclick="selectOption('size', '${s}', this)">${s}</button>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${colors.length > 0 ? `
+                        <div class="option-group">
+                            <label class="option-label">Cor</label>
+                            <div class="option-selector" id="color-options">
+                                ${colors.map(c => `<button type="button" class="option-btn" onclick="selectOption('color', '${c}', this)">${c}</button>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="shipping-info">
+                        <p>⚡ Frete Fixo para Estações de Metrô de SP</p>
+                        <p>🚀 Envios com rastreio para todo o Brasil</p>
+                    </div>
+
+                    <button class="btn-add-cart" onclick="addToCart()">Adicionar ao Carrinho</button>
+                </div>
+            `;
+        } catch (err) {
+            console.error('Erro ao carregar produto:', err);
+            container.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Erro ao carregar os dados do produto.</p>';
+        }
+    }
+
+    window.changeImage = function(direction) {
+        if (!productImages.length) return;
+        currentImgIndex = (currentImgIndex + direction + productImages.length) % productImages.length;
+        const imgs = document.querySelectorAll('.gallery-img');
+        imgs.forEach((img, idx) => {
+            if (idx === currentImgIndex) {
+                img.classList.add('active');
+            } else {
+                img.classList.remove('active');
+            }
+        });
+    };
+
+    window.selectOption = function(type, value, btn) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        if (type === 'size') selectedSize = value;
+        if (type === 'color') selectedColor = value;
+    };
+
+    window.addToCart = function() {
+        if (!currentLoadedProduct) return;
+
         const sizesContainer = document.getElementById('size-options');
         const colorsContainer = document.getElementById('color-options');
 
@@ -293,7 +302,7 @@
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         
         const existingIndex = cart.findIndex(item => 
-            item.product.id === product.id && 
+            item.product.id === currentLoadedProduct.id && 
             item.variant?.size === selectedSize && 
             item.variant?.color === selectedColor
         );
@@ -302,23 +311,16 @@
             cart[existingIndex].quantity += 1;
         } else {
             cart.push({
-                product: product,
+                product: currentLoadedProduct,
                 variant: { size: selectedSize || 'Único', color: selectedColor || 'Única' },
                 quantity: 1
             });
         }
 
-        // Guardar no localStorage
         localStorage.setItem('cart', JSON.stringify(cart));
-
-        // 1. Atualiza instantaneamente o contador do carrinho no cabeçalho
-        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-        const countEl = document.getElementById('cart-count');
-        if (countEl) countEl.textContent = `(${totalItems})`;
-
-        // 2. Avisa o utilizador mantendo-o na página
+        updateCartCount();
         alert('Produto adicionado ao carrinho com sucesso!');
     };
-    </script>
+</script>
 </body>
 </html>
