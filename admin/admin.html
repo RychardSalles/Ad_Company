@@ -4,397 +4,357 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Administrativo - AD Company</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .admin-container { max-width: 1400px; margin: 40px auto; padding: 0 40px; flex: 1; width: 100%; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
-        .admin-header h1 { font-size: 24px; font-weight: 800; text-transform: uppercase; }
-        .btn-primary { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 12px; }
-        .btn-primary:hover { opacity: 0.9; }
+        :root {
+            --bg-body: #0d0d0d;
+            --bg-header: #121212;
+            --text-header: #ffffff;
+            --accent: #c4262e;
+            --accent-hover: #a31f25;
+            --text-main: #ffffff;
+            --text-light: #a0a0a0;
+            --border-color: rgba(136, 136, 136, 0.2);
+            --card-bg: #161616;
+            --danger: #c4262e;
+            --danger-bg: rgba(196, 38, 46, 0.15);
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
 
-        .admin-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid rgba(136, 136, 136, 0.2); }
-        .admin-table th, .admin-table td { padding: 15px 20px; text-align: left; font-size: 13px; border-bottom: 1px solid rgba(136, 136, 136, 0.1); }
-        .admin-table th { background: #111; color: var(--text-light); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
-        .admin-table img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background: #000; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: var(--card-bg); border: 1px solid rgba(136, 136, 136, 0.3); padding: 30px; border-radius: 8px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .modal-content h2 { font-size: 18px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; }
-        .form-group input, .form-group textarea, .form-group select { background: #0d0d0d; border: 1px solid rgba(136, 136, 136, 0.3); color: #fff; padding: 10px; border-radius: 6px; font-size: 13px; font-family: var(--font-sans); }
-        
-        .file-input-wrapper { display: flex; align-items: center; border: 1px solid rgba(136, 136, 136, 0.3); border-radius: 6px; background: #0d0d0d; padding: 5px; }
-        .file-input-wrapper input[type="file"] { display: none; }
-        .btn-file { background: #222; color: #fff; border: 1px solid #444; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 10px; font-weight: 600; }
-        .file-name { font-size: 13px; color: var(--text-light); flex-grow: 1; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-body) !important;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
 
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
-        .btn-secondary { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        /* Barra superior animada (Marquee) */
+        .top-bar { 
+            background: var(--accent) !important; 
+            color: #ffffff !important; 
+            overflow: hidden !important; 
+            white-space: nowrap !important; 
+            padding: 10px 0 !important; 
+            font-size: 12px !important; 
+            font-weight: 800 !important; 
+            letter-spacing: 1px !important; 
+            text-transform: uppercase !important; 
+            width: 100% !important;
+            display: block !important;
+            box-sizing: border-box !important;
+        }
+
+        .top-bar-track {
+            display: inline-flex !important;
+            white-space: nowrap !important;
+            width: max-content !important;
+            animation: marqueeMove 15s linear infinite !important;
+        }
+
+        .top-bar-content { 
+            display: inline-flex !important; 
+            white-space: nowrap !important;
+        }
+
+        .top-bar-content span { 
+            margin: 0 30px !important; 
+        }
+
+        @keyframes marqueeMove { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-50%); } 
+        }
+
+        /* Cabeçalho do Admin */
+        .admin-header {
+            background-color: var(--bg-header);
+            color: var(--text-header);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 15px; }
+
+        .header-logo {
+            width: 40px; height: 40px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+        .header-title h1 {
+            font-family: var(--font-serif);
+            font-size: 20px; margin: 0; letter-spacing: 0.5px;
+        }
+
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+
+        .btn-header {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: white; padding: 8px 16px;
+            border-radius: 20px; cursor: pointer;
+            font-size: 13px; font-weight: 600;
+            transition: all 0.2s; text-decoration: none;
+        }
+
+        .btn-header:hover { border-color: var(--accent); background: rgba(196, 38, 46, 0.1); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .btn-new {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .btn-new:hover { opacity: 0.9; }
+
+        /* Tabela de Gestão */
+        .products-table-wrapper {
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .products-table th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 15px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .products-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .products-table tr:last-child td { border-bottom: none; }
+
+        .prod-thumb {
+            width: 50px; height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #111;
+        }
+
+        .status-active {
+            color: #2ecc71;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .btn-edit:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .btn-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+        .btn-delete:hover { background: rgba(196, 38, 46, 0.3); }
+
+        @media (max-width: 768px) {
+            .admin-header { padding: 15px 20px; flex-direction: column; gap: 15px; }
+            .products-table-wrapper { overflow-x: auto; }
+        }
     </style>
 </head>
 <body>
     <div class="top-bar">
-    <div class="top-bar-track">
-        <div class="top-bar-content">
-            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-            <span>•</span>
-            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-            <span>•</span>
-            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-            <span>•</span>
+        <div class="top-bar-track">
+            <div class="top-bar-content">
+                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+                <span>•</span>
+                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+                <span>•</span>
+                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+                <span>•</span>
+            </div>
+            <div class="top-bar-content">
+                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+                <span>•</span>
+                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+                <span>•</span>
+                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+                <span>•</span>
+            </div>
+        </div>  
+    </div> 
+
+    <header class="admin-header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="../assets/logo.png" alt="Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4='">
+            </div>
+            <div class="header-title">
+                <h1>Painel Administrativo</h1>
+            </div>
         </div>
-        <div class="top-bar-content">
-            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-            <span>•</span>
-            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-            <span>•</span>
-            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-            <span>•</span>
-        </div>
-    </div>
-    
-    <header>
-        <a href="../index.html" class="logo">
-            <img src="../assets/logo.png" alt="AD Company">
-        </a>
-        <nav class="nav-links">
-            <a href="../index.html">Início da Loja</a>
-            <a href="admin.html" style="color: var(--accent);">Painel de Produtos</a>
-        </nav>
-        <div class="nav-icons">
-            <a href="../carrinho.html" title="Carrinho" style="font-size: 18px; display: flex; align-items: center; gap: 5px;">
-                🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
-            </a>
+       <div class="header-actions">
+            <a href="../index.html" class="btn-header">Início da Loja</a>
+            <button id="logout-btn" class="btn-header">Sair</button>
         </div>
     </header>
 
-    <main class="admin-container">
-        <div class="admin-header">
-            <h1>Gestão de Produtos</h1>
-            <button class="btn-primary" onclick="openModal()">+ Novo Produto</button>
+    <main class="container">
+        <div class="section-header">
+            <h2 class="section-title">Gestão de Produtos</h2>
+            <a href="dashboard.html" class="btn-new">+ Novo Produto</a>
         </div>
 
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Imagem</th>
-                    <th>Nome</th>
-                    <th>Preço</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="products-table-body">
-                <tr><td colspan="5" style="text-align: center; color: var(--text-light);">A carregar produtos...</td></tr>
-            </tbody>
-        </table>
+        <div class="products-table-wrapper">
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Imagem</th>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-products-list">
+                    <tr><td colspan="5" style="text-align: center; color: var(--text-light); padding: 30px;">Carregando produtos...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </main>
-
-    <!-- Modal de Cadastro / Edição -->
-    <div class="modal" id="product-modal">
-        <div class="modal-content">
-            <h2 id="modal-title">Adicionar Novo Produto</h2>
-            <input type="hidden" id="prod-id">
-            
-            <div class="form-group">
-                <label for="prod-name">Nome do Tênis</label>
-                <input type="text" id="prod-name" placeholder="Ex: Jordan 4 Retro">
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group">
-                    <label for="prod-price">Preço Normal (R$)</label>
-                    <input type="number" step="0.01" id="prod-price" placeholder="0.00">
-                </div>
-                <div class="form-group">
-                    <label for="prod-promo-price">Preço Promocional (R$)</label>
-                    <input type="number" step="0.01" id="prod-promo-price" placeholder="0.00">
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px; margin-top: 15px;">
-                    <input type="checkbox" id="prod-is-promo" style="width: 18px; height: 18px; accent-color: var(--accent);">
-                    <label for="prod-is-promo" style="margin: 0; cursor: pointer;">Em Promoção</label>
-                </div>
-                <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px; margin-top: 15px;">
-                    <input type="checkbox" id="prod-is-active" checked style="width: 18px; height: 18px; accent-color: var(--accent);">
-                    <label for="prod-is-active" style="margin: 0; cursor: pointer;">Produto Ativo no Site</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Fotos do produto (Selecione uma ou várias fotos)</label>
-                <div class="file-input-wrapper">
-                    <label for="prod-images" class="btn-file">Escolher arquivos</label>
-                    <span id="file-name-display" class="file-name">Nenhum arquivo escolhido</span>
-                    <input type="file" id="prod-images" accept="image/*" multiple>
-                </div>
-                <input type="hidden" id="prod-image-url-existing">
-            </div>
-
-            <div class="form-group">
-                <label for="prod-sizes">Tamanhos (separados por vírgula)</label>
-                <input type="text" id="prod-sizes" placeholder="Ex: 38, 39, 40, 41, 42, 43">
-            </div>
-
-            <div class="form-group">
-                <label for="prod-colors">Cores disponíveis (separadas por vírgula)</label>
-                <input type="text" id="prod-colors" placeholder="Ex: Branco, Preto, Cinza">
-            </div>
-
-            <div class="form-group">
-                <label for="prod-desc">Descrição do Produto</label>
-                <textarea id="prod-desc" rows="3" placeholder="Detalhes e materiais do tênis..."></textarea>
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button class="btn-primary" id="save-btn" onclick="saveProduct()">Salvar Produto</button>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <div class="footer-container">
-            <div class="footer-col">
-                <h3>AD Company</h3>
-                <p style="color: var(--text-light); font-size: 14px;">Estilo e exclusividade em cada passo.</p>
-            </div>
-            <div class="footer-col">
-                <h3>Links Úteis</h3>
-                <ul>
-                    <li><a href="../produtos.html">Catálogo Completo</a></li>
-                    <li><a href="admin.html">Painel Admin</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Contato</h3>
-                <ul>
-                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
-                    <li><a href="https://wa.me/5511950070636" target="_blank">WhatsApp: (11) 95007-0636</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 AD Company. Todos os direitos reservados.
-        </div>
-    </footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/supabase.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-            const countEl = document.getElementById('cart-count');
-            if(countEl) countEl.textContent = `(${totalItems})`;
-
-            await loadAdminProducts();
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadAdminProducts();
         });
 
-        document.getElementById('prod-images').addEventListener('change', (e) => {
-            const count = e.target.files.length;
-            const display = count > 0 ? `${count} arquivo(s) selecionado(s)` : "Nenhum arquivo escolhido";
-            document.getElementById('file-name-display').textContent = display;
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) window.location.href = 'login.html';
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
         });
 
         async function loadAdminProducts() {
-            const tbody = document.getElementById('products-table-body');
-            const { data: products, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+            const tbody = document.getElementById('admin-products-list');
+            const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-light);">Erro ao carregar produtos.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger); padding: 20px;">Erro ao carregar produtos.</td></tr>`;
                 return;
             }
 
-            if (!products || products.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-light);">Nenhum produto cadastrado.</td></tr>`;
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-light); padding: 20px;">Nenhum produto cadastrado.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = '';
-            products.forEach(p => {
-                let firstImg = '../assets/logo.png';
-                if (p.image_url) {
-                    const imgs = p.image_url.split(',').map(i => i.trim());
-                    if (imgs.length > 0 && imgs[0]) firstImg = imgs[0];
+            data.forEach(prod => {
+                let thumb = '../assets/logo.png';
+                if (prod.image_url) {
+                    const imgs = prod.image_url.split(',').map(i => i.trim());
+                    if (imgs.length > 0 && imgs[0]) thumb = imgs[0];
                 }
 
-                tbody.innerHTML += `
+                const priceDisplay = prod.is_promo ? 
+                    `<span style="text-decoration: line-through; font-size: 12px; color: var(--text-light);">${formatCurrency(prod.price)}</span> ${formatCurrency(prod.promo_price)}` : 
+                    formatCurrency(prod.price);
+
+                const row = `
                     <tr>
-                        <td><img src="${firstImg}" alt="${p.name}" onerror="this.src='../assets/logo.png'"></td>
-                        <td style="font-weight: 600;">${p.name}</td>
-                        <td style="color: var(--accent); font-weight: 800;">${formatCurrency(p.price)}</td>
-                        <td>${p.is_active ? '<span style="color: #4ade80;">Ativo</span>' : '<span style="color: #f87171;">Inativo</span>'}</td>
+                        <td><img src="${thumb}" class="prod-thumb" onerror="this.src='../assets/logo.png'"></td>
+                        <td style="font-weight: 600;">${prod.name}</td>
+                        <td style="color: var(--accent); font-weight: 800;">${priceDisplay}</td>
+                        <td><span class="status-active">ATIVO</span></td>
                         <td>
-                            <button onclick='editProduct(${JSON.stringify(p)})' style="background: #333; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Editar</button>
-                            <button onclick="deleteProduct('${p.id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Excluir</button>
+                            <div class="action-btns">
+                                <a href="dashboard.html?edit=${prod.id}" class="btn-action btn-edit">Editar</a>
+                                <button class="btn-action btn-delete" onclick="deleteProduct('${prod.id}')">Excluir</button>
+                            </div>
                         </td>
                     </tr>
                 `;
+                tbody.insertAdjacentHTML('beforeend', row);
             });
         }
 
-        window.openModal = function() {
-            document.getElementById('modal-title').textContent = 'Adicionar Novo Produto';
-            document.getElementById('prod-id').value = '';
-            document.getElementById('prod-name').value = '';
-            document.getElementById('prod-price').value = '';
-            document.getElementById('prod-promo-price').value = '';
-            document.getElementById('prod-is-promo').checked = false;
-            document.getElementById('prod-is-active').checked = true;
-            document.getElementById('prod-image-url-existing').value = '';
-            document.getElementById('prod-images').value = '';
-            document.getElementById('file-name-display').textContent = 'Nenhum arquivo escolhido';
-            document.getElementById('prod-sizes').value = '';
-            document.getElementById('prod-colors').value = '';
-            document.getElementById('prod-desc').value = '';
-            document.getElementById('product-modal').style.display = 'flex';
-        }
-
-        window.closeModal = function() {
-            document.getElementById('product-modal').style.display = 'none';
-        }
-
-        window.editProduct = function(p) {
-            document.getElementById('modal-title').textContent = 'Editar Produto';
-            document.getElementById('prod-id').value = p.id;
-            document.getElementById('prod-name').value = p.name || '';
-            document.getElementById('prod-price').value = p.price || '';
-            document.getElementById('prod-promo-price').value = p.promo_price || '';
-            document.getElementById('prod-is-promo').checked = p.is_promo || false;
-            document.getElementById('prod-is-active').checked = p.is_active ?? true;
-            document.getElementById('prod-image-url-existing').value = p.image_url || '';
-            document.getElementById('prod-images').value = '';
-            document.getElementById('file-name-display').textContent = 'Manter fotos atuais (ou escolher novas)';
-            
-            let sizesVal = '';
-            let colorsVal = '';
-            let cleanDesc = p.description || '';
-
-            if (p.description && p.description.includes('Tamanhos:')) {
-                const parts = p.description.split('Tamanhos:');
-                cleanDesc = parts[0].trim();
-                const rest = parts[1].split('Cores:');
-                if (rest[0]) sizesVal = rest[0].replace(/\\n/g, '').trim();
-                if (rest[1]) colorsVal = rest[1].replace(/\\n/g, '').trim();
-            } else if (p.description && p.description.includes('Cores:')) {
-                const parts = p.description.split('Cores:');
-                cleanDesc = parts[0].trim();
-                colorsVal = parts[1].replace(/\\n/g, '').trim();
-            }
-
-            document.getElementById('prod-sizes').value = sizesVal;
-            document.getElementById('prod-colors').value = colorsVal;
-            document.getElementById('prod-desc').value = cleanDesc;
-            document.getElementById('product-modal').style.display = 'flex';
-        }
-
-        window.saveProduct = async function() {
-            const saveBtn = document.getElementById('save-btn');
-            saveBtn.disabled = true;
-            saveBtn.textContent = 'Enviando e salvando...';
-
-            const id = document.getElementById('prod-id').value;
-            const name = document.getElementById('prod-name').value.trim();
-            const price = parseFloat(document.getElementById('prod-price').value);
-            const promo_price = parseFloat(document.getElementById('prod-promo-price').value) || 0;
-            const is_promo = document.getElementById('prod-is-promo').checked;
-            const is_active = document.getElementById('prod-is-active').checked;
-            const sizes = document.getElementById('prod-sizes').value.trim();
-            const colors = document.getElementById('prod-colors').value.trim();
-            const desc = document.getElementById('prod-desc').value.trim();
-
-            if (!name || isNaN(price)) {
-                alert('Preencha pelo menos o Nome e o Preço válido do produto.');
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Salvar Produto';
-                return;
-            }
-
-            let fullDesc = desc;
-            if(sizes || colors) {
-                fullDesc += `\n\nTamanhos: ${sizes || 'Não informado'} \nCores: ${colors || 'Não informado'}`;
-            }
-
-            const fileInput = document.getElementById('prod-images');
-            let imageUrls = document.getElementById('prod-image-url-existing').value;
-
-            // Faz o upload de múltiplos ficheiros diretamente para a pasta assets/ do bucket Produtos
-            if (fileInput.files.length > 0) {
-                let uploadedUrls = [];
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    const file = fileInput.files[i];
-                    const fileName = `assets/${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-                    
-                    const { error: uploadError } = await supabase.storage
-                        .from('Produtos')
-                        .upload(fileName, file);
-
-                    if (uploadError) {
-                        console.error(uploadError);
-                        alert(`Erro ao enviar a imagem ${file.name}. Verifique o bucket 'Produtos'.`);
-                        saveBtn.disabled = false;
-                        saveBtn.textContent = 'Salvar Produto';
-                        return;
-                    }
-
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('Produtos')
-                        .getPublicUrl(fileName);
-
-                    uploadedUrls.push(publicUrl);
-                }
-                imageUrls = uploadedUrls.join(', ');
-            }
-
-            const productData = { 
-                name, 
-                price, 
-                promo_price, 
-                is_promo, 
-                is_active, 
-                image_url: imageUrls, 
-                description: fullDesc 
-            };
-
-            let error;
-            if (id) {
-                const res = await supabase.from('products').update(productData).eq('id', id);
-                error = res.error;
-            } else {
-                const res = await supabase.from('products').insert([productData]);
-                error = res.error;
-            }
-
-            if (error) {
-                console.error(error);
-                alert('Erro ao salvar produto na base de dados.');
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Salvar Produto';
-                return;
-            }
-
-            alert('Produto salvo com sucesso!');
-            closeModal();
-            loadAdminProducts();
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Salvar Produto';
-        }
-
         window.deleteProduct = async function(id) {
-            if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-            const { error } = await supabase.from('products').delete().eq('id', id);
-            if (error) {
-                alert('Erro ao excluir produto.');
-                return;
+            if (confirm('Tem certeza que deseja excluir este produto?')) {
+                const { error } = await supabase.from('products').delete().eq('id', id);
+                if (error) {
+                    alert('Erro ao excluir produto.');
+                } else {
+                    loadAdminProducts();
+                }
             }
-            loadAdminProducts();
-        }
+        };
     </script>
 </body>
 </html>
