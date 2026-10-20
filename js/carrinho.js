@@ -1,14 +1,14 @@
-// Função de extração ultra-segura para a foto de capa no carrinho
-function getCoverImage(product) {
-    if (!product) return 'assets/logo.png';
+function getCoverImage(item) {
+    if (!item) return 'assets/logo.png';
 
-    // Garante a leitura quer seja do objeto principal quer esteja aninhado
-    const target = product.product ? product.product : product;
-    let raw = target.images || target.fotos || target.image_url || target.foto;
+    // Extrai o produto caso venha no formato { product: {...}, variant: {...} }
+    const product = item.product ? item.product : item;
+    
+    let raw = product.images || product.fotos || product.image_url || product.foto;
     if (!raw) return 'assets/logo.png';
 
     if (Array.isArray(raw)) {
-        return raw.length > 0 && raw[0] ? raw[0] : 'assets/logo.png';
+        return (raw.length > 0 && raw[0]) ? raw[0] : 'assets/logo.png';
     }
 
     if (typeof raw === 'string') {
@@ -27,7 +27,7 @@ function getCoverImage(product) {
             cleaned = cleaned.split(',')[0].trim();
         }
 
-        cleaned = cleaned.replace(/^['"\[\s]+\vert{}['"\]\s]+$/g, '');
+        cleaned = cleaned.replace(/^['"\[\s\\]+|['"\]\s\\]+$/g, '');
 
         if (cleaned && cleaned.length > 5) {
             return cleaned;
@@ -38,17 +38,6 @@ function getCoverImage(product) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Menu Hambúrguer Mobile
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    const navMenu = document.getElementById('nav-menu');
-
-    if (menuBtn && navMenu) {
-        menuBtn.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            menuBtn.classList.toggle('active');
-        });
-    }
-
     renderCart();
 });
 
@@ -76,20 +65,20 @@ function renderCart() {
     let itemsHTML = '<div class="cart-items-list">';
 
     cart.forEach((item, index) => {
-        const productObj = item.product || item;
-        const price = productObj.is_promo ? (productObj.promo_price || productObj.price) : productObj.price;
+        const prod = item.product || item;
+        const price = prod.is_promo ? (prod.promo_price || prod.price) : prod.price;
         const itemTotal = price * item.quantity;
         subtotal += itemTotal;
 
-        const coverUrl = getCoverImage(productObj);
+        const coverUrl = getCoverImage(item);
         const sizeText = item.variant?.size || 'N/A';
         const colorText = item.variant?.color || 'N/A';
 
         itemsHTML += `
             <div class="cart-item">
-                <img src="${coverUrl}" alt="${productObj.name}" onerror="this.onerror=null; this.src='assets/logo.png';">
+                <img src="${coverUrl}" alt="${prod.name}" onerror="this.onerror=null; this.src='assets/logo.png';">
                 <div class="cart-item-details">
-                    <div class="cart-item-title">${productObj.name}</div>
+                    <div class="cart-item-title">${prod.name}</div>
                     <div class="cart-item-info">Tamanho: ${sizeText} | Cor: ${colorText}</div>
                     <div class="cart-item-price">${formatCurrency(price)}</div>
                 </div>
@@ -104,7 +93,6 @@ function renderCart() {
     });
     itemsHTML += '</div>';
 
-    // Resumo e Cupons
     const discountData = JSON.parse(localStorage.getItem('applied_coupon')) || { value: 0, code: '' };
     const total = Math.max(0, subtotal - discountData.value);
 
