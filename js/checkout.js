@@ -29,10 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!data.erro) {
                         const streetInput = document.getElementById('client-street');
                         if (streetInput) {
-                            streetInput.value = `${data.logradouro}, Bairro: ${data.bairro} - ${data.localidade}/${data.uf}`;
+                            streetInput.value = `${data.logradouro} - Bairro: ${data.bairro}, ${data.localidade}/${data.uf}`;
                         }
-                        const compInput = document.getElementById('client-complement');
-                        if (compInput) compInput.focus();
+                        const numberInput = document.getElementById('client-number');
+                        if (numberInput) numberInput.focus();
                     } else {
                         alert('CEP não encontrado.');
                     }
@@ -162,13 +162,14 @@ if (checkoutForm) {
         } else {
             const cep = document.getElementById('client-cep').value.trim();
             const street = document.getElementById('client-street').value.trim();
+            const number = document.getElementById('client-number').value.trim();
             const complement = document.getElementById('client-complement').value.trim();
 
-            if (!cep || !street) {
-                alert('Por favor, preencha pelo menos o CEP e o Endereço.');
+            if (!cep || !street || !number) {
+                alert('Por favor, preencha o CEP, o Endereço e o Número.');
                 return;
             }
-            deliveryDetails = `Envio para Endereço: CEP ${cep}, ${street}${complement ? ' - Complemento: ' + complement : ''}`;
+            deliveryDetails = `Envio para Endereço: ${street}, Nº ${number}${complement ? ' - ' + complement : ''} (CEP: ${cep})`;
             shippingFeeText = 'A combinar';
         }
 

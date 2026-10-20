@@ -92,19 +92,25 @@
                             </select>
                         </div>
 
-                        <!-- Blocos separados para Endereço (Oculto por padrão) -->
+                        <!-- Blocos separados para Endereço com Número (Oculto por padrão) -->
                         <div id="address-group" style="display: none;">
                             <div class="form-group">
                                 <label>CEP</label>
                                 <input type="text" id="client-cep" placeholder="00000-000" maxlength="9">
                             </div>
                             <div class="form-group">
-                                <label>Endereço (Rua, Número e Bairro)</label>
-                                <input type="text" id="client-street" placeholder="Ex: Av. Paulista, 1000 - Bela Vista">
+                                <label>Endereço (Rua e Bairro)</label>
+                                <input type="text" id="client-street" placeholder="Preenchimento automático pelo CEP">
                             </div>
-                            <div class="form-group">
-                                <label>Complemento (Opcional)</label>
-                                <input type="text" id="client-complement" placeholder="Ex: Apto 42, Bloco B">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>Número</label>
+                                    <input type="text" id="client-number" placeholder="Ex: 150">
+                                </div>
+                                <div class="form-group">
+                                    <label>Complemento (Opcional)</label>
+                                    <input type="text" id="client-complement" placeholder="Ex: Apto 42">
+                                </div>
                             </div>
                         </div>
 
