@@ -290,3 +290,21 @@ body {
         gap: 20px !important;
     }
 }
+
+/* Grelha de produtos responsiva para telemóveis */
+#products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Força 2 colunas iguais lado a lado */
+    gap: 12px !important; /* Espaçamento compacto entre os cards */
+    padding: 0 10px !important;
+}
+
+/* Ajustes internos do card para ficarem proporcionais em 2 colunas */
+#products-grid > div {
+    font-size: 12px !important;
+}
+
+#products-grid img {
+    height: 160px !important; /* Reduz ligeiramente a altura da imagem para caber bem no layout lado a lado */
+    object-fit: cover !important;
+}
