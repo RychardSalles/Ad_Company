@@ -11,60 +11,65 @@
 </head>
 <body>
     <div class="top-bar">
-        <div class="top-bar-track">
-            <div class="top-bar-content">
-                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-                <span>•</span>
-                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-                <span>•</span>
-                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-                <span>•</span>
-            </div>
-            <div class="top-bar-content">
-                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-                <span>•</span>
-                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-                <span>•</span>
-                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-                <span>•</span>
-            </div>
-        </div>  
-    </div> 
-
+    <div class="top-bar-track">
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
+    </div>
+</div>
+    
     <header>
         <a href="index.html" class="logo">
-            <img src="assets/logo.png" alt="AD Company" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4='">
+            <img src="assets/logo.png" alt="AD Company">
         </a>
-        
-        <nav class="nav-links" id="nav-menu">
-            <a href="index.html">Início</a>
+        <nav class="nav-links">
+            <a href="produtos.html">Drop Atual</a>
             <a href="produtos.html">Shop</a>
+            <a href="#">Galeria</a>
         </nav>
-
-        <div class="header-right-group">
-            <div class="nav-icons">
-                <a href="carrinho.html" title="Carrinho" style="font-size: 16px; display: flex; align-items: center; gap: 5px;">
-                    🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
-                </a>
-            </div>
-            <button class="menu-toggle" id="mobile-menu-btn" aria-label="Abrir Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+        <div class="nav-icons">
+            <a href="carrinho.html" title="Carrinho" style="font-size: 18px; display: flex; align-items: center; gap: 5px;">
+                🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
+            </a>
         </div>
     </header>
 
-    <main>
-        <!-- Conteúdo da página inicial / Carrossel -->
-        <div style="text-align: center; padding: 60px 20px;">
-            <h1 style="font-size: 32px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;">Lançamento Exclusivo</h1>
-            <p style="color: var(--text-light); font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Coleção Limitada Streetwear</p>
+    <section class="carrossel-container">
+        <div class="carrossel-slide" id="carrossel-slide">
+            <a href="produtos.html" class="carrossel-link">
+                <img src="assets/banner carrosel 1.jpg" class="carrossel-img" alt="Banner 1">
+            </a>
+            <a href="produtos.html" class="carrossel-link">
+                <img src="assets/banner carrosel 2.jpg" class="carrossel-img" alt="Banner 2">
+            </a>
+            <a href="produtos.html" class="carrossel-link">
+                <img src="assets/banner carrosel 3.jpg" class="carrossel-img" alt="Banner 3">
+            </a>
         </div>
-        
-        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px 60px;">
-            <a href="produtos.html" class="btn-submit-order" style="display: block; max-width: 250px; margin: 0 auto; text-align: center; background: var(--accent); color: white; padding: 15px; border-radius: 6px; font-weight: 800; text-transform: uppercase;">Ver Catálogo</a>
-        </div>
+        <button class="carrossel-btn prev" onclick="moverCarrossel(-1)">&#10094;</button>
+        <button class="carrossel-btn next" onclick="moverCarrossel(1)">&#10095;</button>
+    </section>
+
+    <div class="section-title">
+        <p>Lançamento Exclusivo</p>
+        <h2>Catálogo</h2>
+    </div>
+
+    <main class="product-grid" id="featured-grid">
+        <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Carregando produtos...</p>
     </main>
 
     <footer>
@@ -77,13 +82,13 @@
                 <h3>Links Úteis</h3>
                 <ul>
                     <li><a href="produtos.html">Catálogo Completo</a></li>
-                    <li><a href="admin/admin.html">Painel Admin</a></li>
+                    <li><a href="admin/login.html">Painel Admin</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Contato</h3>
                 <ul>
-                    <li><a href="https://www.instagram.com/adthecompany" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
                     <li><a href="https://wa.me/5511950070636" target="_blank">WhatsApp: (11) 95007-0636</a></li>
                 </ul>
             </div>
@@ -96,25 +101,5 @@
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
     <script src="js/home.js"></script>
-    <script>
-        // Script do Menu Hambúrguer Global
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuBtn = document.getElementById('mobile-menu-btn');
-            const navMenu = document.getElementById('nav-menu');
-
-            if (menuBtn && navMenu) {
-                menuBtn.addEventListener('click', () => {
-                    navMenu.classList.toggle('active');
-                    menuBtn.classList.toggle('active');
-                });
-            }
-
-            // Atualiza contador do carrinho
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const countEl = document.getElementById('cart-count');
-            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-            if(countEl) countEl.textContent = `(${totalItems})`;
-        });
-    </script>
 </body>
 </html>
