@@ -182,12 +182,6 @@
             background: #111;
         }
 
-        .status-active {
-            color: #2ecc71;
-            font-weight: 600;
-            font-size: 12px;
-        }
-
         .action-btns {
             display: flex;
             gap: 10px;
@@ -327,12 +321,17 @@
                     `<span style="text-decoration: line-through; font-size: 12px; color: var(--text-light);">${formatCurrency(prod.price)}</span> ${formatCurrency(prod.promo_price)}` : 
                     formatCurrency(prod.price);
 
+                // Validação correta baseada no booleano is_active do Supabase
+                const statusDisplay = prod.is_active 
+                    ? `<span style="color: #2ecc71; font-weight: 600; font-size: 12px;">ATIVO</span>` 
+                    : `<span style="color: #e74c3c; font-weight: 600; font-size: 12px;">INDISPONÍVEL</span>`;
+
                 const row = `
                     <tr>
                         <td><img src="${thumb}" class="prod-thumb" onerror="this.src='../assets/logo.png'"></td>
                         <td style="font-weight: 600;">${prod.name}</td>
                         <td style="color: var(--accent); font-weight: 800;">${priceDisplay}</td>
-                        <td><span class="status-active">ATIVO</span></td>
+                        <td>${statusDisplay}</td>
                         <td>
                             <div class="action-btns">
                                 <a href="dashboard.html?edit=${prod.id}" class="btn-action btn-edit">Editar</a>
