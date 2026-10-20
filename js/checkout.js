@@ -1,144 +1,208 @@
+let currentSubtotal = 0;
+let discountAmount = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const countEl = document.getElementById('cart-count');
+    const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+    if(countEl) countEl.textContent = `(${totalItems})`;
+
     if (cart.length === 0) {
-        alert('Seu carrinho está vazio.');
-        window.location.href = 'index.html';
+        alert('O seu carrinho está vazio.');
+        window.location.href = 'carrinho.html';
         return;
     }
 
-    const itemsContainer = document.getElementById('checkout-items');
-    let subtotal = 0;
+    renderCheckoutSummary(cart);
+    toggleShippingType();
+
+    // Consulta automática de CEP via API ViaCEP
+    const cepInput = document.getElementById('client-cep');
+    if (cepInput) {
+        cepInput.addEventListener('blur', async function() {
+            let cep = this.value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                try {
+                    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                    const data = await response.json();
+                    
+                    if (!data.erro) {
+                        const streetInput = document.getElementById('client-street');
+                        if (streetInput) {
+                            streetInput.value = `${data.logradouro}, Bairro: ${data.bairro} - ${data.localidade}/${data.uf}`;
+                        }
+                        const compInput = document.getElementById('client-complement');
+                        if (compInput) compInput.focus();
+                    } else {
+                        alert('CEP não encontrado.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar CEP:', error);
+                }
+            }
+        });
+    }
+});
+
+function renderCheckoutSummary(cart) {
+    const container = document.getElementById('checkout-items-list');
+    if (!container) return;
+    container.innerHTML = '';
+    currentSubtotal = 0;
 
     cart.forEach(item => {
-        const price = item.product.is_promo ? item.product.promo_price : item.product.price;
-        const itemTotal = price * item.quantity;
-        subtotal += itemTotal;
+        const itemTotal = (item.product.price || 0) * (item.quantity || 1);
+        currentSubtotal += itemTotal;
+        const size = item.variant?.size || 'N/A';
+        const color = item.variant?.color || 'N/A';
 
-        itemsContainer.innerHTML += `
-            <div class="checkout-item">
-                <img src="${item.product.image_url || 'assets/placeholder.jpg'}">
-                <div class="checkout-item-details">
-                    <h4>${item.product.name}</h4>
-                    <p>Tam: ${item.variant.size} | Cor: ${item.variant.color}</p>
-                    <p>Qtd: ${item.quantity} x ${formatCurrency(price)}</p>
+        const html = `
+            <div class="summary-item">
+                <img src="${item.product.image_url || 'assets/logo.png'}" alt="${item.product.name}" onerror="this.src='assets/logo.png'">
+                <div class="summary-item-details">
+                    <span class="summary-item-title">${item.product.name}</span>
+                    <span class="summary-item-variant">Tam: ${size} | Cor: ${color}</span>
+                    <span style="font-size: 12px; color: var(--text-light);">Qtd: ${item.quantity} x ${formatCurrency(item.product.price)}</span>
                 </div>
-                <div style="font-weight:bold;">${formatCurrency(itemTotal)}</div>
+                <span style="font-weight: 800; color: var(--accent); font-size: 14px;">${formatCurrency(itemTotal)}</span>
             </div>
         `;
+        container.insertAdjacentHTML('beforeend', html);
     });
 
-    // Lógica de cálculo (Desconto e Entrega)
-    const discountData = JSON.parse(localStorage.getItem('applied_coupon')) || { value: 0, code: 'Nenhum' };
-    let shippingTax = 0;
+    document.getElementById('checkout-subtotal').textContent = formatCurrency(currentSubtotal);
+    updateTotal();
+}
+
+window.toggleShippingType = function() {
+    const shippingRadio = document.querySelector('input[name="shipping"]:checked');
+    if (!shippingRadio) return;
     
-    const renderTotals = () => {
-        document.getElementById('chk-subtotal').textContent = formatCurrency(subtotal);
-        if (discountData.value > 0) {
-            document.getElementById('chk-discount-line').style.display = 'flex';
-            document.getElementById('chk-discount').textContent = `- ${formatCurrency(discountData.value)}`;
-        }
-        
-        let total = subtotal - discountData.value + shippingTax;
-        
-        const deliveryType = document.querySelector('input[name="delivery_type"]:checked')?.value;
-        if (deliveryType === 'station') {
-            document.getElementById('chk-shipping').textContent = formatCurrency(15);
-        } else if (deliveryType === 'address') {
-            document.getElementById('chk-shipping').textContent = 'A confirmar no WhatsApp';
-            total = subtotal - discountData.value;
-        } else {
-            document.getElementById('chk-shipping').textContent = 'Selecione a entrega';
-        }
-        
-        document.getElementById('chk-total').textContent = formatCurrency(total);
-    };
+    const shippingType = shippingRadio.value;
+    const metroGroup = document.getElementById('metro-group');
+    const addressGroup = document.getElementById('address-group');
+    const feeEl = document.getElementById('checkout-shipping-fee');
 
-    renderTotals();
+    if (shippingType === 'metro') {
+        if (metroGroup) metroGroup.style.display = 'block';
+        if (addressGroup) addressGroup.style.display = 'none';
+        if (feeEl) feeEl.textContent = formatCurrency(15.00);
+    } else {
+        if (metroGroup) metroGroup.style.display = 'none';
+        if (addressGroup) addressGroup.style.display = 'block';
+        if (feeEl) feeEl.textContent = 'A combinar';
+    }
+    updateTotal();
+}
 
-    // Toggle forms
-    document.querySelectorAll('input[name="delivery_type"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            if (e.target.value === 'station') {
-                document.getElementById('station-section').style.display = 'block';
-                document.getElementById('address-section').style.display = 'none';
-                shippingTax = 15;
-            } else {
-                document.getElementById('station-section').style.display = 'none';
-                document.getElementById('address-section').style.display = 'block';
-                shippingTax = 0;
-            }
-            renderTotals();
-        });
-    });
+window.applyCoupon = function() {
+    const codeInput = document.getElementById('coupon-code');
+    if (!codeInput) return;
+    
+    const code = codeInput.value.trim().toUpperCase();
+    if (code === 'AD10') {
+        discountAmount = currentSubtotal * 0.10;
+        const discountRow = document.getElementById('discount-row');
+        const discountVal = document.getElementById('checkout-discount');
+        if (discountRow) discountRow.style.display = 'flex';
+        if (discountVal) discountVal.textContent = '-' + formatCurrency(discountAmount);
+        alert('Cupom aplicado com sucesso! 10% de desconto.');
+    } else {
+        alert('Cupom inválido ou expirado.');
+        discountAmount = 0;
+        const discountRow = document.getElementById('discount-row');
+        if (discountRow) discountRow.style.display = 'none';
+    }
+    updateTotal();
+}
 
-    // Finalizar
-    document.getElementById('btn-finish-whatsapp').addEventListener('click', async (e) => {
+window.updateTotal = function() {
+    const shippingRadio = document.querySelector('input[name="shipping"]:checked');
+    if (!shippingRadio) return;
+
+    const shippingType = shippingRadio.value;
+    const fee = shippingType === 'metro' ? 15.00 : 0.00;
+    const effectiveSubtotal = Math.max(0, currentSubtotal - discountAmount);
+    const totalFinal = effectiveSubtotal + fee;
+    
+    const totalEl = document.getElementById('checkout-total');
+    if (!totalEl) return;
+
+    if (shippingType === 'metro') {
+        totalEl.textContent = formatCurrency(totalFinal);
+    } else {
+        totalEl.textContent = formatCurrency(effectiveSubtotal) + ' + Frete';
+    }
+}
+
+const checkoutForm = document.getElementById('checkout-form');
+if (checkoutForm) {
+    checkoutForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
-        const nome = document.getElementById('cli-nome').value.trim();
-        const telefone = document.getElementById('cli-telefone').value.trim();
-        const deliveryType = document.querySelector('input[name="delivery_type"]:checked')?.value;
-        
-        if (!nome || !telefone || !deliveryType) {
-            alert('Preencha os campos obrigatórios (Nome, Telefone e Modalidade de Entrega).');
-            return;
-        }
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) return;
 
-        let addressDetails = '';
-        let stationDetails = '';
-        let taxaStr = '';
-        
-        if (deliveryType === 'station') {
-            const station = document.getElementById('station-select').value;
-            if (!station) return alert('Selecione uma estação.');
-            stationDetails = station;
-            addressDetails = `Retirada na estação: ${station}`;
-            taxaStr = 'R$ 15,00';
+        const name = document.getElementById('client-name').value.trim();
+        const phone = document.getElementById('client-phone').value.trim();
+        const shippingRadio = document.querySelector('input[name="shipping"]:checked');
+        const shippingType = shippingRadio ? shippingRadio.value : 'metro';
+        const notes = document.getElementById('client-notes').value.trim();
+
+        let deliveryDetails = '';
+        let shippingFeeText = '';
+
+        if (shippingType === 'metro') {
+            const station = document.getElementById('metro-station').value;
+            if (!station) {
+                alert('Por favor, selecione uma estação de metrô.');
+                return;
+            }
+            deliveryDetails = `Retirada em Estação de Metrô: ${station}`;
+            shippingFeeText = 'R$ 15,00 (Frete Fixo)';
         } else {
-            const cep = document.getElementById('end-cep').value;
-            const rua = document.getElementById('end-rua').value;
-            const num = document.getElementById('end-numero').value;
-            if (!cep || !rua || !num) return alert('Preencha CEP, Rua e Número para entrega.');
-            
-            addressDetails = `${rua}, ${num} - ${document.getElementById('end-bairro').value} - ${document.getElementById('end-cidade').value}/${document.getElementById('end-estado').value}. CEP: ${cep}`;
-            taxaStr = 'A confirmar';
+            const cep = document.getElementById('client-cep').value.trim();
+            const street = document.getElementById('client-street').value.trim();
+            const complement = document.getElementById('client-complement').value.trim();
+
+            if (!cep || !street) {
+                alert('Por favor, preencha pelo menos o CEP e o Endereço.');
+                return;
+            }
+            deliveryDetails = `Envio para Endereço: CEP ${cep}, ${street}${complement ? ' - Complemento: ' + complement : ''}`;
+            shippingFeeText = 'A combinar';
         }
 
-        // Construir mensagem para o WhatsApp (Sem redundância no final)
-        let msg = `Olá! Gostaria de fazer um pedido na loja.%0A%0A*DADOS DO PEDIDO*%0A`;
-        
-        cart.forEach((item, index) => {
-            const price = item.product.is_promo ? item.product.promo_price : item.product.price;
-            const itemTotal = price * item.quantity;
-            msg += `Produto ${index+1}: ${item.product.name}%0ATamanho: ${item.variant.size}%0ACor: ${item.variant.color}%0AQuantidade: ${item.quantity}%0AValor unitário: ${formatCurrency(price)}%0ASubtotal: ${formatCurrency(itemTotal)}%0A%0A`;
+        let message = `*NOVO PEDIDO - AD COMPANY*\n\n`;
+        message += `👤 *Cliente:* ${name}\n`;
+        message += `📞 *Telefone:* ${phone}\n`;
+        message += `🚚 *Modalidade:* ${deliveryDetails}\n`;
+        if (notes) message += `📝 *Obs:* ${notes}\n`;
+        message += `\n🛍️ *Itens do Pedido:*\n`;
+
+        let total = 0;
+        cart.forEach(item => {
+            const itemTotal = (item.product.price || 0) * (item.quantity || 1);
+            total += itemTotal;
+            const size = item.variant?.size || 'N/A';
+            const color = item.variant?.color || 'N/A';
+            message += `- ${item.product.name} (Tam: ${size}, Cor: ${color}) x${item.quantity} - ${formatCurrency(itemTotal)}\n`;
         });
 
-        const finalTotal = subtotal - discountData.value + shippingTax;
-
-        msg += `*RESUMO FINANCEIRO*%0ASubtotal dos produtos: ${formatCurrency(subtotal)}%0A`;
-        msg += `Cupom utilizado: ${discountData.code}%0ADesconto: ${formatCurrency(discountData.value)}%0A`;
-        msg += `Entrega: ${deliveryType === 'station' ? 'Retirada em Estação' : 'Entrega em Endereço'}%0A`;
-        if (deliveryType === 'station') msg += `Estação: ${stationDetails}%0A`;
-        msg += `Taxa de entrega: ${taxaStr}%0ATotal do pedido: ${deliveryType === 'station' ? formatCurrency(finalTotal) : formatCurrency(finalTotal) + ' + Frete'}%0A%0A`;
-
-        // Apenas exibe os dados do cliente e a entrega já está integrada acima e no resumo financeiro
-        msg += `*DADOS DO CLIENTE*%0ANome: ${nome}%0ATelefone: ${telefone}%0A`;
-        if (deliveryType === 'address') {
-            msg += `*ENDEREÇO DE ENTREGA*%0A${addressDetails}%0A`;
+        const effectiveSubtotal = Math.max(0, total - discountAmount);
+        const finalTotal = shippingType === 'metro' ? effectiveSubtotal + 15.00 : effectiveSubtotal;
+        
+        message += `\n📦 *Subtotal:* ${formatCurrency(total)}`;
+        if (discountAmount > 0) {
+            message += `\n🏷️ *Desconto:* -${formatCurrency(discountAmount)}`;
         }
-        
-        const obs = document.getElementById('cli-obs').value;
-        if(obs) msg += `Observações: ${obs}%0A`;
-        
-        msg += `%0AAguardo a confirmação. Obrigado!`;
+        message += `\n🚚 *Taxa de Entrega:* ${shippingFeeText}`;
+        message += `\n💰 *TOTAL:* ${shippingType === 'metro' ? formatCurrency(finalTotal) : formatCurrency(effectiveSubtotal) + ' + Frete a combinar'}`;
 
-        const phone = "5511950070636";
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/5511950070636?text=${encodedMessage}`;
         
-        // Limpar carrinho
         localStorage.removeItem('cart');
-        localStorage.removeItem('applied_coupon');
-        
-        window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+        window.open(whatsappUrl, '_blank');
         window.location.href = 'index.html';
     });
-});
+}
