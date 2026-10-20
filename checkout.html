@@ -82,7 +82,7 @@
 
         .nav-icons a { color: var(--text-main); text-decoration: none; }
 
-        /* Estrutura do Checkout (Forçando fundo escuro) */
+        /* Estrutura do Checkout */
         main.checkout-container {
             background-color: var(--bg-body) !important;
             min-height: 80vh;
@@ -139,7 +139,7 @@
             letter-spacing: 0.5px;
         }
 
-        input[type="text"], textarea {
+        input[type="text"], select, textarea {
             padding: 12px 16px;
             background: #0d0d0d;
             border: 1px solid var(--border-color);
@@ -150,7 +150,7 @@
             width: 100%;
         }
 
-        input[type="text"]:focus, textarea:focus {
+        input[type="text"]:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--accent);
         }
@@ -166,7 +166,7 @@
 
         .radio-label input { accent-color: var(--accent); }
 
-        /* Resumo do Pedido na direita */
+        /* Resumo do Pedido */
         .summary-item {
             display: flex;
             align-items: center;
@@ -323,17 +323,41 @@
 
                     <div class="checkout-card">
                         <h3>2. Modalidade de Entrega</h3>
-                        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
                             <label class="radio-label">
-                                <input type="radio" name="shipping" value="metro" checked onchange="updateShipping()"> Retirada em Estação de Metrô (SP) - R$ 15,00
+                                <input type="radio" name="shipping" value="metro" checked onchange="toggleShippingType()"> Retirada em Estação de Metrô (SP) - R$ 15,00
                             </label>
                             <label class="radio-label">
-                                <input type="radio" name="shipping" value="correios" onchange="updateShipping()"> Envio para Endereço (Correios/Moto)
+                                <input type="radio" name="shipping" value="address" onchange="toggleShippingType()"> Envio para Endereço (Taxa a Combinar)
                             </label>
                         </div>
-                        <div class="form-group">
-                            <label>Observações / Estação de Metrô / Endereço</label>
-                            <textarea id="client-address" rows="3" placeholder="Informe a estação de metrô ou o endereço completo com CEP..."></textarea>
+
+                        <!-- Campo dinâmico para Estação de Metrô -->
+                        <div class="form-group" id="metro-group">
+                            <label>Selecione a Estação de Metrô</label>
+                            <select id="metro-station">
+                                <option value="" disabled selected>Escolha a estação...</option>
+                                <option value="Sé (Linha 1-Azul / 3-Vermelha)">Sé (Linha 1-Azul / 3-Vermelha)</option>
+                                <option value="Paulista (Linha 4-Amarela)">Paulista (Linha 4-Amarela)</option>
+                                <option value="Consolação (Linha 2-Verde)">Consolação (Linha 2-Verde)</option>
+                                <option value="República (Linha 3-Vermelha / 4-Amarela)">República (Linha 3-Vermelha / 4-Amarela)</option>
+                                <option value="Luz (Linha 1-Azul / 4-Amarela)">Luz (Linha 1-Azul / 4-Amarela)</option>
+                                <option value="Santa Cruz (Linha 1-Azul / 5-Lilás)">Santa Cruz (Linha 1-Azul / 5-Lilás)</option>
+                                <option value="Paraíso (Linha 1-Azul / 2-Verde)">Paraíso (Linha 1-Azul / 2-Verde)</option>
+                                <option value="Pinheiros (Linha 4-Amarela)">Pinheiros (Linha 4-Amarela)</option>
+                                <option value="Outra / Combinar no Chat">Outra / Combinar no Chat</option>
+                            </select>
+                        </div>
+
+                        <!-- Campo dinâmico para Endereço / CEP (Oculto por padrão) -->
+                        <div class="form-group" id="address-group" style="display: none;">
+                            <label>CEP, Endereço e Complemento</label>
+                            <textarea id="client-full-address" rows="3" placeholder="Digite seu CEP, Rua, Número, Bairro e Complemento..."></textarea>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Observações (Opcional)</label>
+                            <textarea id="client-notes" rows="2" placeholder="Alguma instrução para o envio ou retirada?"></textarea>
                         </div>
                     </div>
                 </div>
@@ -407,6 +431,7 @@
             }
 
             renderCheckoutSummary(cart);
+            toggleShippingType();
         });
 
         function renderCheckoutSummary(cart) {
@@ -435,16 +460,38 @@
             });
 
             document.getElementById('checkout-subtotal').textContent = formatCurrency(currentSubtotal);
-            updateShipping();
+            updateTotal();
         }
 
-        window.updateShipping = function() {
+        window.toggleShippingType = function() {
             const shippingType = document.querySelector('input[name="shipping"]:checked').value;
-            const fee = shippingType === 'metro' ? 15.00 : 30.00; // Ajuste o valor de envio se necessário
-            
-            document.getElementById('checkout-shipping-fee').textContent = formatCurrency(fee);
+            const metroGroup = document.getElementById('metro-group');
+            const addressGroup = document.getElementById('address-group');
+            const feeEl = document.getElementById('checkout-shipping-fee');
+
+            if (shippingType === 'metro') {
+                metroGroup.style.display = 'block';
+                addressGroup.style.display = 'none';
+                feeEl.textContent = formatCurrency(15.00);
+            } else {
+                metroGroup.style.display = 'none';
+                addressGroup.style.display = 'block';
+                feeEl.textContent = 'A combinar';
+            }
+            updateTotal();
+        }
+
+        window.updateTotal = function() {
+            const shippingType = document.querySelector('input[name="shipping"]:checked').value;
+            const fee = shippingType === 'metro' ? 15.00 : 0.00;
             const totalFinal = currentSubtotal + fee;
-            document.getElementById('checkout-total').textContent = formatCurrency(totalFinal);
+            
+            const totalEl = document.getElementById('checkout-total');
+            if (shippingType === 'metro') {
+                totalEl.textContent = formatCurrency(totalFinal);
+            } else {
+                totalEl.textContent = formatCurrency(currentSubtotal) + ' + Frete';
+            }
         }
 
         document.getElementById('checkout-form').addEventListener('submit', (e) => {
@@ -455,15 +502,35 @@
             const name = document.getElementById('client-name').value.trim();
             const phone = document.getElementById('client-phone').value.trim();
             const shippingType = document.querySelector('input[name="shipping"]:checked').value;
-            const address = document.getElementById('client-address').value.trim();
-            const shippingFee = shippingType === 'metro' ? 15.00 : 30.00;
+            const notes = document.getElementById('client-notes').value.trim();
+
+            let deliveryDetails = '';
+            let shippingFeeText = '';
+
+            if (shippingType === 'metro') {
+                const station = document.getElementById('metro-station').value;
+                if (!station) {
+                    alert('Por favor, selecione uma estação de metrô.');
+                    return;
+                }
+                deliveryDetails = `Retirada em Estação de Metrô: ${station}`;
+                shippingFeeText = 'R$ 15,00 (Frete Fixo)';
+            } else {
+                const fullAddress = document.getElementById('client-full-address').value.trim();
+                if (!fullAddress) {
+                    alert('Por favor, informe o seu endereço e CEP.');
+                    return;
+                }
+                deliveryDetails = `Envio para Endereço: ${fullAddress}`;
+                shippingFeeText = 'A combinar';
+            }
 
             let message = `*NOVO PEDIDO - AD COMPANY*\n\n`;
             message += `👤 *Cliente:* ${name}\n`;
             message += `📞 *Telefone:* ${phone}\n`;
-            message += `🚚 *Entrega:* ${shippingType === 'metro' ? 'Retirada em Estação de Metrô SP (R$ 15,00)' : 'Envio para Endereço'}\n`;
-            message += `📍 *Detalhes/Endereço:* ${address || 'Não informado'}\n\n`;
-            message += `🛍️ *Itens do Pedido:*\n`;
+            message += `🚚 *Modalidade:* ${deliveryDetails}\n`;
+            if (notes) message += `📝 *Obs:* ${notes}\n`;
+            message += `\n🛍️ *Itens do Pedido:*\n`;
 
             let total = 0;
             cart.forEach(item => {
@@ -474,10 +541,10 @@
                 message += `- ${item.product.name} (Tam: ${size}, Cor: ${color}) x${item.quantity} - ${formatCurrency(itemTotal)}\n`;
             });
 
-            const finalTotal = total + shippingFee;
+            const finalTotal = shippingType === 'metro' ? total + 15.00 : total;
             message += `\n📦 *Subtotal:* ${formatCurrency(total)}`;
-            message += `\n🚚 *Frete:* ${formatCurrency(shippingFee)}`;
-            message += `\n💰 *TOTAL FINAL:* ${formatCurrency(finalTotal)}`;
+            message += `\n🚚 *Taxa de Entrega:* ${shippingFeeText}`;
+            message += `\n💰 *TOTAL:* ${shippingType === 'metro' ? formatCurrency(finalTotal) : formatCurrency(total) + ' + Frete a combinar'}`;
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/5511950070636?text=${encodedMessage}`;
