@@ -56,20 +56,20 @@
     </header>
 
     <main>
-        <!-- Carrossel com os nomes de ficheiro exatos da pasta assets -->
+        <!-- Carrossel com os nomes exatos dos banners na pasta assets -->
         <section class="hero-carousel" style="position: relative; max-width: 1200px; margin: 20px auto; overflow: hidden; border-radius: 8px;">
             <div class="carousel-track" style="display: flex; transition: transform 0.4s ease-in-out;">
                 <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/bannercarrossel1.jpg" alt="Drop 1" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
+                    <img src="assets/banner carrossel 1.jpg" alt="Drop 1" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
                 </div>
                 <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/bannercarrossel2.jpg" alt="Drop 2" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
+                    <img src="assets/banner carrossel 2.jpg" alt="Drop 2" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
                 </div>
                 <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/bannercarrossel3.jpg" alt="Drop 3" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
+                    <img src="assets/banner carrossel 3.jpg" alt="Drop 3" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
                 </div>
             </div>
-            <!-- Botões sem onclick inline para respeitar o CSP -->
+            <!-- Setas do carrossel discretas -->
             <button class="carousel-button prev" id="prev-slide" style="position: absolute; top: 50%; left: 15px; transform: translateY(-50%); z-index: 10; cursor: pointer;">❮</button>
             <button class="carousel-button next" id="next-slide" style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%); z-index: 10; cursor: pointer;">❯</button>
         </section>
@@ -129,7 +129,7 @@
             const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
             if(countEl) countEl.textContent = `(${totalItems})`;
 
-            // Controlo seguro do carrossel via addEventListener (evita bloqueio CSP)
+            // Controlo do carrossel
             let currentSlide = 0;
             const track = document.querySelector('.carousel-track');
             const slides = track ? track.querySelectorAll('.carousel-slide') : [];
