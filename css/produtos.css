@@ -1,3 +1,6 @@
+/* ==========================================
+   ESTILOS EXCLUSIVOS - CATÁLOGO (produtos.html)
+   ========================================== */
 :root {
     --bg-body: #0d0d0d;
     --card-bg: #161616;
@@ -24,7 +27,7 @@ body {
     flex-direction: column;
 }
 
-/* Barra Superior */
+/* Barra Superior / Header / Footer padrão */
 .top-bar { 
     background: var(--accent) !important; 
     color: #ffffff !important; 
@@ -33,7 +36,6 @@ body {
     padding: 10px 0 !important; 
     font-size: 12px !important; 
     font-weight: 800 !important; 
-    letter-spacing: 1px !important; 
     text-transform: uppercase !important; 
     width: 100% !important;
     display: block !important;
@@ -42,13 +44,7 @@ body {
 .top-bar-track {
     display: inline-flex !important;
     white-space: nowrap !important;
-    width: max-content !important;
     animation: marqueeMove 15s linear infinite !important;
-}
-
-.top-bar-content { 
-    display: inline-flex !important; 
-    white-space: nowrap !important;
 }
 
 .top-bar-content span { 
@@ -60,7 +56,6 @@ body {
     100% { transform: translateX(-50%); } 
 }
 
-/* Cabeçalho */
 header {
     background-color: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
@@ -68,82 +63,14 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
-    z-index: 1000;
 }
 
-.logo img {
-    height: 40px;
-    object-fit: contain;
-}
+.logo img { height: 40px; object-fit: contain; }
+.nav-links { display: flex; gap: 30px; align-items: center; }
+.nav-links a { color: var(--text-light); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); }
 
-.nav-links {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-}
-
-.nav-links a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: color 0.2s;
-}
-
-.nav-links a:hover,
-.nav-links a.active {
-    color: var(--accent);
-}
-
-.header-right-group {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.nav-icons a {
-    color: var(--text-main);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 28px;
-    height: 20px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 1001;
-}
-
-.menu-toggle span {
-    width: 100%;
-    height: 2px;
-    background-color: var(--text-main);
-    transition: all 0.3s ease-in-out;
-    border-radius: 2px;
-}
-
-.menu-toggle.active span:nth-child(1) {
-    transform: translateY(9px) rotate(45deg);
-}
-
-.menu-toggle.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.menu-toggle.active span:nth-child(3) {
-    transform: translateY(-9px) rotate(-45deg);
-}
-
-/* Conteúdo / Grelha de Produtos */
+/* --- GRELHA EXCLUSIVA DO CATÁLOGO (#products-grid) --- */
 main {
     flex: 1;
     padding: 40px 20px;
@@ -158,93 +85,31 @@ h2 {
     text-transform: uppercase;
     text-align: center;
     margin-bottom: 30px;
-    letter-spacing: -0.5px;
-}
-
-#products-grid > *, .products-grid > *, main > div > div {
-    display: inline-block !important;
-    width: 48% !important;
-    max-width: 48% !important;
-    margin: 1% !important;
-    vertical-align: top !important;
-    box-sizing: border-box !important;
 }
 
 #products-grid, .products-grid {
-    text-align: left !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
     width: 100% !important;
-    max-width: 1200px !important;
-    margin: 0 auto !important;
-    padding: 0 10px !important;
 }
 
-/* Imagens e cards proporcionais */
-#products-grid img, .products-grid img, main img {
-    width: 100% !important;
-    height: 180px !important;
+#products-grid > div, .products-grid > div {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#products-grid img, .products-grid img {
+    height: 220px !important;
     object-fit: cover !important;
+    width: 100% !important;
 }
 
-@media (min-width: 768px) {
-    #products-grid > *, .products-grid > *, main > div > div {
-        width: 23% !important;
-        max-width: 23% !important;
-    }
-}
-/* Rodapé */
-footer {
-    background-color: var(--card-bg);
-    border-top: 1px solid var(--border-color);
-    padding: 40px 20px 20px;
-    margin-top: auto;
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    margin-bottom: 30px;
-}
-
-.footer-col h3 {
-    font-size: 14px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-    color: var(--text-main);
-}
-
-.footer-col ul {
-    list-style: none;
-}
-
-.footer-col ul li {
-    margin-bottom: 10px;
-}
-
-.footer-col ul li a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-size: 13px;
-    transition: color 0.2s;
-}
-
-.footer-col ul li a:hover {
-    color: var(--accent);
-}
-
-.footer-bottom {
-    text-align: center;
-    border-top: 1px solid var(--border-color);
-    padding-top: 20px;
-    font-size: 12px;
-    color: var(--text-light);
-}
-
-/* Responsividade (Tablets e Telemóveis) */
+/* Responsividade do Catálogo */
 @media (max-width: 1024px) {
     #products-grid, .products-grid {
         grid-template-columns: repeat(3, 1fr) !important;
@@ -252,51 +117,11 @@ footer {
 }
 
 @media (max-width: 768px) {
-    header {
-        padding: 15px 20px;
-    }
-
-    .menu-toggle {
-        display: flex;
-    }
-
-    .nav-links {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        background-color: var(--card-bg);
-        flex-direction: column;
-        align-items: center;
-        padding: 30px 0;
-        border-bottom: 1px solid var(--border-color);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        transform: translateY(-150%);
-        opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        pointer-events: none;
-        z-index: 999;
-    }
-
-    .nav-links.active {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-    }
-
-    .nav-links a {
-        font-size: 16px;
-        padding: 10px 0;
-    }
-
-    /* Força estritamente 2 colunas lado a lado no telemóvel */
     #products-grid, .products-grid {
-        display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 10px !important;
         padding: 0 5px !important;
     }
-
     #products-grid img, .products-grid img {
         height: 150px !important;
     }
