@@ -50,7 +50,7 @@
         <div class="checkout-page-container">
             <h1 class="checkout-title">Finalizar Pedido</h1>
             
-            <form id="checkout-form" style="display: contents;">
+            <form id="checkout-form">
                 <div>
                     <div class="checkout-card">
                         <h3>1. Seus Dados</h3>
@@ -120,9 +120,9 @@
                         <h3>Resumo do Pedido</h3>
                         
                         <!-- Bloco de Cupom de Desconto -->
-                        <div class="coupon-box" style="display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                        <div class="coupon-box">
                             <input type="text" id="coupon-code" placeholder="Cupom de desconto">
-                            <button type="button" class="btn-apply-coupon" onclick="applyCoupon()" style="background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: 800; font-size: 12px; text-transform: uppercase; cursor: pointer;">Aplicar</button>
+                            <button type="button" class="btn-apply-coupon" onclick="applyCoupon()">Aplicar</button>
                         </div>
 
                         <div id="checkout-items-list">
