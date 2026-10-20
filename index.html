@@ -39,12 +39,13 @@
         <nav class="nav-links" id="nav-menu">
             <a href="index.html" style="color: var(--accent);">Início</a>
             <a href="produtos.html">Shop</a>
+            <a href="produtos.html">Galeria</a>
         </nav>
 
         <div class="header-right-group" style="display: flex; align-items: center; gap: 15px;">
             <div class="nav-icons">
                 <a href="carrinho.html" title="Carrinho" style="font-size: 16px; display: flex; align-items: center; gap: 5px;">
-                    🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
+                    🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">0</span>
                 </a>
             </div>
             <button class="menu-toggle" id="mobile-menu-btn" aria-label="Abrir Menu">
@@ -56,29 +57,8 @@
     </header>
 
     <main>
-        <!-- Carrossel com os nomes exatos dos banners na pasta assets -->
-        <section class="hero-carousel" style="position: relative; max-width: 1200px; margin: 20px auto; overflow: hidden; border-radius: 8px;">
-            <div class="carousel-track" style="display: flex; transition: transform 0.4s ease-in-out;">
-                <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/banner carrosel 1.jpg" alt="Drop 1" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
-                </div>
-                <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/banner carrosel 2.jpg" alt="Drop 2" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
-                </div>
-                <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/banner carrosel 3.jpg" alt="Drop 3" style="width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block;" onerror="this.src='assets/logo.png'">
-                </div>
-            </div>
-            <!-- Setas do carrossel discretas -->
-            <button class="carousel-button prev" id="prev-slide" style="position: absolute; top: 50%; left: 15px; transform: translateY(-50%); z-index: 10; cursor: pointer;">❮</button>
-            <button class="carousel-button next" id="next-slide" style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%); z-index: 10; cursor: pointer;">❯</button>
-        </section>
-
-        <div style="text-align: center; padding: 30px 20px 30px;">
-            <h2 style="font-size: 22px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">Lançamento Exclusivo</h2>
-            <p style="color: var(--text-light); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">Coleção Limitada Streetwear</p>
-            <a href="produtos.html" style="display: inline-block; background: var(--accent); color: white; padding: 12px 28px; border-radius: 6px; font-weight: 800; font-size: 13px; text-transform: uppercase;">Aceder ao Shop</a>
-        </div>
+        <!-- Conteúdo original gerado pelo home.js / carrossel -->
+        <div id="home-content"></div>
     </main>
 
     <footer>
@@ -112,7 +92,7 @@
     <script src="js/home.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Menu Hambúrguer Mobile
+            // Controlo do menu hambúrguer mobile
             const menuBtn = document.getElementById('mobile-menu-btn');
             const navMenu = document.getElementById('nav-menu');
 
@@ -123,39 +103,11 @@
                 });
             }
 
-            // Carrinho count
+            // Atualização do contador do carrinho
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const countEl = document.getElementById('cart-count');
             const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-            if(countEl) countEl.textContent = `(${totalItems})`;
-
-            // Controlo do carrossel
-            let currentSlide = 0;
-            const track = document.querySelector('.carousel-track');
-            const slides = track ? track.querySelectorAll('.carousel-slide') : [];
-
-            function updateSlide() {
-                if (track) {
-                    track.style.transform = `translateX(-${currentSlide * 100}%)`;
-                }
-            }
-
-            const prevBtn = document.getElementById('prev-slide');
-            const nextBtn = document.getElementById('next-slide');
-
-            if (prevBtn) {
-                prevBtn.addEventListener('click', () => {
-                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-                    updateSlide();
-                });
-            }
-
-            if (nextBtn) {
-                nextBtn.addEventListener('click', () => {
-                    currentSlide = (currentSlide + 1) % slides.length;
-                    updateSlide();
-                });
-            }
+            if(countEl) countEl.textContent = totalItems;
         });
     </script>
 </body>
