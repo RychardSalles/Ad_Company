@@ -1,3 +1,40 @@
+// Função para extrair com segurança a PRIMEIRA foto cadastrada como capa
+function getCoverImage(product) {
+    if (!product) return 'assets/logo.png';
+
+    let raw = product.image_url || product.images || product.fotos || product.foto;
+    if (!raw) return 'assets/logo.png';
+
+    if (Array.isArray(raw)) {
+        return raw.length > 0 && raw[0] ? raw[0] : 'assets/logo.png';
+    }
+
+    if (typeof raw === 'string') {
+        let cleaned = raw.trim();
+
+        if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+            try {
+                let parsed = JSON.parse(cleaned);
+                if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]) {
+                    return parsed[0];
+                }
+            } catch(e) {}
+        }
+
+        if (cleaned.includes(',')) {
+            cleaned = cleaned.split(',')[0].trim();
+        }
+
+        cleaned = cleaned.replace(/^['"\[\s]+\vert{}['"\]\s]+$/g, '');
+
+        if (cleaned && cleaned.length > 5) {
+            return cleaned;
+        }
+    }
+
+    return 'assets/logo.png';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     renderCart();
 });
@@ -29,10 +66,13 @@ function renderCart() {
         const price = item.product.is_promo ? item.product.promo_price : item.product.price;
         const itemTotal = price * item.quantity;
         subtotal += itemTotal;
+        
+        // Pega a foto real de capa do produto
+        const coverUrl = getCoverImage(item.product);
 
         itemsHTML += `
             <div class="cart-item">
-                <img src="${item.product.image_url || 'assets/logo.png'}" alt="${item.product.name}">
+                <img src="${coverUrl}" alt="${item.product.name}" onerror="this.onerror=null; this.src='assets/logo.png';">
                 <div class="cart-item-details">
                     <div class="cart-item-title">${item.product.name}</div>
                     <div class="cart-item-info">Tamanho: ${item.variant.size} | Cor: ${item.variant.color}</div>
