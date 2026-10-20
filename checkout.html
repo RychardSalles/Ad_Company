@@ -8,72 +8,28 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/checkout.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        /* Correção de segurança para garantir o fundo escuro padrão e eliminar o fundo vermelho */
-        body, main, .checkout-container, .checkout-page-container {
-            background-color: #0d0d0d !important;
-            color: #ffffff !important;
-        }
-
-        .top-bar { 
-            background: var(--accent) !important; 
-            color: #ffffff !important; 
-            overflow: hidden !important; 
-            white-space: nowrap !important; 
-            padding: 10px 0 !important; 
-            font-size: 12px !important; 
-            font-weight: 800 !important; 
-            letter-spacing: 1px !important; 
-            text-transform: uppercase !important; 
-            width: 100% !important;
-            display: block !important;
-            box-sizing: border-box !important;
-        }
-
-        .top-bar-track {
-            display: inline-flex !important;
-            white-space: nowrap !important;
-            width: max-content !important;
-            animation: marqueeMove 15s linear infinite !important;
-        }
-
-        .top-bar-content { 
-            display: inline-flex !important; 
-            white-space: nowrap !important;
-        }
-
-        .top-bar-content span { 
-            margin: 0 30px !important; 
-        }
-
-        @keyframes marqueeMove { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-50%); } 
-        }
-    </style>
 </head>
 <body>
     <div class="top-bar">
-        <div class="top-bar-track">
-            <div class="top-bar-content">
-                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-                <span>•</span>
-                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-                <span>•</span>
-                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-                <span>•</span>
-            </div>
-            <div class="top-bar-content">
-                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
-                <span>•</span>
-                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
-                <span>•</span>
-                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
-                <span>•</span>
-            </div>
-        </div>  
-    </div> 
-
+    <div class="top-bar-track">
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
+        <div class="top-bar-content">
+            <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+            <span>•</span>
+            <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+            <span>•</span>
+            <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+            <span>•</span>
+        </div>
+    </div>
+    
     <header>
         <a href="index.html" class="logo">
             <img src="assets/logo.png" alt="AD Company">
@@ -89,46 +45,115 @@
         </div>
     </header>
 
+    <div style="max-width: 1400px; margin: 40px auto 0; padding: 0 40px;">
+        <h1 style="font-size: 28px; font-weight: 800; text-transform: uppercase;">Finalizar Pedido</h1>
+    </div>
+
     <main class="checkout-container">
-        <div class="checkout-page-container" style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
-            <h1 style="font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 30px; letter-spacing: -0.5px;">Finalizar Pedido</h1>
-            
-            <form id="checkout-form" style="display: flex; flex-direction: column; gap: 25px;">
-                <div style="background: var(--card-bg, #161616); border: 1px solid rgba(136,136,136,0.2); border-radius: 8px; padding: 30px;">
-                    <h3 style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid rgba(136,136,136,0.2); padding-bottom: 10px;">1. Seus Dados</h3>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <div>
-                            <label style="display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px;">Nome Completo</label>
-                            <input type="text" id="client-name" required placeholder="Digite seu nome" style="width: 100%; padding: 12px; background: #0d0d0d; border: 1px solid rgba(136,136,136,0.3); border-radius: 6px; color: #fff; font-size: 14px;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px;">Telefone / WhatsApp</label>
-                            <input type="text" id="client-phone" required placeholder="(11) 99999-9999" style="width: 100%; padding: 12px; background: #0d0d0d; border: 1px solid rgba(136,136,136,0.3); border-radius: 6px; color: #fff; font-size: 14px;">
-                        </div>
+        <!-- Coluna Esquerda: Dados do Cliente e Entrega -->
+        <div class="checkout-box">
+            <h2>1. Seus Dados</h2>
+            <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" id="cli-nome" placeholder="Digite seu nome">
+            </div>
+            <div class="form-group">
+                <label>Telefone / WhatsApp</label>
+                <input type="text" id="cli-telefone" placeholder="(11) 99999-9999">
+            </div>
+
+            <h2 style="margin-top: 15px;">2. Modalidade de Entrega</h2>
+            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                    <input type="radio" name="delivery_type" value="station"> Retirada em Estação de Metrô (SP) - R$ 15,00
+                </label>
+            </div>
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                    <input type="radio" name="delivery_type" value="address"> Envio para Endereço (Correios/Moto)
+                </label>
+            </div>
+
+            <!-- Seção de Estação -->
+            <div id="station-section" style="display: none;" class="form-group">
+                <label>Selecione a Estação de Metrô</label>
+                <select id="station-select">
+                    <option value="">Escolha a estação...</option>
+                    <option value="Sé (Linha 1-Azul / 3-Vermelha)">Sé (Linha 1-Azul / 3-Vermelha)</option>
+                    <option value="Paulista (Linha 4-Amarela)">Paulista (Linha 4-Amarela)</option>
+                    <option value="Consolação (Linha 2-Verde)">Consolação (Linha 2-Verde)</option>
+                    <option value="República (Linha 3-Vermelha / 4-Amarela)">República (Linha 3-Vermelha / 4-Amarela)</option>
+                    <option value="Liberdade (Linha 1-Azul)">Liberdade (Linha 1-Azul)</option>
+                    <option value="Pari / Brás (Linha 3-Vermelha)">Brás (Linha 3-Vermelha)</option>
+                    <option value="Outra (Combinar no WhatsApp)">Outra Estação (Combinar no WhatsApp)</option>
+                </select>
+            </div>
+
+            <!-- Seção de Endereço -->
+            <div id="address-section" style="display: none;">
+                <div class="form-group">
+                    <label>CEP</label>
+                    <input type="text" id="end-cep" placeholder="00000-000">
+                </div>
+                <div class="form-group">
+                    <label>Rua / Avenida</label>
+                    <input type="text" id="end-rua" placeholder="Nome da rua">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Número</label>
+                        <input type="text" id="end-numero" placeholder="123">
+                    </div>
+                    <div class="form-group">
+                        <label>Bairro</label>
+                        <input type="text" id="end-bairro" placeholder="Nome do bairro">
                     </div>
                 </div>
-
-                <div style="background: var(--card-bg, #161616); border: 1px solid rgba(136,136,136,0.2); border-radius: 8px; padding: 30px;">
-                    <h3 style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid rgba(136,136,136,0.2); padding-bottom: 10px;">2. Modalidade de Entrega</h3>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px;">
-                            <input type="radio" name="shipping" value="metro" checked style="accent-color: var(--accent);"> Retirada em Estação de Metrô de SP (Frete Fixo)
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px;">
-                            <input type="radio" name="shipping" value="correios" style="accent-color: var(--accent);"> Envio para Endereço (Correios / Com Rastreio)
-                        </label>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Cidade</label>
+                        <input type="text" id="end-cidade" placeholder="São Paulo">
                     </div>
-
-                    <div style="margin-top: 20px;">
-                        <label style="display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px;">Endereço ou Estação de Metrô / Observações</label>
-                        <textarea id="client-address" rows="3" placeholder="Informe a estação de metrô ou o endereço completo com CEP..." style="width: 100%; padding: 12px; background: #0d0d0d; border: 1px solid rgba(136,136,136,0.3); border-radius: 6px; color: #fff; font-size: 14px; resize: vertical;"></textarea>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <input type="text" id="end-estado" placeholder="SP">
                     </div>
                 </div>
+            </div>
 
-                <button type="submit" style="background-color: var(--accent); color: white; border: none; padding: 16px; border-radius: 6px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; width: 100%; transition: opacity 0.2s;">Enviar Pedido via WhatsApp</button>
-            </form>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Observações (Opcional)</label>
+                <textarea id="cli-obs" rows="2" placeholder="Alguma instrução para o envio ou retirada?"></textarea>
+            </div>
+        </div>
+
+        <!-- Coluna Direita: Resumo do Carrinho -->
+        <div class="checkout-box">
+            <h2>Resumo do Pedido</h2>
+            <div id="checkout-items">
+                <!-- Inserido via js/checkout.js -->
+            </div>
+
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="chk-subtotal">R$ 0,00</span>
+            </div>
+            <div class="summary-row" id="chk-discount-line" style="display: none; color: var(--accent);">
+                <span>Desconto</span>
+                <span id="chk-discount">- R$ 0,00</span>
+            </div>
+            <div class="summary-row">
+                <span>Taxa de Entrega</span>
+                <span id="chk-shipping">Selecione a entrega</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span id="chk-total">R$ 0,00</span>
+            </div>
+
+            <button class="btn-finish" id="btn-finish-whatsapp" style="margin-top: 15px;">
+                Finalizar pedido pelo WhatsApp
+            </button>
         </div>
     </main>
 
@@ -148,7 +173,7 @@
             <div class="footer-col">
                 <h3>Contato</h3>
                 <ul>
-                    <li><a href="https://www.instagram.com/adthecompany" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
                     <li><a href="https://wa.me/5511950070636" target="_blank">WhatsApp: (11) 95007-0636</a></li>
                 </ul>
             </div>
@@ -160,58 +185,6 @@
 
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const countEl = document.getElementById('cart-count');
-            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-            if(countEl) countEl.textContent = `(${totalItems})`;
-
-            if (cart.length === 0) {
-                alert('O seu carrinho está vazio.');
-                window.location.href = 'carrinho.html';
-            }
-        });
-
-        document.getElementById('checkout-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            if (cart.length === 0) {
-                alert('O seu carrinho está vazio.');
-                return;
-            }
-
-            const name = document.getElementById('client-name').value.trim();
-            const phone = document.getElementById('client-phone').value.trim();
-            const shippingType = document.querySelector('input[name="shipping"]:checked').value;
-            const address = document.getElementById('client-address').value.trim();
-
-            let message = `*NOVO PEDIDO - AD COMPANY*\n\n`;
-            message += `👤 *Cliente:* ${name}\n`;
-            message += `📞 *Telefone:* ${phone}\n`;
-            message += `🚚 *Entrega:* ${shippingType === 'metro' ? 'Retirada em Estação de Metrô SP' : 'Envio para Endereço'}\n`;
-            message += `📍 *Detalhes/Endereço:* ${address || 'Não informado'}\n\n`;
-            message += `🛍️ *Itens do Pedido:*\n`;
-
-            let total = 0;
-            cart.forEach(item => {
-                const itemTotal = (item.product.price || 0) * (item.quantity || 1);
-                total += itemTotal;
-                const size = item.variant?.size || 'N/A';
-                const color = item.variant?.color || 'N/A';
-                message += `- ${item.product.name} (Tam: ${size}, Cor: ${color}) x${item.quantity} - R$ ${itemTotal.toFixed(2)}\n`;
-            });
-
-            message += `\n*TOTAL:* R$ ${total.toFixed(2)}`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/5511950070636?text=${encodedMessage}`;
-            
-            // Limpa o carrinho e abre o WhatsApp
-            localStorage.removeItem('cart');
-            window.open(whatsappUrl, '_blank');
-            window.location.href = 'index.html';
-        });
-    </script>
+    <script src="js/checkout.js"></script>
 </body>
 </html>
