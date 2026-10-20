@@ -89,6 +89,11 @@
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
     <script>
+        let currentImgIndex = 0;
+        let productImages = [];
+        let selectedSize = '';
+        let selectedColor = '';
+
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.getElementById('mobile-menu-btn');
             const navMenu = document.getElementById('nav-menu');
@@ -107,6 +112,28 @@
 
             loadProductDetails();
         });
+
+        // Parser universal de imagens
+        function parseImages(product) {
+            let imgs = [];
+            let raw = product.images || product.fotos || product.image_url;
+            
+            if (!raw) return ['assets/logo.png'];
+
+            if (Array.isArray(raw)) {
+                imgs = raw;
+            } else if (typeof raw === 'string') {
+                let trimmed = raw.trim();
+                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                    try { imgs = JSON.parse(trimmed); } catch(e) { imgs = [trimmed]; }
+                } else if (trimmed.includes(',')) {
+                    imgs = trimmed.split(',').map(s => s.trim()).filter(Boolean);
+                } else if (trimmed) {
+                    imgs = [trimmed];
+                }
+            }
+            return imgs.length > 0 ? imgs : ['assets/logo.png'];
+        }
 
         function parseOptions(value) {
             if (!value) return [];
@@ -143,12 +170,14 @@
                     return;
                 }
 
+                // Processa a galeria de imagens
+                productImages = parseImages(product);
+
                 let sizes = parseOptions(product.sizes || product.tamanhos || product.size);
                 let colors = parseOptions(product.colors || product.cores || product.color);
 
                 const descText = (product.description || '').replace(/\\n/g, '\n');
 
-                // Extração de emergência dos Tamanhos caso estejam salvos no texto da descrição
                 if (sizes.length === 0) {
                     const sizeMatch = descText.match(/Tamanhos?:\s*([^\n\r]+)/i);
                     if (sizeMatch && sizeMatch[1]) {
@@ -156,7 +185,6 @@
                     }
                 }
 
-                // Extração de emergência das Cores caso estejam salvas no texto da descrição
                 if (colors.length === 0) {
                     const colorMatch = descText.match(/Cores?:\s*([^\n\r]+)/i);
                     if (colorMatch && colorMatch[1]) {
@@ -164,32 +192,38 @@
                     }
                 }
 
-                // Limpa o texto da descrição para remover os rótulos "Tamanhos:" e "Cores:" do parágrafo
                 let cleanDescription = descText
                     .replace(/Tamanhos?:\s*[^\n\r]+/gi, '')
                     .replace(/Cores?:\s*[^\n\r]+/gi, '')
                     .trim();
 
                 container.innerHTML = `
-                    <!-- COLUNA 1: ESQUERDA (TÍTULO, PREÇO E DESCRIÇÃO) -->
+                    <!-- COLUNA 1: ESQUERDA (DESCRIÇÃO) -->
                     <div class="product-info-left">
                         <h1 class="product-title">${product.name}</h1>
                         <span class="product-price">${formatCurrency(product.price)}</span>
                         <div class="product-desc">${cleanDescription || 'Sem descrição informada.'}</div>
                     </div>
 
-                    <!-- COLUNA 2: CENTRO (IMAGEM DO PRODUTO) -->
+                    <!-- COLUNA 2: CENTRO (CARROSSEL DE IMAGENS) -->
                     <div class="product-gallery">
-                        <img class="gallery-img" src="${product.image_url || 'assets/logo.png'}" alt="${product.name}" onerror="this.src='assets/logo.png'">
+                        ${productImages.map((img, idx) => `
+                            <img class="gallery-img ${idx === 0 ? 'active' : ''}" src="${img}" alt="${product.name}" onerror="this.src='assets/logo.png'">
+                        `).join('')}
+                        
+                        ${productImages.length > 1 ? `
+                            <button type="button" class="nav-btn prev" onclick="changeImage(-1)">&#10094;</button>
+                            <button type="button" class="nav-btn next" onclick="changeImage(1)">&#10095;</button>
+                        ` : ''}
                     </div>
 
-                    <!-- COLUNA 3: DIREITA (SELEÇÃO DE TAMANHOS, CORES E COMPRA) -->
+                    <!-- COLUNA 3: DIREITA (SELEÇÃO) -->
                     <div class="product-checkout">
                         ${sizes.length > 0 ? `
                             <div class="option-group">
                                 <label class="option-label">Tamanho</label>
                                 <div class="option-selector" id="size-options">
-                                    ${sizes.map((s, idx) => `<button type="button" class="option-btn ${idx === 0 ? 'selected' : ''}" onclick="selectOption('size', '${s}', this)">${s}</button>`).join('')}
+                                    ${sizes.map(s => `<button type="button" class="option-btn" onclick="selectOption('size', '${s}', this)">${s}</button>`).join('')}
                                 </div>
                             </div>
                         ` : ''}
@@ -198,7 +232,7 @@
                             <div class="option-group">
                                 <label class="option-label">Cor</label>
                                 <div class="option-selector" id="color-options">
-                                    ${colors.map((c, idx) => `<button type="button" class="option-btn ${idx === 0 ? 'selected' : ''}" onclick="selectOption('color', '${c}', this)">${c}</button>`).join('')}
+                                    ${colors.map(c => `<button type="button" class="option-btn" onclick="selectOption('color', '${c}', this)">${c}</button>`).join('')}
                                 </div>
                             </div>
                         ` : ''}
@@ -217,8 +251,18 @@
             }
         }
 
-        let selectedSize = '';
-        let selectedColor = '';
+        window.changeImage = function(direction) {
+            if (!productImages.length) return;
+            currentImgIndex = (currentImgIndex + direction + productImages.length) % productImages.length;
+            const imgs = document.querySelectorAll('.gallery-img');
+            imgs.forEach((img, idx) => {
+                if (idx === currentImgIndex) {
+                    img.classList.add('active');
+                } else {
+                    img.classList.remove('active');
+                }
+            });
+        };
 
         window.selectOption = function(type, value, btn) {
             const parent = btn.parentElement;
@@ -227,19 +271,20 @@
 
             if (type === 'size') selectedSize = value;
             if (type === 'color') selectedColor = value;
-        }
+        };
 
         window.addToCart = function(product) {
             const sizesContainer = document.getElementById('size-options');
             const colorsContainer = document.getElementById('color-options');
 
             if (sizesContainer && !selectedSize) {
-                const firstSizeBtn = sizesContainer.querySelector('button');
-                if (firstSizeBtn) selectedSize = firstSizeBtn.textContent;
+                alert('Por favor, selecione um Tamanho antes de adicionar ao carrinho!');
+                return;
             }
+
             if (colorsContainer && !selectedColor) {
-                const firstColorBtn = colorsContainer.querySelector('button');
-                if (firstColorBtn) selectedColor = firstColorBtn.textContent;
+                alert('Por favor, selecione uma Cor antes de adicionar ao carrinho!');
+                return;
             }
 
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -263,7 +308,7 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             alert('Produto adicionado ao carrinho com sucesso!');
             window.location.href = 'carrinho.html';
-        }
+        };
     </script>
 </body>
 </html>
