@@ -1,8 +1,10 @@
-// Função para extrair com segurança a PRIMEIRA foto cadastrada como capa
+// Função de extração ultra-segura para a foto de capa no carrinho
 function getCoverImage(product) {
     if (!product) return 'assets/logo.png';
 
-    let raw = product.image_url || product.images || product.fotos || product.foto;
+    // Garante a leitura quer seja do objeto principal quer esteja aninhado
+    const target = product.product ? product.product : product;
+    let raw = target.images || target.fotos || target.image_url || target.foto;
     if (!raw) return 'assets/logo.png';
 
     if (Array.isArray(raw)) {
@@ -36,6 +38,17 @@ function getCoverImage(product) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Menu Hambúrguer Mobile
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (menuBtn && navMenu) {
+        menuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            menuBtn.classList.toggle('active');
+        });
+    }
+
     renderCart();
 });
 
@@ -53,7 +66,7 @@ function renderCart() {
         container.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 0;">
                 <p style="font-size: 16px; color: var(--text-light); margin-bottom: 20px;">O seu carrinho está vazio.</p>
-                <a href="produtos.html" style="background: var(--accent); color: white; padding: 12px 25px; border-radius: 6px; font-weight: 800; text-transform: uppercase; font-size: 13px;">Ver Catálogo</a>
+                <a href="produtos.html" style="background: var(--accent); color: white; padding: 12px 25px; border-radius: 6px; font-weight: 800; text-transform: uppercase; font-size: 13px; text-decoration: none;">Ver Catálogo</a>
             </div>
         `;
         return;
@@ -63,19 +76,21 @@ function renderCart() {
     let itemsHTML = '<div class="cart-items-list">';
 
     cart.forEach((item, index) => {
-        const price = item.product.is_promo ? item.product.promo_price : item.product.price;
+        const productObj = item.product || item;
+        const price = productObj.is_promo ? (productObj.promo_price || productObj.price) : productObj.price;
         const itemTotal = price * item.quantity;
         subtotal += itemTotal;
-        
-        // Pega a foto real de capa do produto
-        const coverUrl = getCoverImage(item.product);
+
+        const coverUrl = getCoverImage(productObj);
+        const sizeText = item.variant?.size || 'N/A';
+        const colorText = item.variant?.color || 'N/A';
 
         itemsHTML += `
             <div class="cart-item">
-                <img src="${coverUrl}" alt="${item.product.name}" onerror="this.onerror=null; this.src='assets/logo.png';">
+                <img src="${coverUrl}" alt="${productObj.name}" onerror="this.onerror=null; this.src='assets/logo.png';">
                 <div class="cart-item-details">
-                    <div class="cart-item-title">${item.product.name}</div>
-                    <div class="cart-item-info">Tamanho: ${item.variant.size} | Cor: ${item.variant.color}</div>
+                    <div class="cart-item-title">${productObj.name}</div>
+                    <div class="cart-item-info">Tamanho: ${sizeText} | Cor: ${colorText}</div>
                     <div class="cart-item-price">${formatCurrency(price)}</div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -91,7 +106,7 @@ function renderCart() {
 
     // Resumo e Cupons
     const discountData = JSON.parse(localStorage.getItem('applied_coupon')) || { value: 0, code: '' };
-    const total = subtotal - discountData.value;
+    const total = Math.max(0, subtotal - discountData.value);
 
     let summaryHTML = `
         <div class="cart-summary">
@@ -125,12 +140,14 @@ function renderCart() {
 
 window.updateQty = function(index, change) {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart[index].quantity += change;
-    if (cart[index].quantity <= 0) {
-        cart.splice(index, 1);
+    if (cart[index]) {
+        cart[index].quantity += change;
+        if (cart[index].quantity <= 0) {
+            cart.splice(index, 1);
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
     }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    renderCart();
 }
 
 window.removeItem = function(index) {
@@ -141,10 +158,14 @@ window.removeItem = function(index) {
 }
 
 window.applyCoupon = async function() {
-    const code = document.getElementById('coupon-input').value.trim();
+    const codeInput = document.getElementById('coupon-input');
+    if (!codeInput) return;
+    const code = codeInput.value.trim().toUpperCase();
     if (!code) return alert('Digite um código de cupom.');
 
-    const { data: coupon, error } = await supabase
+    const client = window.supabaseClient || supabase;
+
+    const { data: coupon, error } = await client
         .from('coupons')
         .select('*')
         .eq('code', code)
@@ -160,15 +181,16 @@ window.applyCoupon = async function() {
 
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     let subtotal = cart.reduce((acc, item) => {
-        const price = item.product.is_promo ? item.product.promo_price : item.product.price;
+        const prod = item.product || item;
+        const price = prod.is_promo ? (prod.promo_price || prod.price) : prod.price;
         return acc + (price * item.quantity);
     }, 0);
 
     let discountValue = 0;
-    if (coupon.discount_type === 'percentage') {
+    if (coupon.discount_type === 'percentage' || coupon.type === 'percentage') {
         discountValue = (subtotal * coupon.discount_value) / 100;
     } else {
-        discountValue = coupon.discount_value;
+        discountValue = coupon.discount_value || coupon.value || 0;
     }
 
     localStorage.setItem('applied_coupon', JSON.stringify({ code: coupon.code, value: discountValue }));
