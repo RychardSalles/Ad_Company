@@ -88,7 +88,7 @@
 
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
-    <script>
+   <script>
     let currentImgIndex = 0;
     let productImages = [];
     let selectedSize = '';
@@ -142,15 +142,50 @@
         return ['assets/logo.png'];
     }
 
+    // Processa estritamente os valores vindos do banco de dados
     function parseOptions(value) {
         if (!value) return [];
-        if (Array.isArray(value)) return value;
+        if (Array.isArray(value)) {
+            return value.map(v => String(v).trim()).filter(Boolean);
+        }
+
         if (typeof value === 'string') {
             let trimmed = value.trim();
+            if (!trimmed) return [];
+
+            // Se for JSON string
             if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-                try { return JSON.parse(trimmed); } catch(e) {}
+                try {
+                    let parsed = JSON.parse(trimmed);
+                    if (Array.isArray(parsed)) {
+                        return parsed.map(v => String(v).trim()).filter(Boolean);
+                    }
+                } catch(e) {}
             }
-            return trimmed.split(',').map(item => item.trim()).filter(Boolean);
+
+            // Se for intervalo do tipo "38 al 43", "38 a 43", "38-43"
+            let rangeMatch = trimmed.match(/^(\d{2})\s*(?:a|ao|al|-|ate|até)\s*(\d{2})$/i);
+            if (rangeMatch) {
+                let start = parseInt(rangeMatch[1]);
+                let end = parseInt(rangeMatch[2]);
+                if (start <= end && (end - start) <= 20) {
+                    let list = [];
+                    for (let i = start; i <= end; i++) list.push(String(i));
+                    return list;
+                }
+            }
+
+            // Se for separado por vírgula, barra ou ponto e vírgula (ex: "38, 42, 43")
+            if (trimmed.includes(',') || trimmed.includes('/') || trimmed.includes(';')) {
+                return trimmed.split(/[,/;]/).map(item => item.trim()).filter(Boolean);
+            }
+
+            // Se for lista de números separados por espaço (ex: "38 42 43")
+            if (/^\d{2}(\s+\d{2})+$/.test(trimmed)) {
+                return trimmed.split(/\s+/).filter(Boolean);
+            }
+
+            return [trimmed];
         }
         return [];
     }
@@ -181,28 +216,35 @@
             productImages = parseImages(product);
             currentImgIndex = 0;
 
-            let sizes = parseOptions(product.sizes || product.tamanhos || product.size);
-            let colors = parseOptions(product.colors || product.cores || product.color);
+            // Mapeia todas as possíveis colunas de tamanhos no Supabase
+            let rawSizes = product.sizes || product.tamanhos || product.size || product.sizes_available;
+            let sizes = parseOptions(rawSizes);
+
+            // Mapeia todas as possíveis colunas de cores no Supabase
+            let rawColors = product.colors || product.cores || product.color || product.colors_available;
+            let colors = parseOptions(rawColors);
 
             const descText = (product.description || '').replace(/\\n/g, '\n');
 
+            // Se a coluna de tamanhos estiver vazia, extrai do texto da descrição
             if (sizes.length === 0) {
-                const sizeMatch = descText.match(/Tamanhos?:\s*([^\n\r]+)/i);
+                const sizeMatch = descText.match(/(?:Tamanhos?|Tam):\s*([^\n\r]+)/i);
                 if (sizeMatch && sizeMatch[1]) {
-                    sizes = sizeMatch[1].split(',').map(s => s.trim()).filter(Boolean);
+                    sizes = parseOptions(sizeMatch[1]);
                 }
             }
 
+            // Se a coluna de cores estiver vazia, extrai do texto da descrição
             if (colors.length === 0) {
-                const colorMatch = descText.match(/Cores?:\s*([^\n\r]+)/i);
+                const colorMatch = descText.match(/(?:Cores?|Cor):\s*([^\n\r]+)/i);
                 if (colorMatch && colorMatch[1]) {
-                    colors = colorMatch[1].split(',').map(c => c.trim()).filter(Boolean);
+                    colors = parseOptions(colorMatch[1]);
                 }
             }
 
             let cleanDescription = descText
-                .replace(/Tamanhos?:\s*[^\n\r]+/gi, '')
-                .replace(/Cores?:\s*[^\n\r]+/gi, '')
+                .replace(/(?:Tamanhos?|Tam):\s*[^\n\r]+/gi, '')
+                .replace(/(?:Cores?|Cor):\s*[^\n\r]+/gi, '')
                 .trim();
 
             container.innerHTML = `
@@ -225,7 +267,7 @@
                     ` : ''}
                 </div>
 
-                <!-- COLUNA 3: DIREITA (OPÇÕES, BOTÃO E SANFONADOS) -->
+                <!-- COLUNA 3: DIREITA (DADOS DO BANCO, BOTÃO E SANFONADOS) -->
                 <div class="product-checkout">
                     ${sizes.length > 0 ? `
                         <div class="option-group">
