@@ -65,7 +65,8 @@
                     <span>Total</span>
                     <span id="cart-total">R$ 0,00</span>
                 </div>
-                <button class="btn-checkout" onclick="finalizeOrder()">Ir para Finalização</button>
+                <!-- Redireciona corretamente para a página de checkout.html -->
+                <button class="btn-checkout" onclick="window.location.href='checkout.html'">Ir para Finalização</button>
             </div>
         </div>
     </main>
@@ -163,29 +164,6 @@
             cart.splice(index, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-        };
-
-        window.finalizeOrder = function() {
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            if (cart.length === 0) {
-                alert('O seu carrinho está vazio.');
-                return;
-            }
-
-            let message = "Olá! Gostaria de finalizar o meu pedido na AD Company:\n\n";
-            let total = 0;
-
-            cart.forEach(item => {
-                const itemTotal = item.product.price * item.quantity;
-                total += itemTotal;
-                message += `- ${item.product.name} (Tam: ${item.variant.size}, Cor: ${item.variant.color}) x${item.quantity} - ${formatCurrency(itemTotal)}\n`;
-            });
-
-            message += `\n*Total do Pedido: ${formatCurrency(total)}*`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/5511950070636?text=${encodedMessage}`;
-            window.open(whatsappUrl, '_blank');
         };
     </script>
 </body>
