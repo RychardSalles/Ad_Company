@@ -33,7 +33,7 @@
 
     <header>
         <a href="index.html" class="logo">
-            <img src="assets/logo.png" alt="AD Company" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz4='">
+            <img src="assets/logo.png" alt="AD Company">
         </a>
         
         <nav class="nav-links" id="nav-menu">
@@ -56,29 +56,29 @@
     </header>
 
     <main>
-        <!-- Carrossel / Banner Principal da Home -->
+        <!-- Carrossel / Banner Principal da Home com restrição de altura correta -->
         <section class="hero-carousel" style="position: relative; max-width: 1200px; margin: 20px auto; overflow: hidden; border-radius: 8px;">
             <div class="carousel-track" style="display: flex; transition: transform 0.4s ease-in-out;">
                 <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/banner carrossel 1.jpg" alt="Drop 1" style="width: 100%; height: auto; max-height: 450px; object-fit: cover;" onerror="this.src='assets/logo.png'">
+                    <img src="assets/banner carrossel 1.jpg" alt="Drop 1" style="width: 100%; height: 350px; object-fit: cover; display: block;">
                 </div>
                 <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/banner carrossel 2.jpg" alt="Drop 2" style="width: 100%; height: auto; max-height: 450px; object-fit: cover;" onerror="this.src='assets/logo.png'">
+                    <img src="assets/banner carrossel 2.jpg" alt="Drop 2" style="width: 100%; height: 350px; object-fit: cover; display: block;">
                 </div>
                 <div class="carousel-slide" style="min-width: 100%;">
-                    <img src="assets/banner carrossel 3.jpg" alt="Drop 3" style="width: 100%; height: auto; max-height: 450px; object-fit: cover;" onerror="this.src='assets/logo.png'">
+                    <img src="assets/banner carrossel 3.jpg" alt="Drop 3" style="width: 100%; height: 350px; object-fit: cover; display: block;">
                 </div>
             </div>
-            <!-- Setas do carrossel -->
+            <!-- Setas do carrossel (mantidas discretas e elegantes) -->
             <button class="carousel-button prev" onclick="moveSlide(-1)" style="position: absolute; top: 50%; left: 15px; transform: translateY(-50%); z-index: 10; cursor: pointer;">❮</button>
             <button class="carousel-button next" onclick="moveSlide(1)" style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%); z-index: 10; cursor: pointer;">❯</button>
         </section>
 
         <!-- Secção de Destaque / Catálogo Rápido -->
-        <div style="text-align: center; padding: 40px 20px 20px;">
-            <h2 style="font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">Lançamento Exclusivo</h2>
-            <p style="color: var(--text-light); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px;">Coleção Limitada Streetwear</p>
-            <a href="produtos.html" style="display: inline-block; background: var(--accent); color: white; padding: 14px 30px; border-radius: 6px; font-weight: 800; font-size: 13px; text-transform: uppercase;">Aceder ao Shop</a>
+        <div style="text-align: center; padding: 30px 20px 20px;">
+            <h2 style="font-size: 22px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">Lançamento Exclusivo</h2>
+            <p style="color: var(--text-light); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">Coleção Limitada Streetwear</p>
+            <a href="produtos.html" style="display: inline-block; background: var(--accent); color: white; padding: 12px 28px; border-radius: 6px; font-weight: 800; font-size: 13px; text-transform: uppercase;">Aceder ao Shop</a>
         </div>
     </main>
 
@@ -113,7 +113,6 @@
     <script src="js/home.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Menu Hambúrguer Mobile
             const menuBtn = document.getElementById('mobile-menu-btn');
             const navMenu = document.getElementById('nav-menu');
 
@@ -124,14 +123,12 @@
                 });
             }
 
-            // Atualiza contador do carrinho
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const countEl = document.getElementById('cart-count');
             const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
             if(countEl) countEl.textContent = `(${totalItems})`;
         });
 
-        // Lógica simples do carrossel caso o js/home.js não controle diretamente
         let currentSlide = 0;
         function moveSlide(direction) {
             const track = document.querySelector('.carousel-track');
