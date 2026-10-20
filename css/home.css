@@ -63,3 +63,33 @@
 .product-price { font-size: 15px; color: var(--accent); font-weight: 800; }
 
 @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+
+@media (max-width: 900px) {
+    /* Ajusta o espaçamento geral do container principal da home */
+    main {
+        padding: 20px 10px !important;
+    }
+
+    /* Se houver títulos grandes na home, redimensiona para não estourar a tela */
+    main h1 {
+        font-size: 24px !important;
+    }
+
+    .products-grid, .home-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Em telemóveis muito estreitos, exibe os produtos em coluna única */
+    .products-grid, .home-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Ajusta banners ou carrossel principal para ocuparem 100% da largura sem margens excessivas */
+    .hero-carousel, .banner-container {
+        width: 100% !important;
+        border-radius: 0 !important;
+    }
+}

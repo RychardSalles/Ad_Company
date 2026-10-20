@@ -283,3 +283,10 @@ body {
         min-height: 400px; 
     }
 }
+
+@media (max-width: 900px) {
+    #product-detail {
+        grid-template-columns: 1fr !important; /* Passa de 2 colunas para 1 coluna no telemóvel */
+        gap: 20px !important;
+    }
+}

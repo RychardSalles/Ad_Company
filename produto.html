@@ -6,107 +6,8 @@
     <title>Detalhes do Produto - AD Company</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/produto.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body {
-            background-color: #0d0d0d !important;
-            color: #ffffff !important;
-        }
-
-        .top-bar { 
-            background: var(--accent) !important; 
-            color: #ffffff !important; 
-            overflow: hidden !important; 
-            white-space: nowrap !important; 
-            padding: 10px 0 !important; 
-            font-size: 12px !important; 
-            font-weight: 800 !important; 
-            letter-spacing: 1px !important; 
-            text-transform: uppercase !important; 
-            width: 100% !important;
-            display: block !important;
-            box-sizing: border-box !important;
-        }
-
-        .top-bar-track {
-            display: inline-flex !important;
-            white-space: nowrap !important;
-            width: max-content !important;
-            animation: marqueeMove 15s linear infinite !important;
-        }
-
-        .top-bar-content { 
-            display: inline-flex !important; 
-            white-space: nowrap !important;
-        }
-
-        .top-bar-content span { 
-            margin: 0 30px !important; 
-        }
-
-        @keyframes marqueeMove { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-50%); } 
-        }
-
-        .product-container { 
-            max-width: 1400px; 
-            margin: 60px auto; 
-            padding: 0 40px; 
-            display: grid; 
-            grid-template-columns: 1fr 1.5fr 1fr; 
-            gap: 60px; 
-            align-items: start;
-            background-color: #0d0d0d !important;
-        }
-
-        .product-info-left { display: flex; flex-direction: column; gap: 20px; }
-        .product-title { font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; color: #fff; }
-        .product-price { font-size: 20px; font-weight: 800; color: var(--accent); }
-        .product-desc { font-size: 13px; line-height: 1.8; color: var(--text-light); margin-top: 10px; }
-
-        .product-gallery { 
-            position: relative; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: var(--card-bg, #161616); 
-            border: 1px solid rgba(136, 136, 136, 0.2);
-            border-radius: 8px; 
-            overflow: hidden; 
-            min-height: 500px; 
-        }
-        .gallery-img { width: 100%; height: 100%; object-fit: contain; position: absolute; top:0; left:0; opacity: 0; transition: opacity 0.3s ease; }
-        .gallery-img.active { opacity: 1; z-index: 2; position: relative; }
-        
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; font-size: 20px; cursor: pointer; z-index: 10; padding: 15px; transition: 0.3s; }
-        .nav-btn:hover { background: var(--accent); }
-        .nav-btn.prev { left: 0px; }
-        .nav-btn.next { right: 0px; }
-
-        .product-checkout { display: flex; flex-direction: column; gap: 25px; }
-        
-        .option-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; margin-bottom: 8px; }
-        .option-selector { display: flex; gap: 10px; flex-wrap: wrap; }
-        
-        .option-btn { border: 1px solid rgba(136, 136, 136, 0.3); background: var(--card-bg, #161616); color: white; padding: 12px 18px; cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 600; transition: all 0.2s; border-radius: 6px; }
-        .option-btn:hover { border-color: var(--accent); }
-        .option-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
-
-        .btn-add-cart { background: var(--accent); color: white; border: none; padding: 16px; font-size: 14px; font-family: var(--font-sans); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; width: 100%; border-radius: 6px; }
-        .btn-add-cart:hover { opacity: 0.9; }
-
-        .accordion { border-top: 1px solid rgba(136, 136, 136, 0.2); margin-top: 10px; }
-        .accordion-item { border-bottom: 1px solid rgba(136, 136, 136, 0.2); }
-        .accordion-header { padding: 16px 0; display: flex; justify-content: space-between; cursor: pointer; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
-        .accordion-content { padding: 0 0 15px 0; font-size: 13px; color: var(--text-light); display: none; line-height: 1.6; }
-        .accordion-content.open { display: block; }
-
-        @media (max-width: 1024px) {
-            .product-container { grid-template-columns: 1fr; gap: 40px; }
-            .product-gallery { order: -1; min-height: 400px; }
-        }
-    </style>
 </head>
 <body>
     <div class="top-bar">
@@ -132,21 +33,32 @@
 
     <header>
         <a href="index.html" class="logo">
-            <img src="assets/logo.png" alt="AD Company">
+            <img src="assets/logo.png" alt="AD Company" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz4='">
         </a>
-        <nav class="nav-links">
+        
+        <nav class="nav-links" id="nav-menu">
             <a href="index.html">Início</a>
             <a href="produtos.html">Shop</a>
         </nav>
-        <div class="nav-icons">
-            <a href="carrinho.html" title="Carrinho" style="font-size: 18px; display: flex; align-items: center; gap: 5px;">
-                🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
-            </a>
+
+        <div class="header-right-group">
+            <div class="nav-icons">
+                <a href="carrinho.html" title="Carrinho" style="font-size: 16px; display: flex; align-items: center; gap: 5px;">
+                    🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
+                </a>
+            </div>
+            <button class="menu-toggle" id="mobile-menu-btn" aria-label="Abrir Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
-    <main class="product-container" id="product-page">
-        <p style="grid-column: 2; text-align: center; color: var(--text-light);">A carregar produto...</p>
+    <main class="product-container" style="max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 70vh;">
+        <div id="product-detail" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+            <p style="color: var(--text-light);">A carregar detalhes do produto...</p>
+        </div>
     </main>
 
     <footer>
@@ -165,7 +77,7 @@
             <div class="footer-col">
                 <h3>Contato</h3>
                 <ul>
-                    <li><a href="https://www.instagram.com/adthecompany?dlrf=czNzcGNzeXd5OXdh" target="_blank">Instagram: @adthecompany</a></li>
+                    <li><a href="https://www.instagram.com/adthecompany" target="_blank">Instagram: @adthecompany</a></li>
                     <li><a href="https://wa.me/5511950070636" target="_blank">WhatsApp: (11) 95007-0636</a></li>
                 </ul>
             </div>
@@ -178,161 +90,147 @@
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Menu Hambúrguer Mobile
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const navMenu = document.getElementById('nav-menu');
+
+            if (menuBtn && navMenu) {
+                menuBtn.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                    menuBtn.classList.toggle('active');
+                });
+            }
+
+            // Contador do carrinho
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
             const countEl = document.getElementById('cart-count');
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
             if(countEl) countEl.textContent = `(${totalItems})`;
 
-            const params = new URLSearchParams(window.location.search);
-            const productId = params.get('id');
-
-            if (!productId) {
-                document.getElementById('product-page').innerHTML = '<p style="grid-column: 2; text-align: center; color: var(--text-light);">Produto não encontrado.</p>';
-                return;
-            }
-
-            const { data: product, error } = await supabase.from('products').select('*').eq('id', productId).single();
-
-            if (error || !product) {
-                document.getElementById('product-page').innerHTML = '<p style="grid-column: 2; text-align: center; color: var(--text-light);">Erro ao carregar o produto.</p>';
-                return;
-            }
-
-            // Tamanhos
-            let sizes = ["38", "39", "40", "41", "42", "43"]; 
-            if (product.sizes) {
-                sizes = product.sizes.split(',').map(s => s.trim());
-            }
-
-            // Cores
-            let colors = ["Branco", "Preto"];
-            let rawDesc = product.description || "";
-            if (rawDesc.includes('Cores:')) {
-                const parts = rawDesc.split('Cores:');
-                rawDesc = parts[0].trim();
-                const colorPart = parts[1].split('\n')[0].trim();
-                if (colorPart) {
-                    colors = colorPart.split(',').map(c => c.trim());
-                }
-            }
-
-            const descText = rawDesc || "Design exclusivo e material de alta qualidade.";
-            const measuresText = "Consulte a tabela de numeração padrão para este modelo streetwear.";
-            const prazoText = "Entrega estimada em até 7 dias úteis para todo o Brasil.";
-
-            // Múltiplas Imagens (Carrossel)
-            let imagesList = ['assets/logo.png'];
-            if (product.image_url) {
-                imagesList = product.image_url.split(',').map(img => img.trim()).filter(img => img.length > 0);
-            }
-
-            const priceHtml = product.is_promo ? 
-                `<span style="text-decoration: line-through; color: var(--text-light); font-size: 14px; margin-right: 10px;">${formatCurrency(product.price)}</span> ${formatCurrency(product.promo_price)}` : 
-                formatCurrency(product.price);
-
-            const html = `
-                <div class="product-info-left">
-                    <h1 class="product-title">${product.name}</h1>
-                    <div class="product-price">${priceHtml}</div>
-                    <div class="product-desc"><p>${descText}</p></div>
-                </div>
-
-                <div class="product-gallery">
-                    ${imagesList.length > 1 ? '<button class="nav-btn prev" onclick="changeImage(-1)">❮</button>' : ''}
-                    ${imagesList.map((img, idx) => `<img src="${img}" class="gallery-img ${idx === 0 ? 'active' : ''}" alt="${product.name}" onerror="this.src='assets/logo.png'">`).join('')}
-                    ${imagesList.length > 1 ? '<button class="nav-btn next" onclick="changeImage(1)">❯</button>' : ''}
-                </div>
-
-                <div class="product-checkout">
-                    <div>
-                        <div class="option-label">Selecione o Tamanho</div>
-                        <div class="option-selector" id="size-container">
-                            ${sizes.map(s => `<button class="option-btn size-btn" onclick="selectSize(this, '${s}')">${s}</button>`).join('')}
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="option-label">Selecione a Cor</div>
-                        <div class="option-selector" id="color-container">
-                            ${colors.map(c => `<button class="option-btn color-btn" onclick="selectColor(this, '${c}')">${c}</button>`).join('')}
-                        </div>
-                    </div>
-                    
-                    <button class="btn-add-cart" onclick="addToCart('${product.id}', '${product.name}', ${product.is_promo ? product.promo_price : product.price}, '${imagesList[0]}')">
-                        Adicionar ao carrinho
-                    </button>
-
-                    <div class="accordion">
-                        <div class="accordion-item">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">Medidas <span>˅</span></div>
-                            <div class="accordion-content">${measuresText}</div>
-                        </div>
-                        <div class="accordion-item">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">Prazo <span>˅</span></div>
-                            <div class="accordion-content">${prazoText}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('product-page').innerHTML = html;
+            loadProductDetails();
         });
 
-        let currentImg = 0;
-        window.changeImage = function(direction) {
-            const images = document.querySelectorAll('.gallery-img');
-            if(images.length <= 1) return;
-            images[currentImg].classList.remove('active');
-            currentImg = (currentImg + direction + images.length) % images.length;
-            images[currentImg].classList.add('active');
-        };
+        async function loadProductDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            const container = document.getElementById('product-detail');
 
-        let selectedSize = null;
-        window.selectSize = function(btn, size) {
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+            if (!productId) {
+                container.innerHTML = '<p style="color: red;">Produto não especificado.</p>';
+                return;
+            }
+
+            try {
+                const { data: product, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('id', productId)
+                    .single();
+
+                if (error || !product) {
+                    container.innerHTML = '<p style="color: red;">Produto não encontrado.</p>';
+                    return;
+                }
+
+                // Normaliza tamanhos e cores cadastrados restritamente ao produto
+                let sizes = [];
+                try {
+                    sizes = typeof product.sizes === 'string' ? JSON.parse(product.sizes) : (product.sizes || []);
+                } catch(e) { sizes = []; }
+
+                let colors = [];
+                try {
+                    colors = typeof product.colors === 'string' ? JSON.parse(product.colors) : (product.colors || []);
+                } catch(e) { colors = []; }
+
+                container.innerHTML = `
+                    <div>
+                        <img src="${product.image_url || 'assets/logo.png'}" alt="${product.name}" style="width: 100%; border-radius: 8px; object-fit: cover; background: #161618;" onerror="this.src='assets/logo.png'">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <h1 style="font-size: 26px; font-weight: 800; text-transform: uppercase;">${product.name}</h1>
+                        <span style="font-size: 22px; font-weight: 800; color: var(--accent);">${formatCurrency(product.price)}</span>
+                        <p style="color: var(--text-light); font-size: 14px; line-height: 1.6;">${product.description || 'Sem descrição informada.'}</p>
+                        
+                        ${sizes.length > 0 ? `
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light);">Tamanho</label>
+                                <div style="display: flex; gap: 10px;" id="size-options">
+                                    ${sizes.map((s, idx) => `<button type="button" class="size-btn ${idx === 0 ? 'selected' : ''}" onclick="selectOption('size', '${s}', this)" style="padding: 8px 16px; background: #161618; border: 1px solid ${idx === 0 ? 'var(--accent)' : 'var(--text-light)'}; color: white; border-radius: 4px; cursor: pointer; font-weight: 600;">${s}</button>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${colors.length > 0 ? `
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light);">Cor</label>
+                                <div style="display: flex; gap: 10px;" id="color-options">
+                                    ${colors.map((c, idx) => `<button type="button" class="color-btn ${idx === 0 ? 'selected' : ''}" onclick="selectOption('color', '${c}', this)" style="padding: 8px 16px; background: #161618; border: 1px solid ${idx === 0 ? 'var(--accent)' : 'var(--text-light)'}; color: white; border-radius: 4px; cursor: pointer; font-weight: 600;">${c}</button>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <button onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})" style="margin-top: 10px; background: var(--accent); color: white; border: none; padding: 16px; border-radius: 6px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s;">Adicionar ao Carrinho</button>
+                    </div>
+                `;
+            } catch (err) {
+                console.error('Erro ao carregar produto:', err);
+                container.innerHTML = '<p style="color: red;">Erro ao carregar os dados do produto.</p>';
+            }
+        }
+
+        let selectedSize = '';
+        let selectedColor = '';
+
+        window.selectOption = function(type, value, btn) {
+            const parent = btn.parentElement;
+            parent.querySelectorAll('button').forEach(b => {
+                b.style.borderColor = 'var(--text-light)';
+                b.classList.remove('selected');
+            });
+            btn.style.borderColor = 'var(--accent)';
             btn.classList.add('selected');
-            selectedSize = size;
-        };
 
-        let selectedColor = null;
-        window.selectColor = function(btn, color) {
-            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedColor = color;
-        };
+            if (type === 'size') selectedSize = value;
+            if (type === 'color') selectedColor = value;
+        }
 
-        window.toggleAccordion = function(header) {
-            const content = header.nextElementSibling;
-            content.classList.toggle('open');
-        };
+        window.addToCart = function(product) {
+            const sizesContainer = document.getElementById('size-options');
+            const colorsContainer = document.getElementById('color-options');
 
-        window.addToCart = function(id, name, price, img) {
-            if(!selectedSize) { alert('Por favor, selecione um tamanho.'); return; }
-            if(!selectedColor) { alert('Por favor, selecione uma cor.'); return; }
-            
+            if (sizesContainer && !selectedSize) {
+                const firstSizeBtn = sizesContainer.querySelector('button');
+                if (firstSizeBtn) selectedSize = firstSizeBtn.textContent;
+            }
+            if (colorsContainer && !selectedColor) {
+                const firstColorBtn = colorsContainer.querySelector('button');
+                if (firstColorBtn) selectedColor = firstColorBtn.textContent;
+            }
+
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             
-            const existingItem = cart.find(item => item.product.id === id && item.variant.size === selectedSize && item.variant.color === selectedColor);
-            if(existingItem) {
-                existingItem.quantity += 1;
+            const existingIndex = cart.findIndex(item => 
+                item.product.id === product.id && 
+                item.variant?.size === selectedSize && 
+                item.variant?.color === selectedColor
+            );
+
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += 1;
             } else {
                 cart.push({
-                    product: { id, name, price, image_url: img },
-                    variant: { size: selectedSize, color: selectedColor },
+                    product: product,
+                    variant: { size: selectedSize || 'Único', color: selectedColor || 'Única' },
                     quantity: 1
                 });
             }
-            
+
             localStorage.setItem('cart', JSON.stringify(cart));
-            alert('Produto adicionado ao carrinho!');
-            
-            const countEl = document.getElementById('cart-count');
-            if(countEl) {
-                const total = cart.reduce((acc, item) => acc + item.quantity, 0);
-                countEl.textContent = `(${total})`;
-            }
-        };
+            alert('Produto adicionado ao carrinho com sucesso!');
+            window.location.href = 'carrinho.html';
+        }
     </script>
 </body>
 </html>

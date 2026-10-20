@@ -183,3 +183,10 @@ body, main, .checkout-container {
 @media (max-width: 900px) {
     #checkout-form { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 900px) {
+    #checkout-form {
+        grid-template-columns: 1fr !important; /* Dados e resumo emparelham perfeitamente em telas pequenas */
+        gap: 20px !important;
+    }
+}

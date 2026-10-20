@@ -3,140 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todos os Tênis - AD Company</title>
+    <title>Shop - AD Company</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        /* Fundo escuro garantido */
-        body, main, .catalog-container {
-            background-color: #0d0d0d !important;
-            color: #ffffff !important;
-        }
-
-        /* Barra superior animada (marquee) */
-        .top-bar { 
-            background: var(--accent) !important; 
-            color: #ffffff !important; 
-            overflow: hidden !important; 
-            white-space: nowrap !important; 
-            padding: 10px 0 !important; 
-            font-size: 12px !important; 
-            font-weight: 800 !important; 
-            letter-spacing: 1px !important; 
-            text-transform: uppercase !important; 
-            width: 100% !important;
-            display: block !important;
-            box-sizing: border-box !important;
-        }
-
-        .top-bar-track {
-            display: inline-flex !important;
-            white-space: nowrap !important;
-            width: max-content !important;
-            animation: marqueeMove 15s linear infinite !important;
-        }
-
-        .top-bar-content { 
-            display: inline-flex !important; 
-            white-space: nowrap !important;
-        }
-
-        .top-bar-content span { 
-            margin: 0 30px !important; 
-        }
-
-        @keyframes marqueeMove { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-50%); } 
-        }
-
-        /* Vitrine de Produtos - Alinhamento Lado a Lado */
-        .catalog-container {
-            max-width: 1400px;
-            margin: 40px auto;
-            padding: 0 40px;
-        }
-
-        .catalog-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .catalog-title {
-            font-size: 24px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: -0.5px;
-        }
-
-        .products-grid {
-            display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
-            gap: 30px !important;
-            width: 100% !important;
-        }
-
-        .product-card {
-            background: var(--card-bg, #161616);
-            border: 1px solid rgba(136, 136, 136, 0.2);
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: border-color 0.2s;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .product-card:hover {
-            border-color: var(--accent);
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            background-color: #111;
-        }
-
-        .product-card-info {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .product-card-title {
-            font-size: 15px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .product-card-price {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--accent);
-        }
-
-        /* Responsividade para Tablets e Telemóveis */
-        @media (max-width: 1024px) {
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .products-grid {
-                grid-template-columns: 1fr !important;
-            }
-            .catalog-container {
-                padding: 0 20px;
-            }
-        }
-    </style>
 </head>
 <body>
     <div class="top-bar">
@@ -162,24 +32,32 @@
 
     <header>
         <a href="index.html" class="logo">
-            <img src="assets/logo.png" alt="AD Company">
+            <img src="assets/logo.png" alt="AD Company" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4='">
         </a>
-        <nav class="nav-links">
+        
+        <nav class="nav-links" id="nav-menu">
             <a href="index.html">Início</a>
-            <a href="produtos.html">Shop</a>
+            <a href="produtos.html" style="color: var(--accent);">Shop</a>
         </nav>
-        <div class="nav-icons">
-            <a href="carrinho.html" title="Carrinho" style="font-size: 18px; display: flex; align-items: center; gap: 5px;">
-                🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
-            </a>
+
+        <div class="header-right-group">
+            <div class="nav-icons">
+                <a href="carrinho.html" title="Carrinho" style="font-size: 16px; display: flex; align-items: center; gap: 5px;">
+                    🛒 <span id="cart-count" style="font-size: 13px; font-weight: 600;">(0)</span>
+                </a>
+            </div>
+            <button class="menu-toggle" id="mobile-menu-btn" aria-label="Abrir Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
-    <main class="catalog-container">
-        <div class="catalog-header">
-            <h1 class="catalog-title">Todos os Tênis</h1>
-        </div>
-        <div class="products-grid" id="catalog-grid">
+    <main style="max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 70vh;">
+        <h1 style="font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 30px;">Catálogo Completo</h1>
+        <div id="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+            <!-- Produtos carregados dinamicamente via JS -->
             <p style="color: var(--text-light);">A carregar produtos...</p>
         </div>
     </main>
@@ -213,44 +91,58 @@
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-            const countEl = document.getElementById('cart-count');
-            if(countEl) countEl.textContent = `(${totalItems})`;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Script do Menu Hambúrguer
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const navMenu = document.getElementById('nav-menu');
 
-            const grid = document.getElementById('catalog-grid');
-            const { data: products, error } = await supabase.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false });
-
-            if (error || !products || products.length === 0) {
-                grid.innerHTML = '<p style="color: var(--text-light);">Nenhum produto disponível no momento.</p>';
-                return;
+            if (menuBtn && navMenu) {
+                menuBtn.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                    menuBtn.classList.toggle('active');
+                });
             }
 
-            grid.innerHTML = '';
-            products.forEach(prod => {
-                let img = 'assets/logo.png';
-                if (prod.image_url) {
-                    const imgs = prod.image_url.split(',').map(i => i.trim());
-                    if (imgs.length > 0 && imgs[0]) img = imgs[0];
+            // Carrinho count
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const countEl = document.getElementById('cart-count');
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            if(countEl) countEl.textContent = `(${totalItems})`;
+
+            // Carregar produtos da loja
+            loadProductsCatalog();
+        });
+
+        async function loadProductsCatalog() {
+            const grid = document.getElementById('products-grid');
+            try {
+                const { data, error } = await supabase.from('products').select('*').eq('is_active', true);
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    grid.innerHTML = '<p style="color: var(--text-light);">Nenhum produto disponível no momento.</p>';
+                    return;
                 }
 
-                const priceDisplay = prod.is_promo ? 
-                    `<span style="text-decoration: line-through; font-size: 13px; color: var(--text-light); margin-right: 8px;">${formatCurrency(prod.price)}</span> ${formatCurrency(prod.promo_price)}` : 
-                    formatCurrency(prod.price);
-
-                const cardHtml = `
-                    <a href="produto.html?id=${prod.id}" class="product-card">
-                        <img src="${img}" alt="${prod.name}" onerror="this.src='assets/logo.png'">
-                        <div class="product-card-info">
-                            <span class="product-card-title">${prod.name}</span>
-                            <span class="product-card-price">${priceDisplay}</span>
+                grid.innerHTML = '';
+                data.forEach(p => {
+                    const card = `
+                        <div style="background: var(--card-bg); border: 1px solid var(--text-light); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+                            <img src="${p.image_url || 'assets/logo.png'}" alt="${p.name}" style="width: 100%; height: 250px; object-fit: cover;" onerror="this.src='assets/logo.png'">
+                            <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px; flex: 1;">
+                                <h3 style="font-size: 14px; font-weight: 600; text-transform: uppercase;">${p.name}</h3>
+                                <span style="font-size: 15px; font-weight: 800; color: var(--accent);">${formatCurrency(p.price)}</span>
+                                <a href="produto.html?id=${p.id}" style="margin-top: auto; display: block; text-align: center; background: var(--accent); color: white; padding: 10px; border-radius: 4px; font-size: 12px; font-weight: 800; text-transform: uppercase;">Ver Detalhes</a>
+                            </div>
                         </div>
-                    </a>
-                `;
-                grid.insertAdjacentHTML('beforeend', cardHtml);
-            });
-        });
+                    `;
+                    grid.insertAdjacentHTML('beforeend', card);
+                });
+            } catch (err) {
+                console.error('Erro ao carregar produtos:', err);
+                grid.innerHTML = '<p style="color: red;">Erro ao carregar o catálogo.</p>';
+            }
+        }
     </script>
 </body>
 </html>
