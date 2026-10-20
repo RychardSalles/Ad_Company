@@ -249,3 +249,44 @@ footer {
         min-height: 400px !important; 
     }
 }
+
+/* --- CORREÇÃO DEFINITIVA DE LAYOUT PARA A PÁGINA DE DETALHES --- */
+.product-container, main {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    gap: 40px !important;
+    max-width: 1200px !important;
+    margin: 40px auto !important;
+    padding: 0 20px !important;
+}
+
+/* Força os blocos internos ou o conteúdo gerado a dividirem-se em duas colunas principais no PC */
+.product-container > *, main > div {
+    flex: 1 1 45% !important;
+    min-width: 300px !important;
+}
+
+/* Ajuste específico para a imagem/galeria ficar em destaque à esquerda */
+.product-gallery, .product-container img, main img:first-of-type {
+    max-width: 500px !important;
+    width: 100% !important;
+    height: 450px !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+}
+
+/* Responsividade para telemóveis (tudo em coluna única) */
+@media (max-width: 768px) {
+    .product-container, main {
+        flex-direction: column !important;
+        padding: 0 10px !important;
+    }
+    
+    .product-container > *, main > div {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+    }
+}
