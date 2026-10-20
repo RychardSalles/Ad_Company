@@ -23,7 +23,7 @@ body {
     flex-direction: column;
 }
 
-/* Barra Superior e Cabeçalho */
+/* --- BARRA SUPERIOR --- */
 .top-bar { 
     background: var(--accent) !important; 
     color: white !important; 
@@ -39,6 +39,7 @@ body {
 .top-bar-content span { margin: 0 30px !important; }
 @keyframes marqueeMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
+/* --- CABEÇALHO --- */
 header { 
     background-color: var(--card-bg) !important; 
     border-bottom: 1px solid var(--border-color) !important; 
@@ -47,13 +48,78 @@ header {
     justify-content: space-between !important; 
     align-items: center !important; 
 }
-.logo img { height: 75px !important; width: auto !important; object-fit: contain !important; }
-.nav-links { display: flex !important; gap: 30px !important; align-items: center !important; list-style: none !important; }
-.nav-links a { color: var(--text-light) !important; text-decoration: none !important; font-size: 13px !important; font-weight: 600 !important; text-transform: uppercase !important; }
-.nav-links a:hover, .nav-links a.active { color: var(--accent) !important; }
 
-/* MAIN & GRELHA */
-main {
+/* Remove links roxos/azuis e sublinhado padrão do cabeçalho */
+header a, 
+header a:visited, 
+header a:hover, 
+header a:active {
+    color: var(--text-main) !important;
+    text-decoration: none !important;
+}
+
+.logo img { 
+    height: 75px !important; 
+    width: auto !important; 
+    object-fit: contain !important; 
+}
+
+.nav-links { 
+    display: flex !important; 
+    gap: 30px !important; 
+    align-items: center !important; 
+    list-style: none !important; 
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.nav-links a { 
+    color: var(--text-light) !important; 
+    font-size: 13px !important; 
+    font-weight: 600 !important; 
+    text-transform: uppercase !important; 
+}
+
+.nav-links a:hover, .nav-links a.active { 
+    color: var(--accent) !important; 
+}
+
+/* ÍCONE DO CARRINHO E GRUPO DIREITO */
+.header-right-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 20px !important;
+}
+
+.nav-icons {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.nav-icons a {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+#cart-count {
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+.menu-toggle {
+    display: none !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+/* --- CONTENTOR PRINCIPAL --- */
+main.catalog-container, main {
     max-width: 1300px !important;
     margin: 40px auto !important;
     padding: 0 20px !important;
@@ -71,16 +137,15 @@ main {
     color: #ffffff !important;
 }
 
-/* GRELHA DO CATÁLOGO: 4 COLUNAS EM DESKTOP */
-#products-grid, .products-grid {
+/* --- GRELHA DO CATÁLOGO (4 COLUNAS EM DESKTOP) --- */
+#products-grid {
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 25px !important;
     width: 100% !important;
-    align-items: stretch !important;
 }
 
-/* CARDS DOS PRODUTOS */
+/* CARTÕES DOS PRODUTOS */
 .product-card {
     background: var(--card-bg) !important;
     border: 1px solid var(--border-color) !important;
@@ -89,7 +154,7 @@ main {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    max-width: 100% !important;
+    min-width: 0 !important;
     transition: transform 0.2s, border-color 0.2s !important;
 }
 
@@ -100,8 +165,9 @@ main {
 
 .product-card img {
     width: 100% !important;
-    height: 250px !important;
-    max-height: 250px !important;
+    max-width: 100% !important;
+    height: 220px !important;
+    max-height: 220px !important;
     object-fit: cover !important;
     display: block !important;
     background-color: #000 !important;
@@ -120,6 +186,9 @@ main {
     font-weight: 700 !important;
     text-transform: uppercase !important;
     color: #ffffff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .product-card-price {
@@ -140,30 +209,25 @@ main {
     font-weight: 800 !important;
     text-transform: uppercase !important;
     text-decoration: none !important;
-    transition: opacity 0.2s !important;
 }
 
-.btn-card-details:hover {
-    opacity: 0.9 !important;
-}
-
-/* RODAPÉ */
+/* --- RODAPÉ --- */
 footer { background-color: var(--card-bg) !important; border-top: 1px solid var(--border-color) !important; padding: 40px 20px 20px !important; margin-top: auto !important; }
 .footer-container { max-width: 1200px !important; margin: 0 auto !important; display: grid !important; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important; gap: 30px !important; margin-bottom: 30px !important; }
 .footer-col h3 { font-size: 14px !important; font-weight: 800 !important; text-transform: uppercase !important; margin-bottom: 15px !important; color: #fff !important; }
-.footer-col ul { list-style: none !important; }
+.footer-col ul { list-style: none !important; padding: 0 !important; margin: 0 !important; }
 .footer-col ul li { margin-bottom: 10px !important; }
 .footer-col ul li a { color: var(--text-light) !important; text-decoration: none !important; font-size: 13px !important; }
 .footer-bottom { text-align: center !important; border-top: 1px solid var(--border-color) !important; padding-top: 20px !important; font-size: 12px !important; color: var(--text-light) !important; }
 
-/* RESPONSIVIDADE: 2 COLUNAS NO TELEMÓVEL E TABLET */
+/* --- RESPONSIVIDADE (2 COLUNAS NO TELEMÓVEL) --- */
 @media (max-width: 900px) {
-    #products-grid, .products-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+    #products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 15px !important;
     }
     .product-card img {
-        height: 180px !important;
-        max-height: 180px !important;
+        height: 160px !important;
+        max-height: 160px !important;
     }
 }
