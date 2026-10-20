@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!data.erro) {
                         const streetInput = document.getElementById('client-street');
                         if (streetInput) {
-                            streetInput.value = `${data.logradouro} - Bairro: ${data.bairro}, ${data.localidade}/${data.uf}`;
+                            streetInput.value = `${data.logradouro}, Bairro: ${data.bairro}, ${data.localidade}/${data.uf}`;
                         }
                         const numberInput = document.getElementById('client-number');
                         if (numberInput) numberInput.focus();
@@ -95,23 +95,49 @@ window.toggleShippingType = function() {
     updateTotal();
 }
 
-window.applyCoupon = function() {
+window.applyCoupon = async function() {
     const codeInput = document.getElementById('coupon-code');
     if (!codeInput) return;
     
     const code = codeInput.value.trim().toUpperCase();
-    if (code === 'AD10') {
-        discountAmount = currentSubtotal * 0.10;
-        const discountRow = document.getElementById('discount-row');
-        const discountVal = document.getElementById('checkout-discount');
-        if (discountRow) discountRow.style.display = 'flex';
-        if (discountVal) discountVal.textContent = '-' + formatCurrency(discountAmount);
-        alert('Cupom aplicado com sucesso! 10% de desconto.');
-    } else {
-        alert('Cupom inválido ou expirado.');
-        discountAmount = 0;
-        const discountRow = document.getElementById('discount-row');
-        if (discountRow) discountRow.style.display = 'none';
+    if (!code) {
+        alert('Digite um código de cupom.');
+        return;
+    }
+
+    try {
+        // Consulta o cupom diretamente na tabela 'coupons' do Supabase
+        const { data, error } = await window.supabaseClient
+            .from('coupons')
+            .select('*')
+            .eq('code', code)
+            .single();
+
+        if (error || !data) {
+            alert('Cupom inválido ou expirado.');
+            discountAmount = 0;
+            const discountRow = document.getElementById('discount-row');
+            if (discountRow) discountRow.style.display = 'none';
+        } else {
+            // Suporta tipos de desconto por percentagem ou valor fixo
+            const type = data.discount_type || data.type;
+            const val = data.discount_value !== undefined ? data.discount_value : (data.value || 0);
+
+            if (type === 'percentage' || type === 'percentual') {
+                discountAmount = currentSubtotal * (val / 100);
+            } else {
+                discountAmount = val;
+            }
+
+            const discountRow = document.getElementById('discount-row');
+            const discountVal = document.getElementById('checkout-discount');
+            if (discountRow) discountRow.style.display = 'flex';
+            if (discountVal) discountVal.textContent = '-' + formatCurrency(discountAmount);
+            alert('Cupom aplicado com sucesso!');
+        }
+    } catch (err) {
+        console.error('Erro ao validar cupom:', err);
+        alert('Erro ao validar o cupom. Tente novamente.');
     }
     updateTotal();
 }
