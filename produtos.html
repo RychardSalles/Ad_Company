@@ -91,58 +91,84 @@
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Script do Menu Hambúrguer
-            const menuBtn = document.getElementById('mobile-menu-btn');
-            const navMenu = document.getElementById('nav-menu');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Script do Menu Hambúrguer
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const navMenu = document.getElementById('nav-menu');
 
-            if (menuBtn && navMenu) {
-                menuBtn.addEventListener('click', () => {
-                    navMenu.classList.toggle('active');
-                    menuBtn.classList.toggle('active');
-                });
-            }
-
-            // Carrinho count
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const countEl = document.getElementById('cart-count');
-            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-            if(countEl) countEl.textContent = `(${totalItems})`;
-
-            // Carregar produtos da loja
-            loadProductsCatalog();
-        });
-
-        async function loadProductsCatalog() {
-            const grid = document.getElementById('products-grid');
-            try {
-                const { data, error } = await supabase.from('products').select('*').eq('is_active', true);
-                if (error) throw error;
-
-                if (!data || data.length === 0) {
-                    grid.innerHTML = '<p style="color: var(--text-light);">Nenhum produto disponível no momento.</p>';
-                    return;
-                }
-
-                grid.innerHTML = '';
-                data.forEach(p => {
-                    const card = `
-                        <div style="background: var(--card-bg); border: 1px solid var(--text-light); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
-                            <img src="${p.image_url || 'assets/logo.png'}" alt="${p.name}" style="width: 100%; height: 250px; object-fit: cover;" onerror="this.src='assets/logo.png'">
-                            <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px; flex: 1;">
-                                <h3 style="font-size: 14px; font-weight: 600; text-transform: uppercase;">${p.name}</h3>
-                                <span style="font-size: 15px; font-weight: 800; color: var(--accent);">${formatCurrency(p.price)}</span>
-                                <a href="produto.html?id=${p.id}" style="margin-top: auto; display: block; text-align: center; background: var(--accent); color: white; padding: 10px; border-radius: 4px; font-size: 12px; font-weight: 800; text-transform: uppercase;">Ver Detalhes</a>
-                            </div>
-                        </div>
-                    `;
-                    grid.insertAdjacentHTML('beforeend', card);
-                });
-            } catch (err) {
-                console.error('Erro ao carregar produtos:', err);
-                grid.innerHTML = '<p style="color: red;">Erro ao carregar o catálogo.</p>';
-            }
+        if (menuBtn && navMenu) {
+            menuBtn.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                menuBtn.classList.toggle('active');
+            });
         }
-    </script>
+
+        // Carrinho count
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const countEl = document.getElementById('cart-count');
+        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+        if(countEl) countEl.textContent = `(${totalItems})`;
+
+        // Carregar produtos da loja
+        loadProductsCatalog();
+    });
+
+    // Função para extrair sempre a PRIMEIRA foto cadastrada como capa
+    function getCoverImage(product) {
+        if (!product) return 'assets/logo.png';
+        let raw = product.images || product.fotos || product.image_url;
+        if (!raw) return 'assets/logo.png';
+
+        if (Array.isArray(raw)) {
+            return raw[0] || 'assets/logo.png';
+        }
+        if (typeof raw === 'string') {
+            let trimmed = raw.trim();
+            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                try {
+                    let parsed = JSON.parse(trimmed);
+                    return parsed[0] || 'assets/logo.png';
+                } catch(e) {}
+            }
+            if (trimmed.includes(',')) {
+                return trimmed.split(',')[0].trim() || 'assets/logo.png';
+            }
+            return trimmed || 'assets/logo.png';
+        }
+        return 'assets/logo.png';
+    }
+
+    async function loadProductsCatalog() {
+        const grid = document.getElementById('products-grid');
+        try {
+            const { data, error } = await supabase.from('products').select('*').eq('is_active', true);
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<p style="color: var(--text-light); text-align: center; grid-column: 1 / -1;">Nenhum produto disponível no momento.</p>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(p => {
+                const coverUrl = getCoverImage(p);
+                const card = `
+                    <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+                        <img src="${coverUrl}" alt="${p.name}" style="width: 100%; height: 220px; object-fit: cover;" onerror="this.src='assets/logo.png'">
+                        <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px; flex: 1;">
+                            <h3 style="font-size: 14px; font-weight: 600; text-transform: uppercase;">${p.name}</h3>
+                            <span style="font-size: 15px; font-weight: 800; color: var(--accent);">${formatCurrency(p.price)}</span>
+                            <a href="produto.html?id=${p.id}" style="margin-top: auto; display: block; text-align: center; background: var(--accent); color: white; padding: 10px; border-radius: 4px; font-size: 12px; font-weight: 800; text-transform: uppercase; text-decoration: none;">Ver Detalhes</a>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', card);
+            });
+        } catch (err) {
+            console.error('Erro ao carregar produtos:', err);
+            grid.innerHTML = '<p style="color: red; grid-column: 1 / -1;">Erro ao carregar o catálogo.</p>';
+        }
+    }
+</script>
 </body>
 </html>

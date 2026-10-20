@@ -113,7 +113,6 @@
             loadProductDetails();
         });
 
-        // Parser universal de imagens
         function parseImages(product) {
             let imgs = [];
             let raw = product.images || product.fotos || product.image_url;
@@ -170,8 +169,9 @@
                     return;
                 }
 
-                // Processa a galeria de imagens
+                // Processa a galeria (primeira foto = índice 0)
                 productImages = parseImages(product);
+                currentImgIndex = 0;
 
                 let sizes = parseOptions(product.sizes || product.tamanhos || product.size);
                 let colors = parseOptions(product.colors || product.cores || product.color);
@@ -197,6 +197,7 @@
                     .replace(/Cores?:\s*[^\n\r]+/gi, '')
                     .trim();
 
+                // Monta o layout sem botões pré-selecionados
                 container.innerHTML = `
                     <!-- COLUNA 1: ESQUERDA (DESCRIÇÃO) -->
                     <div class="product-info-left">
@@ -205,7 +206,7 @@
                         <div class="product-desc">${cleanDescription || 'Sem descrição informada.'}</div>
                     </div>
 
-                    <!-- COLUNA 2: CENTRO (CARROSSEL DE IMAGENS) -->
+                    <!-- COLUNA 2: CENTRO (CARROSSEL COM NAVEGAÇÃO MANUAL) -->
                     <div class="product-gallery">
                         ${productImages.map((img, idx) => `
                             <img class="gallery-img ${idx === 0 ? 'active' : ''}" src="${img}" alt="${product.name}" onerror="this.src='assets/logo.png'">
@@ -217,7 +218,7 @@
                         ` : ''}
                     </div>
 
-                    <!-- COLUNA 3: DIREITA (SELEÇÃO) -->
+                    <!-- COLUNA 3: DIREITA (OPÇÕES ZERADAS E CHECKOUT) -->
                     <div class="product-checkout">
                         ${sizes.length > 0 ? `
                             <div class="option-group">
@@ -251,6 +252,7 @@
             }
         }
 
+        // Navegação estritamente manual do carrossel
         window.changeImage = function(direction) {
             if (!productImages.length) return;
             currentImgIndex = (currentImgIndex + direction + productImages.length) % productImages.length;
@@ -264,6 +266,7 @@
             });
         };
 
+        // Seleção interativa manual de tamanho/cor
         window.selectOption = function(type, value, btn) {
             const parent = btn.parentElement;
             parent.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
@@ -278,12 +281,12 @@
             const colorsContainer = document.getElementById('color-options');
 
             if (sizesContainer && !selectedSize) {
-                alert('Por favor, selecione um Tamanho antes de adicionar ao carrinho!');
+                alert('Por favor, selecione um Tamanho!');
                 return;
             }
 
             if (colorsContainer && !selectedColor) {
-                alert('Por favor, selecione uma Cor antes de adicionar ao carrinho!');
+                alert('Por favor, selecione uma Cor!');
                 return;
             }
 

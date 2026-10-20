@@ -153,35 +153,36 @@ main.product-container {
     white-space: pre-line;
 }
 
-/* COLUNA 2: CENTRO (CARROSSEL DE IMAGENS) */
+/* COLUNA 2: CENTRO (CARROSSEL ISOLADO) */
 .product-gallery {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    overflow: hidden;
+    overflow: hidden !important;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     position: relative;
-    min-height: 450px;
+    height: 450px;
 }
 
 .gallery-img {
     width: 100%;
-    height: 450px;
+    height: 100%;
     object-fit: cover;
     position: absolute;
     top: 0;
     left: 0;
     opacity: 0;
+    visibility: hidden;
     transition: opacity 0.3s ease;
 }
 
 .gallery-img.active {
     opacity: 1;
-    position: relative;
-    z-index: 1;
+    visibility: visible;
+    z-index: 2;
 }
 
 .nav-btn {
@@ -206,7 +207,7 @@ main.product-container {
 .nav-btn.prev { left: 10px; }
 .nav-btn.next { right: 10px; }
 
-/* COLUNA 3: DIREITA (TAMANHOS, CORES, FRETE E BOTÃO) */
+/* COLUNA 3: DIREITA (OPÇÕES E CHECKOUT) */
 .product-checkout {
     display: flex;
     flex-direction: column;
@@ -237,11 +238,12 @@ main.product-container {
     flex-wrap: wrap;
 }
 
+/* Estado Padrão (Sem Seleção) */
 .option-btn {
     padding: 10px 16px;
-    background: #0d0d0d;
-    border: 1px solid var(--border-color);
-    color: #ffffff;
+    background: #0d0d0d !important;
+    border: 1px solid var(--border-color) !important;
+    color: #ffffff !important;
     border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
@@ -250,9 +252,10 @@ main.product-container {
 }
 
 .option-btn:hover {
-    border-color: var(--accent);
+    border-color: var(--accent) !important;
 }
 
+/* Estado Selecionado (Apenas quando clicado) */
 .option-btn.selected {
     background: var(--accent) !important;
     border-color: var(--accent) !important;
