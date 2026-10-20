@@ -232,10 +232,6 @@ footer { background-color: var(--card-bg) !important; border-top: 1px solid var(
     }
 }
 
-/* ==========================================
-   REMOÇÃO DE SUBLINHADOS E CORES DE LINKS
-   ========================================== */
-
 /* Remove sublinhado e altera a cor padrão de todos os links */
 a, 
 a:visited, 
