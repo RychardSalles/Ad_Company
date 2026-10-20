@@ -320,6 +320,60 @@ footer {
 .footer-col ul li a:hover { color: var(--accent); }
 .footer-bottom { text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px; font-size: 12px; color: var(--text-light); }
 
+/* SANFONADOS (ACCORDIONS) DE MEDIDAS E PRAZO */
+.accordion-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+}
+
+.accordion-item {
+    border-top: 1px solid var(--border-color);
+}
+
+.accordion-item:last-child {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.accordion-header {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.accordion-header .arrow {
+    font-size: 11px;
+    color: var(--text-light);
+    transition: transform 0.3s ease;
+}
+
+.accordion-item.active .arrow {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    display: none;
+    padding-bottom: 16px;
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+.accordion-item.active .accordion-content {
+    display: block;
+}
+
 /* RESPONSIVIDADE PARA TELEMÓVEL E TABLET */
 @media (max-width: 900px) {
     #product-detail {
