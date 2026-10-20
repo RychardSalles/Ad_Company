@@ -161,14 +161,22 @@ h2 {
     letter-spacing: -0.5px;
 }
 
+/* Grelha flexível e robusta para forçar os itens lado a lado */
 #products-grid, .products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
     gap: 20px !important;
-    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 40px auto !important;
+    padding: 0 20px !important;
+    justify-content: flex-start !important;
 }
 
+/* Define a largura exata de cada card (cerca de 4 por linha no PC) */
 #products-grid > div, .products-grid > div {
+    flex: 1 1 calc(25% - 20px) !important;
+    max-width: calc(25% - 20px) !important;
+    min-width: 250px !important;
     background: var(--card-bg) !important;
     border: 1px solid var(--border-color) !important;
     border-radius: 8px !important;
@@ -183,6 +191,23 @@ h2 {
     width: 100% !important;
 }
 
+/* Responsividade para telemóveis (2 colunas lado a lado) */
+@media (max-width: 768px) {
+    #products-grid, .products-grid {
+        gap: 10px !important;
+        padding: 0 10px !important;
+    }
+
+    #products-grid > div, .products-grid > div {
+        flex: 1 1 calc(50% - 5px) !important;
+        max-width: calc(50% - 5px) !important;
+        min-width: unset !important;
+    }
+
+    #products-grid img, .products-grid img {
+        height: 150px !important;
+    }
+}
 /* Rodapé */
 footer {
     background-color: var(--card-bg);
