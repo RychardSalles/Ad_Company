@@ -1,5 +1,5 @@
 /* 
-   ESTILOS GLOBAIS E TEMA DARK - AD COMPANY
+    ESTILOS GLOBAIS E TEMA DARK - AD COMPANY
     */
 :root {
     --bg-body: #0d0d0d;
@@ -28,7 +28,7 @@ body {
 }
 
 /* 
-   BARRA SUPERIOR (MARQUEE / LETREIRO)
+    BARRA SUPERIOR (MARQUEE / LETREIRO)
    */
 .top-bar { 
     background: var(--accent) !important; 
@@ -270,6 +270,36 @@ body {
 }
 
 /* ==========================================
+   GRELHA DE PRODUTOS (CATÁLOGO / SHOP)
+   ========================================== */
+#products-grid, .products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important; /* 4 colunas no PC */
+    gap: 20px !important;
+    max-width: 1200px !important;
+    margin: 40px auto !important;
+    padding: 0 20px !important;
+    width: 100% !important;
+}
+
+#products-grid > div, .products-grid > div {
+    width: 100% !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+}
+
+#products-grid img, .products-grid img {
+    height: 220px !important;
+    object-fit: cover !important;
+    width: 100% !important;
+}
+
+/* ==========================================
    RESPONSIVIDADE (MOBILE / TABLET)
    ========================================== */
 @media (max-width: 1024px) {
@@ -282,44 +312,27 @@ body {
         order: -1; 
         min-height: 400px; 
     }
-}
-
-@media (max-width: 900px) {
-    #product-detail {
-        grid-template-columns: 1fr !important; /* Passa de 2 colunas para 1 coluna no telemóvel */
-        gap: 20px !important;
+    
+    #products-grid, .products-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
     }
 }
 
-/* Grelha de produtos responsiva para telemóveis */
-#products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* Força 2 colunas iguais lado a lado */
-    gap: 12px !important; /* Espaçamento compacto entre os cards */
-    padding: 0 10px !important;
-}
-
-/* Ajustes internos do card para ficarem proporcionais em 2 colunas */
-#products-grid > div {
-    font-size: 12px !important;
-}
-
-#products-grid img {
-    height: 160px !important; /* Reduz ligeiramente a altura da imagem para caber bem no layout lado a lado */
-    object-fit: cover !important;
-}
-
-/* --- LAYOUT DE PRODUTOS LADO A LADO NO TELEMÓVEL --- */
 @media (max-width: 768px) {
-    /* Força o container dos produtos a usar 2 colunas */
+    #product-detail {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    /* Força estritamente 2 colunas lado a lado no telemóvel */
     #products-grid, .products-grid {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
+        gap: 12px !important;
         padding: 0 10px !important;
+        margin: 20px auto !important;
     }
 
-    /* Redimensiona os cards e imagens para encaixarem perfeitamente lado a lado */
     #products-grid > div, .products-grid > div {
         width: 100% !important;
         margin: 0 !important;
@@ -327,11 +340,10 @@ body {
     }
 
     #products-grid img, .products-grid img {
-        height: 140px !important;
+        height: 150px !important;
         object-fit: cover !important;
     }
 
-    /* Ajusta os botões e textos dos cards para o espaço reduzido */
     #products-grid h3, .products-grid h3 {
         font-size: 12px !important;
     }
