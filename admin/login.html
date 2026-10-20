@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Administrativo - AD Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-body: #0d0d0d;
+            --card-bg: #161616;
+            --accent: #c4262e;
+            --accent-hover: #a31f25;
+            --text-main: #ffffff;
+            --text-light: #a0a0a0;
+            --border-color: rgba(136, 136, 136, 0.2);
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Barra superior animada (Marquee) */
+        .top-bar { 
+            background: var(--accent) !important; 
+            color: #ffffff !important; 
+            overflow: hidden !important; 
+            white-space: nowrap !important; 
+            padding: 10px 0 !important; 
+            font-size: 12px !important; 
+            font-weight: 800 !important; 
+            letter-spacing: 1px !important; 
+            text-transform: uppercase !important; 
+            width: 100% !important;
+            display: block !important;
+            box-sizing: border-box !important;
+        }
+
+        .top-bar-track {
+            display: inline-flex !important;
+            white-space: nowrap !important;
+            width: max-content !important;
+            animation: marqueeMove 15s linear infinite !important;
+        }
+
+        .top-bar-content { 
+            display: inline-flex !important; 
+            white-space: nowrap !important;
+        }
+
+        .top-bar-content span { 
+            margin: 0 30px !important; 
+        }
+
+        @keyframes marqueeMove { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-50%); } 
+        }
+
+        .login-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .login-logo img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-light);
+            letter-spacing: 1px;
+        }
+
+        input {
+            padding: 12px 16px;
+            background: #0d0d0d;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-family: var(--font-sans);
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn-login {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+        }
+
+        .error-message {
+            background: rgba(196, 38, 46, 0.2);
+            border: 1px solid var(--accent);
+            color: #ff8080;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-track">
+            <div class="top-bar-content">
+                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+                <span>•</span>
+                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+                <span>•</span>
+                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+                <span>•</span>
+            </div>
+            <div class="top-bar-content">
+                <span>⚡ FRETE FIXO PARA ESTAÇÕES DE METRÔ DE SP</span>
+                <span>•</span>
+                <span>🚀 ENVIOS COM RASTREIO PARA TODO O BRASIL</span>
+                <span>•</span>
+                <span>🔥 DROP LIMITADO - APENAS ENQUANTO DURAR O ESTOQUE</span>
+                <span>•</span>
+            </div>
+        </div>  
+    </div> 
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="../assets/logo.png" alt="AD Company" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4='">
+            </div>
+            <h1 class="login-title">Área Restrita</h1>
+            
+            <div id="error-alert" class="error-message"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" placeholder="admin@adcompany.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Palavra-passe</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn-login" id="submit-btn">Entrar</button>
+            </form>
+
+            <a href="../index.html" class="back-link">← Voltar para a loja</a>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submit-btn');
+            const errorAlert = document.getElementById('error-alert');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'A entrar...';
+            errorAlert.style.display = 'none';
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                errorAlert.textContent = 'E-mail ou palavra-passe incorretos.';
+                errorAlert.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Entrar';
+            } else {
+                window.location.href = 'admin.html';
+            }
+        });
+    </script>
+</body>
+</html>
